@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROS 2 总体架构</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 1 章 · ROS 2 总体架构：一层一层往下</h1>
+<p class="sub">配套讲义：<a href="../lessons/01-what-is-ros2.html">第 1 章 · ROS 2 是什么</a>。按"单步"从上往下逐层点亮；分层依据 <code>ROS-Framework/client-libraries/About-Internal-Interfaces</code>。</p>
+<div class="panel"><svg id="sv" viewBox="0 0 680 600"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：你只和节点、客户端库打交道（写节点、调 rclpy）；下面三层是 ROS 2 内部，换中间件（Fast DDS ↔ Zenoh）时你的代码不用改。左边的 rosidl 把 .msg 文件变成每一层都要用的类型代码。</p>
+</main>
+<script src="anim.js"></script>
+<script>
+const sv=$('sv');
+const MX=140,MW=380,TX=540,TW=120,LX=20,LW=104;
+// [id, x, y, w, h, 标题, 小字, 颜色]
+const B=[
+ ['cap',MX,16,MW,52,'能力包：别人写好的节点','Nav2 · MoveIt 2 · ros2_control · tf2 · robot_state_publisher','var(--teal)'],
+ ['app',MX,84,MW,62,'你的节点（node）','camera_driver · ball_detector · policy(VLA) · motor_driver','var(--accent)'],
+ ['tool',TX,16,TW,130,'工具（也都是节点）','','var(--amber)'],
+ ['cli',MX,162,MW,52,'客户端库：rclpy（Python）/ rclcpp（C++）','你写代码时 import / #include 的就是它','var(--accent)'],
+ ['rcl',MX,230,MW,52,'rcl（C 语言）','节点、参数、时间、计算图等公共逻辑，各语言共用','var(--purple)'],
+ ['rmw',MX,298,MW,52,'rmw 接口：中间件的"插座"','只定义"发现、发布订阅、请求应答、序列化"这几件事','var(--purple)'],
+ ['impl',MX,366,MW,62,'rmw 实现（插头）','Fast DDS（默认）· Cyclone DDS · Connext DDS · Zenoh','var(--purple)'],
+ ['net',MX,444,MW,44,'传输','同一进程 · 共享内存 · UDP 网络（可跨机器）','var(--muted)'],
+ ['os',MX,504,MW+140,34,'操作系统：Ubuntu 26.04（Lyrical 的 Tier 1 平台）','','var(--muted)'],
+ ['idl',LX,84,LW,404,'接口定义','','var(--warm)'],
+];
+const G={};
+for(const [id,x,y,w,h,t,s,c] of B){
+  const g=el('g',{},sv);
+  const r=el('rect',{x,y,width:w,height:h,rx:8,fill:'var(--bg)',stroke:c,'stroke-width':1},g);
+  const ty=s?y+h/2-4:y+h/2+5;
+  if(id!=='tool'&&id!=='idl')txt(t,{x:x+w/2,y:ty,'text-anchor':'middle'},g);
+  if(s)txt(s,{x:x+w/2,y:ty+18,'text-anchor':'middle',class:'m'},g);
+  G[id]={g,r,c};
+}
+// 工具列表
+txt('工具（也是节点）',{x:TX+TW/2,y:36,'text-anchor':'middle'},G.tool.g);
+['ros2 命令行','launch','rviz2','rosbag2','rqt'].forEach((s,i)=>txt(s,{x:TX+TW/2,y:60+i*18,'text-anchor':'middle',class:'m'},G.tool.g));
+// rosidl 列
+txt('接口定义',{x:LX+LW/2,y:108,'text-anchor':'middle'},G.idl.g);
+['.msg 话题','.srv 服务','.action 动作'].forEach((s,i)=>txt(s,{x:LX+LW/2,y:134+i*18,'text-anchor':'middle',class:'m'},G.idl.g));
+txt('↓ rosidl',{x:LX+LW/2,y:214,'text-anchor':'middle'},G.idl.g);
+txt('代码生成',{x:LX+LW/2,y:232,'text-anchor':'middle',class:'m'},G.idl.g);
+['Python 类','C++ 结构体','序列化代码'].forEach((s,i)=>txt(s,{x:LX+LW/2,y:262+i*18,'text-anchor':'middle',class:'m'},G.idl.g));
+txt('每一层都用',{x:LX+LW/2,y:330,'text-anchor':'middle',class:'m'},G.idl.g);
+// 右侧括号
+function brace(y1,y2,label,sub){
+  el('path',{d:`M${TX} ${y1} L${TX+8} ${y1} L${TX+8} ${y2} L${TX} ${y2}`,stroke:'var(--muted)',fill:'none'},sv);
+  txt(label,{x:TX+16,y:(y1+y2)/2,class:'m'},sv);
+  if(sub)txt(sub,{x:TX+16,y:(y1+y2)/2+16,class:'m'},sv);
+}
+brace(166,212,'你调用的','');
+brace(232,428,'ROS 2 内部','一般不用碰');
+// 层间箭头
+[[146,162],[214,230],[282,298],[350,366],[428,444]].forEach(([a,b])=>el('path',{d:`M${MX+MW/2} ${a} L${MX+MW/2} ${b}`,stroke:'var(--muted)',fill:'none','marker-end':''},sv));
+// 说明文字
+const cap1=txt('',{x:20,y:568},sv),cap2=txt('',{x:20,y:588,class:'m'},sv);
+const STEPS=[
+ [[],'ROS 2 = 一摞软件层，从上往下：能力包 → 你的节点 → 客户端库 → rcl → rmw → 中间件 → 传输。','按"单步"逐层看。'],
+ [['cap'],'最上面：别人写好的能力包。导航 Nav2、机械臂规划 MoveIt 2、硬件控制 ros2_control。','它们本质上也是一组节点，拿来就能接到你的系统里。'],
+ [['app','tool'],'你的节点：每个只干一件事。右边的命令行、rviz2、rosbag2 也都是节点。','所以录数据（rosbag2）= 多开一个订阅者，不打扰别人。'],
+ [['cli'],'客户端库：你写代码时直接用的 API。Python 用 rclpy，C++ 用 rclcpp。','create_publisher、create_subscription、spin 都在这一层。'],
+ [['rcl'],'rcl：用 C 写的公共核心。各语言的客户端库都调它，保证行为一致。','参数、时间、节点名这些逻辑只写一遍。'],
+ [['rmw'],'rmw 接口：一个"插座"。只规定中间件必须会：发现、发布订阅、请求应答、序列化。','上面的层只认这个插座，不关心插的是谁。'],
+ [['impl'],'rmw 实现：具体的"插头"。默认 Fast DDS，也可换成 Cyclone DDS、Zenoh。','换中间件只要设一个环境变量 RMW_IMPLEMENTATION，代码不改。'],
+ [['net'],'传输：同进程可免复制（需开进程内通信），同机器可走共享内存，跨机器走 UDP。','节点放在哪台电脑上，对上层代码是透明的。'],
+ [['idl'],'左边：接口定义。你写 .msg / .srv / .action，rosidl 自动生成各层要用的代码。','所以 Python 节点和 C++ 节点能互相收发同一种消息。'],
+ [['cap','app','tool','cli','rcl','rmw','impl','net','idl'],'总结：你写节点、调客户端库；rcl 往下是 ROS 2 内部，中间件可替换。','下一张流程图：一条消息怎么从上到下、再从下到上走完一趟。'],
+];
+let k;
+function draw(){
+  const [on,a,b]=STEPS[k];
+  for(const id in G){const {g,r,c}=G[id];const hit=on.includes(id);
+    r.setAttribute('stroke-width',hit?2.5:1);
+    r.setAttribute('fill',hit&&on.length<9?'var(--card)':'var(--bg)');
+    g.setAttribute('opacity',on.length===0||hit?1:.45);}
+  cap1.textContent=a;cap2.textContent=b;
+}
+const A={captureSeed:1,reset(){k=0;draw()},next(){if(k>=STEPS.length-1)return false;k++;draw();return true}};
+setupPlayer(A,1800);
+</script></body></html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工作区构建流程</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 4 章 · 从源码到 ros2 run</h1>
+<p class="sub">配套讲义：<a href="../lessons/04-workspace-package.html">第 4 章 · 工作区、colcon 和第一个包</a>。依据官方 Creating-A-Workspace、Creating-Your-First-ROS2-Package、About-Build-System。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：你只动 src/；colcon 按 package.xml 里的依赖排编译顺序；编译完在新终端里先 source 底层再 source 上层，ros2 run 先在上层找。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:290,term:true,
+ boxes:{
+  SRC:[20,20,180,74,'src/','my_package/ · package.xml','accent'],
+  RD:[240,20,180,46,'rosdep install','按 package.xml 装系统库','teal'],
+  CB:[240,96,180,46,'colcon build','按依赖排序、并行编译','purple'],
+  BUILD:[470,20,190,36,'build/  中间文件','','muted'],
+  INST:[470,64,190,36,'install/  成品 + setup.bash','','purple'],
+  LOG:[470,108,190,36,'log/  构建日志','','muted'],
+  OVER:[20,176,300,44,'overlay：~/ros2_ws/install','你的包（同名时优先）','accent'],
+  UNDER:[20,230,300,44,'underlay：/opt/ros/lyrical','系统装好的 ROS','muted'],
+  RUN:[380,196,280,60,'ros2 run my_package my_node','先在 overlay 找，找不到去 underlay','good'],
+ },
+ arrows:{
+  a1:[200,44,238,44,'','teal'],
+  a2:[200,80,238,112,'','purple'],
+  b1:[420,108,468,40,'','muted'],
+  b2:[420,119,468,82,'','purple'],
+  b3:[420,128,468,124,'','muted'],
+  i1:[565,100,322,186,'source','purple','dash'],
+  r1:[320,198,378,214,'','good'],
+  r2:[320,250,378,240,'','muted','dash'],
+ },
+ steps:[
+  {c:['工作区 = 一个放 ROS 包的目录，惯例 ~/ros2_ws/，源码都放 src/ 里。','流程：写包 → rosdep 装依赖 → colcon 编译 → source → ros2 run。','']},
+  {n:'建包',on:['SRC'],c:['① 在 src/ 里用 ros2 pkg create 建一个 Python 包，顺手生成 hello world 节点。','build-type 二选一：ament_python（纯 Python）或 ament_cmake（C++）。',''],
+   term:['$ mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src','$ ros2 pkg create --build-type ament_python --license Apache-2.0 \\','    --node-name my_node my_package','going to create a new package','package name: my_package']},
+  {n:'骨架',on:['SRC'],c:['② 必有 package.xml：包的身份证（名字、版本、依赖）。Python 包还有 setup.py / setup.cfg。','可执行入口登记在 setup.py 的 entry_points：my_node = my_package.my_node:main。','resource/my_package 是空的标记文件，ROS 工具靠它找到包。'],
+   term:['my_package/','├── package.xml','├── setup.py   setup.cfg','├── resource/my_package','└── my_package/__init__.py  my_node.py']},
+  {n:'rosdep',on:['SRC','a1','RD'],c:['③ rosdep 扫描所有 package.xml，把声明了但没装的系统依赖用 apt 装上。','依赖写全，换一台新电脑也能一条命令装齐。只在 Linux 上可用。',''],
+   term:['$ cd ~/ros2_ws','$ rosdep install -i --from-path src --rosdistro lyrical -y','#All required rosdeps installed successfully']},
+  {n:'colcon',on:['SRC','a2','CB','b1','b2','b3','BUILD','INST','LOG'],c:['④ 在工作区根目录 colcon build：读所有 package.xml，按依赖排序，互不依赖的并行编。','产物三兄弟：build/ 中间文件，install/ 成品和 setup.bash，log/ 构建日志。','Python 包加 --symlink-install：改了脚本不用重编。'],
+   term:['$ colcon build --symlink-install','Starting >>> my_package','Finished <<< my_package [1.2s]','Summary: 1 package finished [1.3s]']},
+  {n:'排序',on:['CB'],c:['⑤ 依赖顺序：robot_driver 依赖 robot_msgs，colcon 就先编 robot_msgs。','package.xml 里依赖没写全，就可能先编了用的一方，报"找不到头文件 / 模块"。',''],
+   term:['$ colcon build','Starting >>> robot_msgs','Finished <<< robot_msgs [8.4s]','Starting >>> robot_driver','Finished <<< robot_driver [3.1s]','Summary: 2 packages finished [11.6s]']},
+  {n:'source',on:['INST','i1','OVER','UNDER'],c:['⑥ 新开一个终端：先 source 底层 /opt/ros/lyrical，再 source 本工作区的 install/。','overlay 叠在 underlay 上面；同名包时 overlay 优先。不要在编译用的终端里 source overlay。',''],
+   term:['$ source /opt/ros/lyrical/setup.bash','$ cd ~/ros2_ws','$ source install/local_setup.bash','# 等价于一句：source ~/ros2_ws/install/setup.bash']},
+  {n:'run',on:['OVER','UNDER','r1','r2','RUN'],c:['⑦ ros2 run 先在 overlay 里找 my_package，找不到再去 underlay。','克隆 turtlesim 源码改窗口标题，编译后跑的就是你改过的版本，系统里那份没动。',''],
+   term:['$ ros2 run my_package my_node','Hi from my_package.']},
+  {n:'总结',all:true,c:['构建系统三层：CMake / setuptools 编一个包，ament 加 ROS 便利，colcon 编一堆包并排顺序。','你只动 src/；产物三兄弟不入库；新终端先 source 再 run。','']},
+ ]});
+</script></body></html>

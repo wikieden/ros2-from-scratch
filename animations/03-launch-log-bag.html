@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>launch、日志与 bag</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 3 章 · 一次启动、看清日志、录下来重放</h1>
+<p class="sub">配套讲义：<a href="../lessons/03-launch-log-bag.html">第 3 章 · 日志、launch 和 bag：一次启动、看清日志、录下来重放</a>。命令与输出取自官方 Launching-Multiple-Nodes、About-Logging、Recording-And-Playing-Back-Data。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：命名空间把两套同名话题分开；日志同时去终端、文件和 /rosout；bag 录的是序列化字节，回放时按原时间重新发布。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:300,term:true,
+ boxes:{
+  L:[20,40,150,50,'ros2 launch','multisim.launch.py','accent'],
+  TEL:[210,10,200,44,'/turtlesim1/teleop_turtle','','accent'],
+  T1:[210,80,200,44,'/turtlesim1/turtlesim','','accent'],
+  T2:[210,150,200,44,'/turtlesim2/turtlesim','','accent'],
+  CON:[470,40,190,38,'终端（stderr）','','muted'],
+  FILE:[470,90,190,38,'~/.ros/log/ 日志文件','','muted'],
+  RO:[470,140,190,38,'/rosout → rqt_console','','muted'],
+  REC:[20,236,150,46,'ros2 bag record','','purple'],
+  BAG:[250,236,170,46,'subset/','.mcap + metadata.yaml','purple'],
+  PLAY:[490,236,170,46,'ros2 bag play','','purple'],
+ },
+ arrows:{
+  l1:[170,62,208,100,'','accent'],
+  l2:[170,72,208,170,'','accent'],
+  cmd:[310,54,310,78,'cmd_vel','accent'],
+  g1:[410,96,468,60,'','muted'],
+  g2:[410,102,468,109,'','muted'],
+  g3:[410,110,468,158,'','muted'],
+  rec:[230,124,120,234,'订阅','purple'],
+  w:[170,259,248,259,'写入','purple'],
+  r:[420,259,488,259,'读出','purple'],
+  pub:[560,234,412,118,'','purple','dash'],
+ },
+ steps:[
+  {c:['三件和"干活"无关、但天天要用的事：一次启动（launch）、看日志、录像回放（bag）。','按"单步"往下走。','']},
+  {n:'launch',on:['L','l1','l2','T1','T2'],c:['① ros2 launch 读一个 Python 文件，里面是一张"要启动什么"的清单。','multisim.launch.py 列了两个 turtlesim 节点，一条命令同时启动，弹出两个窗口。',''],
+   term:['$ ros2 launch turtlesim multisim.launch.py','[INFO] [launch]: All log files can be found below ~/.ros/log/…','[INFO] [turtlesim_node-1]: process started with pid [1201]','[INFO] [turtlesim_node-2]: process started with pid [1202]']},
+  {n:'命名空间',on:['T1','T2'],c:['② 两个节点都叫 turtlesim，但命名空间不同：turtlesim1 和 turtlesim2。','它们的话题、服务都加上了前缀，彼此分开，按键不会让两只乌龟一起动。','多台同型号机器人共用一个网络，靠的也是命名空间：/robot1/…、/robot2/…'],
+   term:['$ ros2 topic list','/turtlesim1/turtle1/cmd_vel','/turtlesim1/turtle1/pose','/turtlesim2/turtle1/cmd_vel','/turtlesim2/turtle1/pose','…']},
+  {n:'遥控',on:['TEL','cmd','T1'],chip:['cmd','Twist',.5],c:['③ 想遥控 1 号，把遥控节点也放进 turtlesim1 命名空间：-r __ns:=/turtlesim1。','它发的 turtle1/cmd_vel 自动变成 /turtlesim1/turtle1/cmd_vel，只有 1 号乌龟会动。',''],
+   term:['$ ros2 run turtlesim turtle_teleop_key --ros-args -r __ns:=/turtlesim1']},
+  {n:'日志',on:['T1','g1','g2','g3','CON','FILE','RO'],c:['④ 日志三个去处：终端、磁盘上的 ~/.ros/log/、以及 /rosout 话题。','/rosout 汇集所有节点的日志，在另一台电脑上开 rqt_console 就能看全机日志。','五个级别：DEBUG < INFO < WARN < ERROR < FATAL，默认只显示 INFO 及以上。'],
+   term:['[INFO] [1763020000.123] [turtlesim1.turtlesim]: Starting turtlesim with node name /turtlesim1/turtlesim','[INFO] [1763020000.125] [turtlesim1.turtlesim]: Spawning turtle [turtle1] at x=[5.544445] …','$ ros2 run rqt_console rqt_console']},
+  {n:'调级别',on:['T1','CON'],c:['⑤ 调试时把级别调到 DEBUG：--ros-args --log-level debug。','代码里高频回调打日志要节流：get_logger().info(…, throttle_duration_sec=1.0)。',''],
+   term:['$ ros2 run turtlesim turtlesim_node --ros-args --log-level debug','[DEBUG] [turtlesim]: …（平时被过滤掉的调试信息）']},
+  {n:'录',on:['REC','rec','w','BAG','T1'],chip:['rec','pose / cmd_vel',.5],c:['⑥ bag record 就是一个订阅者：订阅指定话题，把收到的消息原样（序列化字节）写进文件。','-o 指定目录名，-d 5 每 5 秒切一个文件；Ctrl+C 停止。',''],
+   term:['$ ros2 bag record -o subset --topics /turtlesim1/turtle1/cmd_vel /turtlesim1/turtle1/pose','[INFO] [rosbag2_recorder]: Subscribed to topic \'/turtlesim1/turtle1/cmd_vel\'','[INFO] [rosbag2_recorder]: Recording...']},
+  {n:'看',on:['BAG'],c:['⑦ bag info 读 metadata.yaml：有哪些文件、多长时间、每个话题几条。','默认存储格式 MCAP，消息按 CDR 序列化格式存放：录制时不用反序列化，很省 CPU。',''],
+   term:['$ ros2 bag info subset','Files:             subset_0.mcap','Storage id:        mcap','Duration:          48.47s','Messages:          3013','Topic information: Topic: /turtlesim1/turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Count: 9 | Serialization Format: cdr']},
+  {n:'放',on:['BAG','r','PLAY','pub','T1'],chip:['pub','Twist（原时间）',.45],c:['⑧ bag play 按录制时的时间间隔，把消息重新发布到原来的话题上。乌龟重走当时的路线。','回放时要关掉原来的发布者，否则同一话题有两个来源，数据打架。','空格暂停，方向键调速；-i 可以同时放多个 bag。'],
+   term:['$ ros2 bag play subset','[INFO] [rosbag2_player]: Adding keyboard callbacks.','[1763020100.10] Duration 3.21/48.47 [R]']},
+  {n:'总结',all:true,c:['总结：launch 一次启动、命名空间分组；日志三去处、五级别；bag 录字节、按原时间回放。','bag 也是 VLA / 模仿学习示范数据最原始的形态：遥操作时录下相机、关节和动作。','']},
+ ]});
+</script></body></html>

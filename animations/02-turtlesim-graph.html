@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>turtlesim 计算图</title><link rel="stylesheet" href="anim.css">
+<style>svg text.mono{font-family:Menlo,Consolas,monospace;font-size:11.5px}</style></head>
+<body><main>
+<h1>第 2 章 · 用命令行看懂 turtlesim</h1>
+<p class="sub">配套讲义：<a href="../lessons/02-turtlesim-cli.html">第 2 章 · 用命令行看懂 turtlesim</a>。左边是小乌龟窗口，右边是 ROS 计算图，下面是终端里敲的命令和输出。命令与输出摘自官方 Understanding nodes / topics / services / parameters / actions 五个教程。</p>
+<div class="panel"><svg id="sv" viewBox="0 0 680 600"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">颜色：<span style="color:var(--accent)">蓝 = 话题</span>，<span style="color:var(--amber)">橙 = 服务</span>，<span style="color:var(--purple)">紫 = 动作</span>，<span style="color:var(--teal)">绿 = 参数</span>。看点：命令行 ros2 每次运行也是一个临时节点，所以它能像别的节点一样发布、订阅、调用服务。</p>
+</main>
+<script src="anim.js"></script>
+<script>
+const sv=$('sv');
+// —— 乌龟窗口 ——
+const WX=20,WY=40,WS=220,WORLD=11.09;
+const px=x=>WX+x/WORLD*WS, py=y=>WY+WS-y/WORLD*WS;
+txt('turtlesim 窗口',{x:WX,y:WY-10,class:'m'},sv);
+const bg=el('rect',{x:WX,y:WY,width:WS,height:WS,rx:4,fill:'rgb(69,86,255)'},sv);
+const pathG=el('g',{},sv);
+function turtle(color){const g=el('g',{opacity:0},sv);el('circle',{cx:0,cy:0,r:8,fill:color,stroke:'#fff','stroke-width':1.5},g);el('circle',{cx:10,cy:0,r:3.5,fill:color,stroke:'#fff','stroke-width':1},g);return g}
+const t1=turtle('#3b6d11'),t2=turtle('#ba7517');
+const t2l=txt('turtle2',{x:0,y:0,style:'fill:#fff;font-size:11px',opacity:0},sv);
+const t1l=txt('turtle1',{x:0,y:0,style:'fill:#fff;font-size:11px',opacity:0},sv);
+function place(g,l,x,y,th){g.setAttribute('transform',`translate(${px(x)},${py(y)}) rotate(${-th*180/Math.PI})`);l.setAttribute('x',px(x)-18);l.setAttribute('y',py(y)+22)}
+// —— 计算图 ——
+function node(x,y,w,h,t,sub){const g=el('g',{opacity:.2},sv);const r=el('rect',{x,y,width:w,height:h,rx:10,fill:'var(--bg)',stroke:'var(--text)','stroke-width':1.2},g);txt(t,{x:x+w/2,y:y+20,'text-anchor':'middle'},g);if(sub)sub.forEach((s,i)=>txt(s,{x:x+w/2,y:y+38+i*15,'text-anchor':'middle',class:'m'},g));return {g,r}}
+const NT=node(255,30,200,46,'/teleop_turtle',['参数 scale_linear / scale_angular']);
+const NSIM=node(255,180,200,88,'/turtlesim',['参数 background_r / g / b','服务 /spawn /clear /kill …','动作 /turtle1/rotate_absolute']);
+const NC=node(510,180,150,46,'ros2 命令行',['（临时节点）']);
+NT.r.setAttribute('height',52);NC.r.setAttribute('height',52);
+// 边：teleop → turtlesim（cmd_vel）
+const eT=el('path',{d:'M355 82 L355 178',stroke:'var(--line)','stroke-width':2,fill:'none'},sv);
+const eTa=el('path',{d:'M349 170 L355 180 L361 170',stroke:'var(--line)','stroke-width':2,fill:'none'},sv);
+const eTl=txt('/turtle1/cmd_vel',{x:362,y:120,class:'m'},sv);
+const eTl2=txt('geometry_msgs/msg/Twist',{x:362,y:135,class:'m'},sv);
+// 边：命令行 ↔ turtlesim
+const eC=el('path',{d:'M508 222 L457 222',stroke:'var(--line)','stroke-width':2,fill:'none'},sv);
+const eCa=el('path',{d:'',stroke:'var(--line)','stroke-width':2,fill:'none'},sv);
+const eCl=txt('',{x:585,y:250,'text-anchor':'middle',class:'m'},sv);
+// 消息块
+const chip=el('g',{opacity:0},sv);
+const chipR=el('rect',{x:0,y:-11,width:10,height:22,rx:11,fill:'var(--accent)'},chip);
+const chipT=txt('',{x:10,y:4,style:'fill:#fff;font-size:11px'},chip);
+// —— 终端 ——
+el('rect',{x:20,y:290,width:640,height:150,rx:8,fill:'#1f1e1d'},sv);
+txt('终端',{x:30,y:306,style:'fill:#8a8984;font-size:11px'},sv);
+const term=[0,1,2,3,4,5,6].map(i=>txt('',{x:32,y:326+i*17,class:'mono',style:'fill:#e8e6dd;white-space:pre'},sv));
+// —— 说明 ——
+const cap=[0,1,2].map(i=>txt('',{x:20,y:468+i*22,class:i?'m':''},sv));
+const PH=['启动','键盘','看节点','按↑','听位姿','自己发','服务','参数','动作','结果','总结'];
+const tl=PH.map((p,i)=>{const x=20+i*58.6;const r=el('rect',{x,y:548,width:54,height:22,rx:5,fill:'var(--bg)',stroke:'var(--line)'},sv);txt(p,{x:x+27,y:563,'text-anchor':'middle',class:'m'},sv);return r});
+const COL={topic:'var(--accent)',srv:'var(--amber)',act:'var(--purple)',par:'var(--teal)'};
+// 乌龟轨迹
+const P0=[5.544,5.544,0], P1=[7.544,5.544,0];
+const arc=[];for(let i=0;i<=12;i++){const t=i/12,w=1.8,v=2;arc.push([P1[0]+v/w*Math.sin(w*t),P1[1]+v/w*(1-Math.cos(w*t))])}
+const P2=[arc[12][0],arc[12][1],1.8];
+const S=[
+ {c:['turtlesim 是官方的 2D 小乌龟模拟器：不用任何硬件，就能练 ROS 的四种通信方式。','每个新终端都要先 source ROS 的环境（第 1 步讲），否则找不到 ros2 命令。','按"单步"往下走。'],term:['$ source /opt/ros/lyrical/setup.bash']},
+ {s:1,t1:P0,c:['① 启动模拟器节点：ros2 run <包名> <可执行文件名>。','包 turtlesim 里的可执行文件 turtlesim_node 跑起来后，计算图里多了节点 /turtlesim。','窗口中间出现一只乌龟 turtle1，坐标约 (5.54, 5.54)。'],
+  term:['$ ros2 run turtlesim turtlesim_node','[INFO] [turtlesim]: Starting turtlesim with node name /turtlesim','[INFO] [turtlesim]: Spawning turtle [turtle1] at x=[5.544445], y=[5.544445], theta=[0.000000]']},
+ {s:1,tp:1,t1:P0,c:['② 新开一个终端，启动键盘遥控节点 turtle_teleop_key（同一个包里的另一个可执行文件）。','它的节点名是 /teleop_turtle：可执行文件名和节点名不一定相同。','两个节点通过话题 /turtle1/cmd_vel 自动连上（第 1 章的"发现 + 匹配"）。'],
+  term:['$ ros2 run turtlesim turtle_teleop_key','Use arrow keys to move the turtle.',"Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rotation."],eT:1},
+ {s:1,tp:1,cl:1,t1:P0,c:['③ 第三个终端里查看计算图：node list 列出所有节点，node info 列出一个节点的全部连接。','/turtlesim 订阅 1 个话题、发布位姿和颜色、提供一堆服务、1 个动作。','命令行查询时它自己也临时加入了计算图。'],
+  term:['$ ros2 node list','/turtlesim','/teleop_turtle','$ ros2 node info /turtlesim','  Subscribers:  /turtle1/cmd_vel: geometry_msgs/msg/Twist','  Publishers:   /turtle1/pose: turtlesim_msgs/msg/Pose  …','  Action Servers: /turtle1/rotate_absolute …'],eT:1},
+ {s:1,tp:1,t1:P1,path:[P0,P1],c:['④ 在遥控终端按 ↑：teleop 往 /turtle1/cmd_vel 发一条 Twist（线速度 + 角速度）。','turtlesim 订阅到后让乌龟往前走一小段就停：按一下只走一下，断线时机器人不会一直跑。','这就是话题：单向、持续、发的一方决定什么时候发。'],
+  term:['（遥控终端里按了一下 ↑）'],eT:2,chip:['T','Twist linear.x=2.0']},
+ {s:1,tp:1,cl:1,t1:P1,path:[P0,P1],c:['⑤ 听一个话题：topic echo 订阅 /turtle1/pose，把 turtlesim 不停发布的位姿打出来。','x 从 5.54 变成约 7.5：按一下 ↑ 发的是 linear.x = 2.0，乌龟以这个速度走约 1 秒。','topic info 看发布者 / 订阅者数，topic hz 看频率，interface show 看消息格式。'],
+  term:['$ ros2 topic echo /turtle1/pose','x: 7.54   （示意值，约前进 2 个单位）','y: 5.544445','theta: 0.0','linear_velocity: 0.0','angular_velocity: 0.0','---'],eT:1,eC:['topic','/turtle1/pose','←']},
+ {s:1,tp:1,cl:1,t1:P2,path:[P0,P1,...arc],c:['⑥ 自己发：topic pub 直接往 /turtle1/cmd_vel 发一条消息，效果和按键一样。','这里给了线速度 2.0、角速度 1.8，乌龟走出一段弧线。','话题是匿名的：turtlesim 不知道、也不关心这条命令来自键盘还是命令行。'],
+  term:['$ ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist \\','    "{linear: {x: 2.0}, angular: {z: 1.8}}"','publishing #1: geometry_msgs.msg.Twist(linear=…(x=2.0…), angular=…(z=1.8))'],eT:1,eC:['topic','/turtle1/cmd_vel','→'],chip:['C','Twist']},
+ {s:1,tp:1,cl:1,t1:P2,t2:[2,2,0.2],path:[P0,P1,...arc],c:['⑦ 服务：service call /spawn 请求 turtlesim 在 (2, 2) 再生一只乌龟，并等着回复。','回复里带着新乌龟的名字 turtle2。一问一答、马上结束，正适合用服务。','service list 列出所有服务，service type 看类型，interface show 看请求 / 回复格式。'],
+  term:['$ ros2 service call /spawn turtlesim_msgs/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: \'\'}"','requester: making request: turtlesim_msgs.srv.Spawn_Request(x=2.0, y=2.0, …)','response:','turtlesim_msgs.srv.Spawn_Response(name=\'turtle2\')'],eT:1,eC:['srv','/spawn','↔'],chip:['C','请求 → 回复']},
+ {s:1,tp:1,cl:1,t1:P2,t2:[2,2,0.2],path:[P0,P1,...arc],bg:[150,86,255],c:['⑧ 参数：param get 读 /turtlesim 的背景色 background_g = 86；param set 把 background_r 从 69 改成 150。','窗口背景立刻变色，代码一行没改。参数是节点自己的设置，节点关掉就没了。','param dump 存成 YAML 文件，下次启动时 --params-file 读回来。'],
+  term:['$ ros2 param list','/turtlesim:','  background_b  background_g  background_r  …','$ ros2 param get /turtlesim background_g','Integer value is: 86','$ ros2 param set /turtlesim background_r 150','Set parameter successful'],eT:1,eC:['par','param set','→']},
+ {s:1,tp:1,cl:1,t1:P2,t2:[2,2,0.2],path:[P0,P1,...arc],bg:[150,86,255],c:['⑨ 动作：send_goal 给 /turtle1/rotate_absolute 发目标"转到朝向 −1.57 弧度（朝下）"。','服务端先回"接受"，再一边转一边发反馈：还剩多少弧度没转（remaining）。','遥控终端里按 G B V C D E R T 也是在发这个动作的目标，按 F 取消。'],
+  term:['$ ros2 action send_goal /turtle1/rotate_absolute \\','    turtlesim_msgs/action/RotateAbsolute "{theta: -1.57}" --feedback','Goal accepted with ID: e6092c83…','Feedback:','    remaining: -2.1   （示意值）'],eT:1,eC:['act','rotate_absolute','↔'],chip:['C','目标 theta=-1.57'],rot:0.35},
+ {s:1,tp:1,cl:1,t1:[P2[0],P2[1],-1.57],path:[P0,P1,...arc],bg:[150,86,255],c:['⑩ 转完后服务端发结果：delta = 实际转过的角度。动作 = 目标 → 反馈 … → 结果。','中途取消（客户端按 F）叫 cancel；服务端自己放弃叫 abort：转的过程中再发新目标，turtlesim 会 abort 旧目标。','遇到新目标时接受还是拒绝，由各个动作服务端自己决定，ROS 不统一规定。'],
+  term:['Feedback:','    remaining: -0.4   （示意值）','Result:','    delta: -3.37   （示意值）','Goal finished with status: SUCCEEDED'],eT:1,eC:['act','rotate_absolute','←'],chip:['C','反馈 / 结果']},
+ {s:1,tp:1,cl:1,t1:[P2[0],P2[1],-1.57],t2:[2,2,0.2],path:[P0,P1,...arc],bg:[150,86,255],all:1,c:['总结：两个节点 + 命令行，就把四种通信方式都用了一遍。','话题 cmd_vel / pose，服务 /spawn，参数 background_r，动作 rotate_absolute。','命令套路都一样：ros2 <node|topic|service|param|action> <list|info|echo|call|get|set|send_goal>。'],
+  term:['ros2 node    list | info','ros2 topic   list -t | echo | info | hz | pub','ros2 service list -t | type | call','ros2 param   list | get | set | dump | load','ros2 action  list -t | info | send_goal','ros2 interface show <类型>'],eT:1},
+];
+let k;
+function line(pts){return pts.map((p,i)=>(i?'L':'M')+px(p[0]).toFixed(1)+' '+py(p[1]).toFixed(1)).join(' ')}
+function draw(){
+  const s=S[k];
+  NSIM.g.setAttribute('opacity',s.s?1:.2);NT.g.setAttribute('opacity',s.tp?1:.2);NC.g.setAttribute('opacity',s.cl?1:.2);
+  // teleop 边
+  const te=s.eT||0;[eT,eTa].forEach(p=>{p.setAttribute('stroke',te?COL.topic:'var(--line)');p.setAttribute('stroke-width',te===2?3.5:2);p.setAttribute('opacity',te?1:.25)});
+  eTl.setAttribute('opacity',te?1:.25);eTl2.setAttribute('opacity',te?1:.25);
+  // 命令行边
+  if(s.eC){const [ty,l,dir]=s.eC;const c=COL[ty];eC.setAttribute('stroke',c);eC.setAttribute('stroke-width',3);eC.setAttribute('opacity',1);eCa.setAttribute('stroke',c);
+    eCa.setAttribute('d',dir==='←'?'M500 216 L510 222 L500 228':(dir==='→'?'M465 216 L455 222 L465 228':'M465 216 L455 222 L465 228 M500 216 L510 222 L500 228'));eCa.setAttribute('opacity',1);eCl.textContent=l;eCl.setAttribute('fill',c)}
+  else{eC.setAttribute('stroke','var(--line)');eC.setAttribute('stroke-width',2);eC.setAttribute('opacity',s.cl?.5:.15);eCa.setAttribute('opacity',0);eCl.textContent=''}
+  // 消息块
+  if(s.chip){const [where,t]=s.chip;chipT.textContent=t;const w=[...t].reduce((a,ch)=>a+(ch.charCodeAt(0)>255?12:6.6),0)+20;chipR.setAttribute('width',w);chipT.setAttribute('x',10);
+    const c=where==='T'?COL.topic:COL[s.eC[0]];chipR.setAttribute('fill',c);
+    chip.setAttribute('transform',where==='T'?'translate(362,155)':`translate(${585-w/2},272)`);chip.setAttribute('opacity',1)}else chip.setAttribute('opacity',0);
+  // 乌龟窗口
+  const b=s.bg||[69,86,255];bg.setAttribute('fill',`rgb(${b})`);
+  clear(pathG);if(s.path)el('path',{d:line(s.path),stroke:'#fff','stroke-width':1.5,fill:'none'},pathG);
+  if(s.t1){t1.setAttribute('opacity',1);t1l.setAttribute('opacity',1);const th=s.rot!==undefined?P2[2]-(P2[2]+1.57)*s.rot:s.t1[2];place(t1,t1l,s.t1[0],s.t1[1],th)}else{t1.setAttribute('opacity',0);t1l.setAttribute('opacity',0)}
+  if(s.t2){t2.setAttribute('opacity',1);t2l.setAttribute('opacity',1);place(t2,t2l,...s.t2)}else{t2.setAttribute('opacity',0);t2l.setAttribute('opacity',0)}
+  // 终端与说明
+  term.forEach((t,i)=>{const l=(s.term||[])[i]||'';t.textContent=l;t.style.fill=l.startsWith('$')?'#9fe1cb':'#e8e6dd'});
+  cap.forEach((c,i)=>c.textContent=s.c[i]||'');
+  tl.forEach((r,i)=>{const on=i===k-1;r.setAttribute('fill',on?'var(--accent-bg)':(i<k-1?'var(--card)':'var(--bg)'));r.setAttribute('stroke',on?'var(--accent)':'var(--line)')});
+}
+const A={captureSeed:1,reset(){k=0;draw()},next(){if(k>=S.length-1)return false;k++;draw();return true}};
+setupPlayer(A,2600);
+</script></body></html>

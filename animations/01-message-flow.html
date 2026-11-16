@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROS 2 核心流程：一条消息走一趟</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 1 章 · 核心流程：一条消息从发出到被处理</h1>
+<p class="sub">配套讲义：<a href="../lessons/01-what-is-ros2.html">第 1 章 · ROS 2 是什么</a>。官方 talker / listener 例子：talker 每 0.5 秒往 <code>/chatter</code> 发一句话，listener 收到就打印。依据 <code>nodes/About-Discovery</code>、<code>client-libraries/About-Executors</code>。</p>
+<div class="panel"><svg id="sv" viewBox="0 0 680 540"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：① 连接是"自动发现 + 三项匹配"建立的，没有中心服务器；② 消息在发送端往下走（对象 → 字节），在接收端往上走（字节 → 对象）；③ 回调不是消息一到就跑，而是 executor 在 spin() 里发现有数据才调用。</p>
+</main>
+<script src="anim.js"></script>
+<script>
+const sv=$('sv');
+const LX=20,RX=440,W=220;
+const ROWS=[['code',30,78],['cli',122,40],['rcl',170,36],['rmw',214,36],['dds',258,44]];
+function stack(x,name,codeLines,layerNames){
+  const s={};
+  txt(name,{x:x+W/2,y:20,'text-anchor':'middle'},sv);
+  ROWS.forEach(([id,y,h],i)=>{
+    const g=el('g',{},sv);
+    const r=el('rect',{x,y,width:W,height:h,rx:8,fill:'var(--bg)',stroke:i===0?'var(--accent)':(i===1?'var(--accent)':'var(--purple)'),'stroke-width':1},g);
+    if(id==='code')codeLines.forEach((l,j)=>txt(l,{x:x+10,y:y+22+j*18,class:j?'m':''},g));
+    else txt(layerNames[i-1],{x:x+W/2,y:y+h/2+5,'text-anchor':'middle'},g);
+    s[id]={g,r,y,h};
+  });
+  return s;
+}
+const T=stack(LX,'talker 节点（进程 A）',['talker（你的代码）','pub = create_publisher(','  String, "/chatter", 10)'],['rclpy','rcl','rmw','Fast DDS']);
+const L=stack(RX,'listener 节点（进程 B，可在另一台电脑）',['listener（你的代码）','create_subscription(String,','  "/chatter", callback, 10)'],['rclpy · executor spin()','rcl','rmw','Fast DDS']);
+// 订阅队列
+const qg=el('g',{opacity:0},sv);
+el('rect',{x:RX+W-70,y:262,width:62,height:36,rx:6,fill:'var(--card)',stroke:'var(--amber)'},qg);
+const qtxt=txt('队列 0/10',{x:RX+W-39,y:285,'text-anchor':'middle',class:'m'},qg);
+// 发现：域
+const dom=el('g',{opacity:.25},sv);
+el('ellipse',{cx:340,cy:150,rx:86,ry:34,fill:'var(--card)',stroke:'var(--teal)','stroke-dasharray':'4 3'},dom);
+txt('同一个 ROS 域',{x:340,y:146,'text-anchor':'middle'},dom);
+txt('ROS_DOMAIN_ID = 0',{x:340,y:164,'text-anchor':'middle',class:'m'},dom);
+const dl=el('path',{d:`M${LX+W} 280 Q300 230 300 180`,stroke:'var(--teal)',fill:'none','stroke-dasharray':'4 3',opacity:0},sv);
+const dr=el('path',{d:`M${RX} 280 Q380 230 380 180`,stroke:'var(--teal)',fill:'none','stroke-dasharray':'4 3',opacity:0},sv);
+const adL=txt('"我在，我发 /chatter (String)"',{x:LX,y:330,class:'m',opacity:0},sv);
+const adR=txt('"我在，我收 /chatter (String)"',{x:RX,y:330,class:'m',opacity:0},sv);
+// 匹配清单
+const mg=el('g',{opacity:0},sv);
+el('rect',{x:262,y:196,width:156,height:70,rx:8,fill:'var(--bg)',stroke:'var(--good)'},mg);
+['✓ 话题名相同','✓ 消息类型相同','✓ QoS 兼容'].forEach((s,i)=>txt(s,{x:276,y:216+i*18,class:i?'':''},mg));
+// 网络
+const net=el('path',{d:`M${LX+W} 300 L${RX} 300`,stroke:'var(--muted)','stroke-width':2,fill:'none',opacity:0},sv);
+const netl=txt('UDP 网络 / 共享内存',{x:340,y:318,'text-anchor':'middle',class:'m',opacity:0},sv);
+// 消息点
+const dot=el('g',{opacity:0},sv);
+const dc=el('rect',{x:-34,y:-12,width:68,height:24,rx:12,fill:'var(--warm)'},dot);
+const dtx=txt('msg',{x:0,y:5,'text-anchor':'middle',style:'fill:#fff;font-size:12px'},dot);
+// 输出
+const out=txt('',{x:RX,y:350,style:'fill:var(--good)'},sv);
+const cap1=txt('',{x:20,y:410},sv),cap2=txt('',{x:20,y:432,class:'m'},sv),cap3=txt('',{x:20,y:454,class:'m'},sv);
+const stepn=txt('',{x:660,y:520,'text-anchor':'end',class:'m'},sv);
+// 时间线
+const PH=['启动','发现','匹配','发布','往下','序列化','传输','排队','等待集','往上','回调','循环'];
+const tl=PH.map((p,i)=>{const x=20+i*55;const r=el('rect',{x,y:478,width:51,height:22,rx:5,fill:'var(--bg)',stroke:'var(--line)'},sv);const t=txt(p,{x:x+25.5,y:493,'text-anchor':'middle',class:'m'},sv);return {r,t}});
+const S=[
+ {h:[],c:['两个独立进程：talker 和 listener。它们互相不知道对方存在。','代码里只写了话题名 /chatter、类型 String、队列深度 10。','按"单步"往下走。']},
+ {h:[T.code,L.code],c:['① 启动：各自 rclpy.init()、创建节点，再创建 publisher / subscription。','这时只是在本进程里登记"我要发 / 我要收"，还没有任何连接。','']},
+ {h:[T.dds,L.dds],disc:1,c:['② 发现（discovery）：中间件自动在同一 ROS_DOMAIN_ID 里广播"我是谁、发收什么"。','对方听到后回一句介绍自己。没有中心服务器，这是和 ROS 1 最大的区别之一。','节点还会定期广播，后来加入的节点也能被发现；下线时也会通知。']},
+ {h:[T.dds,L.dds],disc:1,match:1,c:['③ 匹配：话题名相同、类型相同、QoS 兼容，三项都满足才建立连接。','QoS 不兼容（如一边要求可靠、一边只给尽力而为）就连不上，只打一条警告，新手常踩。','连接建好后，下面是每一条消息都要走的路。']},
+ {h:[T.code],net:1,dot:[LX+W/2,T.code.y+60],dl:'msg',c:['④ 发布：talker 的定时器每 0.5 秒触发一次回调，调用 pub.publish(msg)。','msg 是一个 Python 对象：String(data="Hello World: 0")。','']},
+ {h:[T.cli,T.rcl],net:1,dot:[LX+W/2,T.rcl.y+18],dl:'msg',c:['⑤ 往下：rclpy 把消息交给 rcl，rcl 再交给 rmw。','这几层只是转手，你的代码不用关心。','']},
+ {h:[T.rmw,T.dds],net:1,dot:[LX+W/2,T.dds.y+22],dl:'字节',c:['⑥ 序列化：Fast DDS 用 rosidl 生成的代码，把对象变成一串字节。','所以 Python 发、C++ 收也没问题：两边对字节格式的约定由 .msg 文件决定。','']},
+ {h:[],net:1,dot:[340,300],dl:'字节',c:['⑦ 传输：字节经 UDP 网络（同机器可能走共享内存）送到对面。','对上层来说，对方在同一台电脑还是另一台，代码完全一样。','']},
+ {h:[L.dds],net:1,q:1,dot:[RX+42,L.dds.y+22],dl:'字节',c:['⑧ 排队：listener 的中间件收到字节，放进这个订阅的队列（深度 10）。','队列满了最旧的会被挤掉，这就是 create_subscription 里那个 10 的含义。','此时回调还没有运行！']},
+ {h:[L.cli],net:1,q:1,dot:[RX+42,L.dds.y+22],dl:'字节',c:['⑨ 等待集（wait set）：executor 在 spin() 里不停询问下层"有没有新数据"。','它看到这个订阅的队列有一条，就准备处理它。','如果你忘了写 spin()，消息会一直躺在队列里，回调永远不会被调用。']},
+ {h:[L.cli,L.rcl,L.rmw],net:1,q:2,dot:[RX+W/2,L.cli.y+20],dl:'msg',c:['⑩ 往上 + 反序列化：字节被还原成 String 对象，从 rmw → rcl → rclpy 交上来。','','']},
+ {h:[L.code],net:1,q:2,dot:[RX+W/2,L.code.y+60],dl:'msg',out:'I heard: "Hello World: 0"',c:['⑪ 回调：executor 调用你写的 callback(msg)，打印收到的内容。','你的代码只看到了第 ① 步和这一步，中间九步全是 ROS 2 替你做的。','']},
+ {h:[T.code,L.code],net:1,q:2,dot:[340,300],dl:'字节',out:'I heard: "Hello World: 1"',c:['⑫ 循环：0.5 秒后定时器再次触发，④–⑪ 再走一遍。发现和匹配只在开始做一次。','这就是一个最小 ROS 2 系统的全部流程。第 2 章开始动手跑它。','']},
+];
+let k;
+function hl(boxes){for(const s of [T,L])for(const id in s){const b=s[id];const on=boxes.includes(b);b.r.setAttribute('stroke-width',on?2.5:1);b.r.setAttribute('fill',on?'var(--card)':'var(--bg)')}}
+function draw(){
+  const s=S[k];hl(s.h);
+  const d=!!s.disc&&!s.net;
+  dom.setAttribute('opacity',s.disc||s.net?1:.25);
+  [dl,dr].forEach(p=>p.setAttribute('opacity',d||s.disc?1:0));
+  [adL,adR].forEach(p=>p.setAttribute('opacity',s.disc&&!s.match?1:0));
+  mg.setAttribute('opacity',s.match?1:0);
+  net.setAttribute('opacity',s.net||s.match?1:0);netl.setAttribute('opacity',s.net||s.match?1:0);
+  qg.setAttribute('opacity',s.q?1:0);qtxt.textContent=s.q===1?'队列 1/10':'队列 0/10';
+  if(s.dot){dot.setAttribute('opacity',1);dot.setAttribute('transform',`translate(${s.dot[0]},${s.dot[1]})`);dtx.textContent=s.dl;dc.setAttribute('fill',s.dl==='字节'?'var(--purple)':'var(--warm)')}else dot.setAttribute('opacity',0);
+  out.textContent=s.out||'';
+  cap1.textContent=s.c[0];cap2.textContent=s.c[1];cap3.textContent=s.c[2];
+  tl.forEach((t,i)=>{const on=i===k-1;t.r.setAttribute('fill',on?'var(--accent-bg)':(i<k-1?'var(--card)':'var(--bg)'));t.r.setAttribute('stroke',on?'var(--accent)':'var(--line)')});
+  stepn.textContent=k?`${k} / ${S.length-1}`:'';
+}
+const A={captureSeed:1,reset(){k=0;draw()},next(){if(k>=S.length-1)return false;k++;draw();return true}};
+setupPlayer(A,2200);
+</script></body></html>
