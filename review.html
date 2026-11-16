@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ros2 · 复习卡片 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="index.html">从零学 ROS 2</a>
+<a href="lessons/index.html">讲义目录</a>
+<a href="animations/index.html">动画</a>
+<a href="review.html">复习卡片</a>
+<a href="lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="ros2">ros2 · 复习卡片</h1>
+<p>讲解中卡住、追问、答错的地方，以及必须记住的要点，都会自动追加到这里。每张卡片的"来源"链接到 <a href="lessons/index.html">lessons/</a> 里对应的讲义章节，忘了就回去重读那一章。</p>
+<h2 id="_1">怎么用</h2>
+<ol>
+<li>先只看<strong>问题</strong>，自己说出或写出答案；</li>
+<li>再点开"答案"核对；</li>
+<li>答对了，在"复习记录"里补一个日期；答错了就当天再看一遍。</li>
+</ol>
+<p><strong>复习间隔</strong>（按答对的次数）：第 1 次 → 隔 1 天 → 隔 3 天 → 隔 7 天 → 隔 14 天 → 隔 30 天。连续答对 5 次的卡片移到文末"已掌握"。</p>
+<p>想复习时说一声"复习"，我会挑到期的卡片来考你。</p>
+<hr />
+<h2 id="_2">基本概念</h2>
+<h3 id="r01-ros">R01 · ROS 是操作系统吗？它到底是什么？"节点"是什么？</h3>
+<p>来源：<a href="lessons/01-what-is-ros2.html">第 1 章 · 第 1 步</a> · 加入 2026-11-05 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>不是。ROS 是装在 Ubuntu 等系统上面的一套工具和库，官方说它是机器人各部分之间通信的"管道"（plumbing）。</p>
+<p>节点（node）= 一个只干一件事的程序，比如读相机、找红球、驱动电机。节点之间通过有名字的话题（topic）传数据，彼此不需要知道对方是谁，所以换掉一个节点不影响别人；节点可以在同一进程、不同进程或不同电脑上。</p>
+<p>口诀：后厨每个厨师只干一件事，做好就放传菜口。</p>
+</details>
+<h3 id="r02-ros-2-fast-dds-zenoh">R02 · ROS 2 从上到下分哪几层？换中间件（比如 Fast DDS 换成 Zenoh）要改你的代码吗？</h3>
+<p>来源：<a href="lessons/01-what-is-ros2.html">第 1 章 · 总图 1</a> · 加入 2026-11-05 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>能力包（Nav2 / MoveIt 2 / ros2_control）→ <strong>你的节点</strong> → <strong>客户端库 rclpy / rclcpp</strong>（你调用的 API）→ rcl（C 写的公共核心）→ rmw 接口（中间件"插座"）→ rmw 实现（"插头"：Fast DDS 默认、Cyclone DDS、Connext DDS、Zenoh）→ 传输（同进程 / 共享内存 / UDP）。旁边是 rosidl：把 <code>.msg</code> / <code>.srv</code> / <code>.action</code> 生成各层要用的代码。</p>
+<p><strong>不用改代码</strong>，设环境变量 <code>RMW_IMPLEMENTATION</code> 就能换。rmw 这层就是为了把用户代码和中间件隔离开。</p>
+<p>口诀：节点写在上，rclpy 来调；rcl 往下是内部，中间件能换插头。</p>
+</details>
+<h3 id="r03-talker-listener-spin">R03 · 一条消息从 talker 到 listener 要经过哪几步？两个节点要满足哪三个条件才能连上？忘了写 <code>spin()</code> 会怎样？</h3>
+<p>来源：<a href="lessons/01-what-is-ros2.html">第 1 章 · 总图 2</a> · 加入 2026-11-05 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>建立连接（只做一次）：① 创建 publisher / subscription → ② <strong>发现</strong>：中间件在同一 <code>ROS_DOMAIN_ID</code> 里自动广播，没有中心服务器 → ③ <strong>匹配</strong>：<strong>话题名相同 + 消息类型相同 + QoS 兼容</strong>。</p>
+<p>每条消息：④ <code>publish(msg)</code> → ⑤ 往下 rclpy → rcl → rmw → ⑥ 序列化成字节 → ⑦ 传输 → ⑧ 放进接收端的订阅队列 → ⑨ executor 在 <code>spin()</code> 里通过等待集（wait set）发现有数据 → ⑩ 往上、反序列化成对象 → ⑪ 调用 <code>callback(msg)</code>。</p>
+<p>忘了 <code>spin()</code>：消息一直躺在队列里，<strong>回调永远不会执行</strong>。QoS 不兼容：连不上，只打一条警告。</p>
+<p>口诀：先发现、再匹配；往下变字节，往上变对象；队列里等着，spin 才叫醒回调。</p>
+</details>
+<h3 id="r04">R04 · 话题、服务、动作、参数各在什么情况下用？各举一个机器人例子。</h3>
+<p>来源：<a href="lessons/01-what-is-ros2.html">第 1 章 · 第 2 步</a> · 加入 2026-11-05 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<ul>
+<li><strong>话题</strong>：数据源源不断、单向、多对多，发的一方决定节奏。例：相机 30 Hz 发 <code>/image</code>、<code>/joint_states</code>。</li>
+<li><strong>服务</strong>：一问一答，问的一方等着，必须很快结束。例：问 IK 解、问电量。<strong>耗时长的事不能用服务</strong>（没法中途取消）。</li>
+<li><strong>动作</strong>：耗时长、有进度反馈、能取消 / 抢占。例："导航到厨房"、"去抓杯子"。</li>
+<li><strong>参数</strong>：节点自己的设置，不改代码就能调，运行中也能改。例：要找的颜色、最高车速、<code>use_sim_time</code>。</li>
+</ul>
+<p>另：一个服务名 / 动作名只能有一个 server；话题的发布者、订阅者数量不限。</p>
+<p>口诀：流水用话题，问答用服务，长活用动作，设置用参数。</p>
+</details>
+<h3 id="r05-ros-1-ros-2-ros-2-dds">R05 · ROS 1 和 ROS 2 在结构上最大的区别是什么？ROS 2 为什么要另起一套、为什么选 DDS？</h3>
+<p>来源：<a href="lessons/01-what-is-ros2.html">第 1 章 · 第 3 步</a> · 加入 2026-11-05 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>最大区别：ROS 1 有一个中心 <strong>master</strong>（<code>roscore</code>），所有节点先去它那登记再找彼此；ROS 2 <strong>没有 master</strong>，靠 DDS 的分布式发现自动找到彼此。</p>
+<p>另起一套的原因：ROS 1 围着 PR2 的六个前提设计（单台机器人、工作站级电脑、不要求实时、网络很好、学术研究、什么都不规定），后来的多机器人、嵌入式、实时、差网络、产品化需求都满足不了；在 ROS 1 上改太伤筋动骨，会弄坏大家在用的系统，所以 API 不兼容，靠桥接（bridge）共存。</p>
+<p>选 DDS：自己维护的代码少；有成文的工业标准；自带分布式发现；已有生产系统在用。代价是要在 DDS 的框架里干活，所以用 rmw 把它隔离在下面，后来还加了 Zenoh。</p>
+<p>口诀：小饭馆开连锁：去掉领班（master），借用 DDS，加上 QoS。</p>
+</details>
+<h2 id="_3">命令行</h2>
+<h3 id="r06-ros2-run-turtlesim-turtlesim_node">R06 · 每个新终端第一件事做什么？<code>ros2 run turtlesim turtlesim_node</code> 里两个词各是什么？节点名一定等于可执行文件名吗？</h3>
+<p>来源：<a href="lessons/02-turtlesim-cli.html">第 2 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>先 <code>source /opt/ros/lyrical/setup.bash</code>：告诉这个终端 ROS 装在哪，否则 <code>ros2: command not found</code>。</p>
+<p><code>turtlesim</code> 是<strong>包名</strong>（工具箱），<code>turtlesim_node</code> 是包里的<strong>可执行文件名</strong>（一件工具）。节点名不一定相同：<code>turtlesim_node</code> 跑起来叫 <code>/turtlesim</code>，<code>turtle_teleop_key</code> 叫 <code>/teleop_turtle</code>。用 <code>ros2 node list</code> 查节点名，<code>ros2 node info</code> 查它的发布 / 订阅 / 服务 / 动作；<code>--ros-args --remap __node:=新名</code> 改名。</p>
+<p>口诀：包是工具箱，可执行是工具，节点名是工牌。</p>
+</details>
+<h3 id="r07">R07 · 排查一个话题，常用哪四个命令？各看什么？</h3>
+<p>来源：<a href="lessons/02-turtlesim-cli.html">第 2 章 · 第 2 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<ul>
+<li><code>ros2 topic echo &lt;话题&gt;</code>：看内容（它自己是一个新订阅者，会让订阅者计数 +1）；</li>
+<li><code>ros2 topic info &lt;话题&gt; [-v]</code>：看类型、发布者 / 订阅者数，<code>-v</code> 再看节点名和 QoS；</li>
+<li><code>ros2 topic hz &lt;话题&gt;</code>：看频率（是 hz 自己收到的频率，受负载和 QoS 影响）；</li>
+<li><code>ros2 topic pub [--once | --rate N] &lt;话题&gt; &lt;类型&gt; "&lt;YAML&gt;"</code>：自己发。</li>
+</ul>
+<p>另：<code>ros2 interface show &lt;类型&gt;</code> 看消息格式；<code>rqt_graph</code> 画出整张计算图。</p>
+<p>口诀：echo 看内容，info 看谁连着，hz 看频率够不够，pub 自己发。</p>
+</details>
+<h3 id="r08">R08 · 怎么调用一个服务？怎么让节点每次启动都用同一组参数？</h3>
+<p>来源：<a href="lessons/02-turtlesim-cli.html">第 2 章 · 第 3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>服务：<code>ros2 service list -t</code> 找名字和类型 → <code>ros2 interface show &lt;类型&gt;</code> 看格式（<code>---</code> 上是请求、下是回复）→ <code>ros2 service call &lt;名字&gt; &lt;类型&gt; "&lt;YAML 请求&gt;"</code>。例：<code>ros2 service call /spawn turtlesim_msgs/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: ''}"</code>。</p>
+<p>参数：<code>ros2 param dump /节点 &gt; 文件.yaml</code> 存下来（格式是 <code>/节点: ros__parameters: {名: 值}</code>），启动时加 <code>--ros-args --params-file 文件.yaml</code>；运行中可以 <code>ros2 param load</code> 灌回去，或 <code>param set</code> 单个改。<code>param set</code> 底层调用的就是节点自带的 <code>…/set_parameters</code> 服务。</p>
+<p>口诀：先 list 再 show 后 call；dump 存、params-file 载。</p>
+</details>
+<h3 id="r09">R09 · 动作接口文件有几段？一个动作目标有哪三种结局？</h3>
+<p>来源：<a href="lessons/02-turtlesim-cli.html">第 2 章 · 第 4 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>三段，用两条 <code>---</code> 隔开：<strong>目标</strong>（goal）/ <strong>结果</strong>（result）/ <strong>反馈</strong>（feedback）。例 <code>RotateAbsolute</code>：<code>theta</code>（要转到的绝对朝向，弧度）/ <code>delta</code>（实际转过的角度）/ <code>remaining</code>（还剩多少）。</p>
+<p>结局：<strong>成功</strong>（SUCCEEDED）；<strong>客户端取消</strong>（canceled，如按 F）；<strong>服务端放弃</strong>（aborted，如 turtlesim 收到新目标就放弃旧的）。新目标来了旧目标怎么办由每个服务端自己定，ROS 不统一规定。每个目标有唯一 ID。</p>
+<p>命令：<code>ros2 action send_goal &lt;名&gt; &lt;类型&gt; "&lt;YAML&gt;" --feedback</code>。</p>
+<p>口诀：动作三段（目标、结果、反馈），三结局（成功、取消、放弃）。</p>
+</details>
+<h3 id="r10-ros-2-rosout">R10 · ROS 2 日志有哪五个级别、默认去哪三个地方？为什么要有 <code>/rosout</code>？</h3>
+<p>来源：<a href="lessons/03-launch-log-bag.html">第 3 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>级别从低到高：DEBUG &lt; INFO &lt; WARN &lt; ERROR &lt; FATAL；日志器只处理不低于设定级别的消息，默认 INFO。</p>
+<p>三个去处：终端（stderr）、磁盘日志文件（<code>~/.ros/log/</code>，<code>ROS_LOG_DIR</code> 可改）、<code>/rosout</code> 话题。<code>/rosout</code> 汇集全机所有节点的日志，在任意一台电脑上用 <code>rqt_console</code> 订阅就能看全部，不用逐台登录。</p>
+<p>调级别：<code>--ros-args --log-level debug</code>；高频回调里打日志要节流（Python <code>throttle_duration_sec=</code>，C++ <code>RCLCPP_INFO_THROTTLE</code>）。</p>
+<p>口诀：五级三去处，高频要节流。</p>
+</details>
+<h3 id="r11-python-launch-namespace">R11 · 一个 Python launch 文件最少由哪几部分组成？<code>namespace=</code> 有什么用？</h3>
+<p>来源：<a href="lessons/03-launch-log-bag.html">第 3 章 · 第 2 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>入口函数 <code>generate_launch_description()</code>，返回 <code>LaunchDescription([...])</code> 清单；清单里每个 <code>launch_ros.actions.Node(package=, executable=, namespace=, output=)</code> 相当于一条 <code>ros2 run</code>。运行：<code>ros2 launch &lt;包&gt; &lt;文件&gt; 参数:=值</code>。launch 也可用 XML / YAML 写。</p>
+<p><code>namespace</code> 给节点的所有名字加前缀：两个 turtlesim 分别在 <code>turtlesim1</code>、<code>turtlesim2</code> 下，话题变成 <code>/turtlesim1/turtle1/cmd_vel</code> 等，互不干扰。多台同型号机器人靠它分组。命令行等价写法：<code>--ros-args -r __ns:=/turtlesim1</code>。</p>
+<p>口诀：一张清单起全家，命名空间分你我。</p>
+</details>
+<h3 id="r12-bag">R12 · bag 的录、看、放三个命令？默认存储格式？回放时要注意什么？</h3>
+<p>来源：<a href="lessons/03-launch-log-bag.html">第 3 章 · 第 3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<ul>
+<li>录：<code>ros2 bag record -o &lt;目录&gt; --topics &lt;话题...&gt;</code>（<code>-d</code> 按秒切分，<code>-b</code> 按大小切分）；</li>
+<li>看：<code>ros2 bag info &lt;目录&gt;</code>（读 <code>metadata.yaml</code>）；</li>
+<li>放：<code>ros2 bag play &lt;目录&gt;</code>（按原时间间隔重新发布，空格暂停；<code>-i</code> 同时放多个）。</li>
+</ul>
+<p>默认存储 MCAP（老版本 SQLite），消息按 CDR 序列化字节存，录制不用反序列化。回放时要关掉被录话题的原始发布者，否则同一话题两个来源打架。还能录服务 / 动作（需节点开内省）。</p>
+<p>用途：现场问题复现、示范数据集原始形态、离线测试感知节点。</p>
+<p>口诀：录字节、存 MCAP、按原时间放，回放先关原发布者。</p>
+</details>
+<h2 id="_4">写代码</h2>
+<h3 id="r13-overlay-underlay-source">R13 · 工作区里有哪几个目录？overlay 和 underlay 是什么，source 的顺序和注意事项？</h3>
+<p>来源：<a href="lessons/04-workspace-package.html">第 4 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>~/ros2_ws/src/</code> 放源码（你只动这里）；<code>colcon build</code> 生成 <code>build/</code>（中间文件）、<code>install/</code>（成品 + setup 脚本）、<code>log/</code>（构建日志）。</p>
+<p>underlay = 已装好的 ROS（<code>/opt/ros/lyrical</code>）；overlay = 你的工作区，叠在 underlay 上，可用其中所有包，<strong>同名包 overlay 优先</strong>。</p>
+<p>顺序：<strong>新开终端</strong> → <code>source /opt/ros/lyrical/setup.bash</code> → <code>source ~/ros2_ws/install/local_setup.bash</code>（或直接 <code>source install/setup.bash</code>，它包含底层）。不要在编译用的终端里 source overlay，也不要在 source 了 overlay 的终端里编译。</p>
+<p>口诀：先 source 底层再 source 上层，同名上层优先，新终端里 source。</p>
+</details>
+<h3 id="r14-python-ros-packagexml">R14 · 一个 Python ROS 包最少有哪些文件？<code>package.xml</code> 的依赖为什么要写全？构建系统分哪三层？</h3>
+<p>来源：<a href="lessons/04-workspace-package.html">第 4 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>package.xml</code>、<code>setup.py</code>（<code>entry_points</code> 里登记 <code>命令名 = 包.模块:函数</code>，否则 ros2 run 找不到）、<code>setup.cfg</code>、<code>resource/&lt;包名&gt;</code>（空标记文件）、<code>&lt;包名&gt;/__init__.py</code>。C++ 包：<code>package.xml</code> + <code>CMakeLists.txt</code> + <code>include/</code> + <code>src/</code>。</p>
+<p>依赖（<code>&lt;depend&gt;</code> / <code>&lt;build_depend&gt;</code> / <code>&lt;exec_depend&gt;</code> / <code>&lt;test_depend&gt;</code>）写全的原因：colcon 靠它排编译顺序，rosdep 靠它装系统库。</p>
+<p>三层：构建工具（CMake / setuptools，编一个包）→ 构建辅助（ament，加 ROS 便利）→ 元构建工具（colcon，编一堆包、排顺序、并行）。常用：<code>colcon build --symlink-install --packages-select &lt;包&gt;</code>；<code>rosdep install -i --from-path src --rosdistro lyrical -y</code>。</p>
+<p>口诀：package.xml 是身份证；rosdep 装依赖，colcon 排顺序。</p>
+</details>
+<h3 id="r15-python-rclpyspinnode">R15 · Python 节点的最小骨架是什么？<code>rclpy.spin(node)</code> 起什么作用？</h3>
+<p>来源：<a href="lessons/05-python-nodes.html">第 5 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<pre><code class="language-python">class MyNode(Node):
+    def __init__(self):
+        super().__init__('my_node')
+        # 在这里 create_publisher / create_subscription / create_timer / create_service
+def main(args=None):
+    try:
+        with rclpy.init(args=args):
+            rclpy.spin(MyNode())
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass
+</code></pre>
+<p>节点是事件驱动的：<code>__init__</code> 只登记回调，<code>spin</code> 把控制权交给 executor，它发现定时器到点 / 有新消息 / 有服务请求，就调用对应回调。不 spin，回调永远不执行。创建出的对象要存到 <code>self</code> 上，否则被回收、功能停止。</p>
+<p>口诀：继承 Node 起个名，init、spin 加 Ctrl+C。</p>
+</details>
+<h3 id="r16-call_async-executor-call">R16 · 服务客户端为什么要用 <code>call_async</code>？在单线程 executor 的回调里用同步 <code>call()</code> 为什么会死锁？</h3>
+<p>来源：<a href="lessons/05-python-nodes.html">第 5 章 · 第 3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>call_async</code> 立刻返回 future（凭条），回复到了由 executor 在 spin 中填入；主程序用 <code>spin_until_future_complete(node, future)</code>，回调里用 <code>future.add_done_callback(...)</code>。</p>
+<p>死锁：回调里 <code>call()</code> 阻塞等回复；回复要靠 executor 取出来，而单线程 executor 正卡在这个回调里，没空去取。回调等回复、回复等回调结束。</p>
+<p>改法：<code>call_async</code> + 完成回调；多线程 executor + 回调组（第 9 章）；Lyrical 的 <code>AsyncNode</code> 用 <code>await client.call(req)</code>。</p>
+<p>口诀：拿凭条别干等；回调里不阻塞。</p>
+</details>
+<h3 id="r17">R17 · 节点参数怎么声明和读取？运行中参数被修改，有哪三种回调、各干什么？</h3>
+<p>来源：<a href="lessons/05-python-nodes.html">第 5 章 · 第 4 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>self.declare_parameter('名', 默认值[, ParameterDescriptor(...)])</code>（默认值决定类型，必须先声明再用）；读取 <code>self.get_parameter('名').get_parameter_value().string_value</code>（或 <code>.value</code>）。</p>
+<ul>
+<li>pre-set（<code>add_pre_set_parameters_callback</code>）：生效前，可增改要设的参数列表；</li>
+<li>on-set（<code>add_on_set_parameters_callback</code>）：生效前<strong>校验</strong>，返回 <code>SetParametersResult(successful=False)</code> 拒绝；<strong>不要有副作用</strong>，因为后面的回调可能还会拒绝；</li>
+<li>post-set（<code>add_post_set_parameters_callback</code>）：成功后，更新成员变量、重新配置。</li>
+</ul>
+<p>口诀：先声明再用；校验在 on-set，收尾在 post-set。</p>
+</details>
+<h3 id="r18-msg">R18 · <code>.msg</code> 里怎么写数组、有界类型、默认值和常量？自定义接口包有什么硬性要求？</h3>
+<p>来源：<a href="lessons/06-interfaces-actions.html">第 6 章 · 第 1–2 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>每行"类型 名字"。<code>int32[]</code> 不限长，<code>int32[5]</code> 定长，<code>int32[&lt;=5]</code> 有上限，<code>string&lt;=10</code> 字符串有上限（有界类型尺寸已知，利于实时预分配）。默认值放第三项：<code>uint8 x 42</code>；常量全大写用等号：<code>int32 X=123</code>。类型名大驼峰（<code>MyMessage.msg</code>），字段名小写下划线。</p>
+<p>接口包必须是 <code>ament_cmake</code>；CMakeLists：<code>find_package(rosidl_default_generators REQUIRED)</code> + <code>rosidl_generate_interfaces(${PROJECT_NAME} "msg/Num.msg" ... DEPENDENCIES geometry_msgs)</code>；package.xml 三行：<code>&lt;buildtool_depend&gt;rosidl_default_generators&lt;/buildtool_depend&gt;</code>、<code>&lt;exec_depend&gt;rosidl_default_runtime&lt;/exec_depend&gt;</code>、<code>&lt;member_of_group&gt;rosidl_interface_packages&lt;/member_of_group&gt;</code>。生成的代码 Python / C++ 都能用。能用标准消息就别自定义。</p>
+<p>口诀：接口包只能 CMake，CMake 一句生成、package.xml 三行。</p>
+</details>
+<h3 id="r19">R19 · 动作在底层由哪些服务和话题组成？目标有哪些状态？</h3>
+<p>来源：<a href="lessons/06-interfaces-actions.html">第 6 章 · 总图与第 3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>三个服务：<code>_action/send_goal</code>（发目标，回接受 / 拒绝）、<code>_action/cancel_goal</code>（请求取消）、<code>_action/get_result</code>（提前请求，服务端做完才回复）；两个话题：<code>_action/feedback</code>（进度）、<code>_action/status</code>（所有在办目标状态）。名字以 <code>_action/</code> 开头，默认隐藏。</p>
+<p>状态机（只针对被接受的目标）：中间态 ACCEPTED → EXECUTING，取消时 CANCELING；终态 SUCCEEDED（成功）、ABORTED（服务端自己放弃）、CANCELED（应客户端要求取消）。服务端用 <code>goal_handle.publish_feedback / succeed / abort / canceled</code>；可选 <code>goal_callback</code>（接不接受新目标）、<code>cancel_callback</code>（同不同意取消）。</p>
+<p>口诀：三服务两话题；三中间态三终态。</p>
+</details>
+<h2 id="_5">通信机制</h2>
+<h3 id="r20-qos-reliable-best-effortvolatile-transient-local">R20 · QoS 有哪七个策略？Reliable 和 Best effort、Volatile 和 Transient local 各适合什么数据？</h3>
+<p>来源：<a href="lessons/07-qos.html">第 7 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>History（Keep last / Keep all）、Depth（队列深度）、Reliability（Reliable 丢了重传 / Best effort 丢了就丢）、Durability（Volatile 不保存 / Transient local 发布者保存最近消息，晚来的订阅者也能收到）、Deadline（相邻消息最大间隔）、Lifespan（消息多久过期）、Liveliness + Lease duration（发布者多久不报平安算挂了）。</p>
+<p>高频传感器用 Best effort（Sensor data 预设：宁可丢帧也要最新，Reliable 在丢包时重传会让延迟越积越大）；指令、服务用 Reliable；地图、机器人描述等只发一次的用 Transient local（≈ ROS 1 latched）。默认：Keep last 10、Reliable、Volatile。ROS 2 的 Reliable 也基于 UDP，由 DDS 做确认重传。</p>
+<p>口诀：历史、深度、可靠、持久，截止、寿命、活性。</p>
+</details>
+<h3 id="r21-qos">R21 · QoS 兼容规则是什么？举两个最常见的"收不到消息"的坑，怎么排查？</h3>
+<p>来源：<a href="lessons/07-qos.html">第 7 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>"要求 vs 提供"：订阅者要求最低质量，发布者提供最高质量，每一项要求都不高于提供才连接。不兼容时不报错退出，只打 incompatible QoS 警告 / 触发事件，消息不传。</p>
+<p>坑 1：发布者 Best effort（相机、雷达驱动），订阅者默认 Reliable → 连不上。改订阅为 <code>qos_profile_sensor_data</code>。
+坑 2：<code>/map</code> 用 Transient local 只发一次，订阅者用 Volatile → 能连上但晚来收不到；两边都要 Transient local（发布者 Volatile、订阅者 Transient local 则连不上）。
+Deadline / 租期：订阅者要求的时长不能比发布者提供的更短。</p>
+<p>排查：<code>ros2 topic info &lt;话题&gt; --verbose</code> 看两边 QoS；命令行可 <code>--qos-reliability best_effort</code>。可挂 QoS 事件回调（deadline missed、incompatible QoS、liveliness changed），用 Deadline 实现指令超时停车。</p>
+<p>口诀：要求不高于提供；收不到先 topic info -v。</p>
+</details>
+<h3 id="r22-ros_domain_id-ros_automatic_discovery_range">R22 · <code>ROS_DOMAIN_ID</code> 和 <code>ROS_AUTOMATIC_DISCOVERY_RANGE</code> 各管什么？安全的域号范围？</h3>
+<p>来源：<a href="lessons/08-middleware-discovery.html">第 8 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>Domain ID 是同一张网上的"频道号"：同域互相发现，不同域互相看不见；默认 0。DDS 用它算 UDP 端口，Linux 上安全范围 0–101（及 215–232），macOS 0–166；不想细算就取 0–101。</p>
+<p>发现范围：<code>ROS_AUTOMATIC_DISCOVERY_RANGE</code> = <code>SUBNET</code>（默认，组播能到的都发现）/ <code>LOCALHOST</code>（只本机）/ <code>OFF</code>（都不发现）/ <code>SYSTEM_DEFAULT</code>；<code>ROS_STATIC_PEERS</code> 用 <code>;</code> 分隔的地址点名去找。这两个变量 Zenoh 不支持。网络不支持组播时：静态对端、Fast DDS 发现服务器或换 Zenoh。</p>
+<p>口诀：同号同频道，默认是 0；LOCALHOST 只看本机，STATIC_PEERS 点名找人。</p>
+</details>
+<h3 id="r23-dds-zenoh">R23 · 怎么换中间件？DDS 和 Zenoh 的发现方式有何不同？"看不见对方节点"按什么顺序排查？</h3>
+<p>来源：<a href="lessons/08-middleware-discovery.html">第 8 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>export RMW_IMPLEMENTATION=rmw_fastrtps_cpp | rmw_cyclonedds_cpp | rmw_connextdds | rmw_zenoh_cpp</code>，代码不改；全系统用同一个，DDS 与 Zenoh 互不相通。</p>
+<p>DDS：节点向局域网组播自我介绍，零配置，节点多时流量大，Wi-Fi / VPN / 容器常不支持组播。Zenoh：先起本机路由器 <code>ros2 run rmw_zenoh_cpp rmw_zenohd</code>（TCP 7447），节点连路由器登记，路由器 gossip 转告地址；同机节点直连，跨机经路由器（需在路由器配置里互连）；默认关闭组播，不起路由器就发现不了。</p>
+<p>排查：域号 → 中间件 → 发现范围 → ping / 防火墙 → 组播 → Zenoh 路由器 → 能看见收不到查 QoS（<code>topic info -v</code>）。<code>ros2 doctor --report</code> 汇总环境；CLI 缓存过期（显示已关节点、换域后没变）用 <code>ros2 daemon stop</code>。</p>
+<p>口诀：一个环境变量换插头；Zenoh 先起路由器；缓存不对 daemon stop。</p>
+</details>
+<h3 id="r24-rclpyspinnode-executor-executor-executor">R24 · <code>rclpy.spin(node)</code> 背后是什么 executor？等待集告诉 executor 什么？有哪三种 executor？</h3>
+<p>来源：<a href="lessons/09-executors.html">第 9 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><code>spin(node)</code> = 创建单线程 executor、<code>add_node</code>、<code>spin()</code>：当前线程不停向 rcl / 中间件询问有无新消息、定时器是否到期，有就调回调。消息留在中间件里（不在客户端库排队），等回调来取，这样 QoS 才生效。</p>
+<p>等待集只告诉"某队列有没有数据"，不告诉几条、谁先到；回调快时近似先来后到，慢时按话题轮转。一个慢回调会拖住同一单线程上的所有回调。</p>
+<p>三种：SingleThreadedExecutor（默认）、MultiThreadedExecutor（线程池，并行度由回调组决定）、EventsCBGExecutor（Lyrical 新增，就绪事件进先进先出队列，省 10%–15% CPU，支持多线程和仿真时间，队列无上限）。一个 executor 可 <code>add_node</code> 多个节点。</p>
+<p>口诀：spin 就是单线程 executor；快时先来后到，慢时轮转。</p>
+</details>
+<h3 id="r25-executor">R25 · 两种回调组的规则？为什么"换成多线程 executor"常常没效果？服务死锁怎么用回调组修？</h3>
+<p>来源：<a href="lessons/09-executors.html">第 9 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>互斥组（MutuallyExclusiveCallbackGroup）：组内回调不能同时执行；可重入组（ReentrantCallbackGroup）：组内回调可并行，同一回调也能同时跑多份；不同组之间总能并行。未指定组的回调都在默认组，<strong>默认组是互斥组</strong>，所以只换多线程 executor 不分组，仍是串行。回调组对象要存住（<code>self.xxx_group</code>），创建实体时传 <code>callback_group=</code>。</p>
+<p>分组原则：自己能否和自己并行 → 可重入 / 互斥；两个回调绝不能同时跑 → 放同一互斥组；需要并行 → 不同组。</p>
+<p>修死锁：定时器和客户端放<strong>不同</strong>互斥组 + MultiThreadedExecutor：一个线程在定时器回调里同步等，另一个线程处理回复。控制回路单独一组（C++ 可交给单独 executor / 高优先级线程）。Python 有 GIL，多线程主要解决等待。</p>
+<p>口诀：多线程不分组还是串行；等人的和被等的分开组。</p>
+</details>
+<h3 id="r26-composition">R26 · 组件和普通节点有什么区别？组合（composition）带来什么好处？</h3>
+<p>来源：<a href="lessons/10-composition-zero-copy.html">第 10 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>组件 = 没有 main 的节点：编成动态库，运行时由组件容器进程加载（ROS 1 的 nodelet，ROS 2 统一成同一套 API，通常是 <code>rclcpp::Node</code> 子类，构造函数收 <code>NodeOptions</code>，用 <code>rclcpp_components</code> 宏 / <code>rclcpp_components_register_nodes</code> 注册）。构造函数里不做耗时阻塞的事，周期工作用定时器。目前是 C++ 特性。</p>
+<p>好处：进程布局在<strong>部署时</strong>决定——分进程（隔离、好调试）或进同一容器（开销小、可进程内零拷贝）。命令：<code>ros2 run rclcpp_components component_container</code>、<code>ros2 component load /ComponentManager &lt;包&gt; &lt;类&gt;</code>、<code>ros2 component list</code>；容器可选 <code>--executor-type multi-threaded | events-cbg</code>、<code>--isolated</code>。</p>
+<p>口诀：没有 main 的节点，进容器加载，进程怎么分部署时定。</p>
+</details>
+<h3 id="r27">R27 · 三种减少复制的机制各是什么、各有什么前提？</h3>
+<p>来源：<a href="lessons/10-composition-zero-copy.html">第 10 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<ol>
+<li><strong>进程内通信</strong>：同一进程、两边 <code>NodeOptions().use_intra_process_comms(true)</code>，发布 <code>publish(std::move(unique_ptr))</code> 交出所有权，订阅者拿到同一块内存（demo 打印地址相同）。交出后发布者不能再用。</li>
+<li><strong>loaned messages</strong>：跨进程；发布者向中间件借共享内存，订阅者直接读。前提：中间件支持（Fast DDS 支持，Cyclone / Connext 不支持），消息类型一般需定长。</li>
+<li><strong><code>rosidl::Buffer</code>（Lyrical）</strong>：C++ 里 <code>uint8[]</code> 等变长数组字段改为可挂后端的 Buffer，数据可留在 GPU / 厂商内存，解决"源数据不在 CPU"时前两者帮不上的问题；用法同 <code>vector</code>，需 Fast DDS 或 Zenoh 与对应后端。</li>
+</ol>
+<p>口诀：同进程交指针，跨进程借内存，GPU 数据不回家。</p>
+</details>
+<h3 id="r28-ros-2">R28 · ROS 2 有哪三种时钟？仿真时间怎么开？最常见的坑是什么？</h3>
+<p>来源：<a href="lessons/11-time-lifecycle.html">第 11 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>SystemTime（墙上时钟，NTP / 手改会跳）、SteadyTime（单调递增不倒退，测耗时和超时用）、ROSTime（默认 = 系统时间；开仿真时间后 = <code>/clock</code> 话题上的时间，可暂停、可往回跳）。节点里 <code>self.get_clock().now()</code> 拿 ROS 时间。</p>
+<p>开法：仿真器或 <code>ros2 bag play --clock</code> 往 <code>/clock</code> 发时间 + 节点参数 <code>use_sim_time:=true</code>；定时器也按 ROS 时间触发。需要它是因为仿真可快可慢、bag 时间戳是录制时的。</p>
+<p>坑：部分节点设了、部分没设 <code>use_sim_time</code>，时间对不上，tf2 报"变换在过去 / 未来"、消息同步失败。Lyrical 可 <code>ros2 param get use_sim_time</code> 一次查所有节点。</p>
+<p>口诀：系统钟会跳，稳定钟不倒退，ROS 钟听 /clock；use_sim_time 全体一个不漏。</p>
+</details>
+<h3 id="r29">R29 · 托管节点有哪四个主状态、五种转换？各回调该做什么？谁来触发转换？</h3>
+<p>来源：<a href="lessons/11-time-lifecycle.html">第 11 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>主状态：Unconfigured（刚构造 / 出错退回）→ Inactive（配置好不干活：不处理话题、功能性服务请求立刻失败，可安全改配置）→ Active（干活）→ Finalized（待销毁）。过渡状态：Configuring、Activating、Deactivating、CleaningUp、ShuttingDown、ErrorProcessing。</p>
+<p>转换：configure（<code>on_configure</code>：读参数、建通信、分配内存、连硬件）、activate（<code>on_activate</code>：激活发布者、开始处理）、deactivate（停止处理，硬件不断）、cleanup（释放 configure 申请的一切）、shutdown（任意主状态 → Finalized）。Active 中出错自动进 ErrorProcessing，<code>on_error</code> 成功回 Unconfigured、失败到 Finalized。构造函数里什么都不做（Nav2 约定）。</p>
+<p>触发：除出错外都要外部监管者：<code>ros2 lifecycle set &lt;节点&gt; &lt;转换&gt;</code>、launch 事件处理器、Nav2 <code>lifecycle_manager</code>（按序启动 + bond 心跳，崩一个就有序降级）。</p>
+<p>口诀：configure 准备好，activate 才开工；转换听外部指挥。</p>
+</details>
+<h2 id="_6">坐标与模型</h2>
+<h3 id="r30">R30 · 一个点从源坐标系换到目标坐标系的公式？只平移和带旋转时怎么算？为什么用四元数？</h3>
+<p>来源：<a href="lessons/12-tf2.html">第 12 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p><span class="arithmatex">\(P_{\text{target}}={}_{\text{target}}T_{\text{source}}\cdot P_{\text{source}}\)</span>（左下标目标、右下标源）；串联 <span class="arithmatex">\({}_{B}T_{A}={}_{B}T_{E}\cdot{}_{E}T_{A}\)</span>。变换 = 平移 <span class="arithmatex">\(t\)</span> + 旋转 <span class="arithmatex">\(q\)</span>，作用顺序<strong>先转后移</strong>：<span class="arithmatex">\(P_{\text{target}}=R\,P_{\text{source}}+t\)</span>。</p>
+<p>例：相机在底座前 0.1、上 0.3，无旋转，看到 (0.5,0,0) → 底座下 (0.6,0,0.3)；相机朝左转 90° 时先转成 (0,0.5,0) 再加平移得 (0.1,0.5,0.3)。</p>
+<p>四元数 <span class="arithmatex">\((x,y,z,w)\)</span>，不转是 <span class="arithmatex">\((0,0,0,1)\)</span>，必须单位长度（手算后 normalize）。不用欧拉角：有万向节锁、插值不平滑、轴顺序约定多。存储传输用四元数，给人看再转欧拉角（<code>quaternion_from_euler</code>）。ROS 轴约定：x 前、y 左、z 上。</p>
+<p>口诀：先转后移；四元数存，欧拉角看。</p>
+</details>
+<h3 id="r31-tf2-tf-tf_static-rep-105">R31 · tf2 的树有什么规则？<code>/tf</code> 和 <code>/tf_static</code> 区别？REP 105 主干是什么、各段谁发布？</h3>
+<p>来源：<a href="lessons/12-tf2.html">第 12 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>每个坐标系只能有一个父亲、不能有环；变换带时间戳、按时间缓存（约 10 秒），查询给 <code>Time()</code> = 最新。查询 <code>tf_buffer.lookup_transform(目标, 源, 时间)</code>，tf2 沿树找路径相乘、必要时取逆；推荐 <code>tf_buffer.transform(stamped, 目标)</code>。</p>
+<p><code>/tf</code>：动态变换，持续高频发（<code>TransformBroadcaster</code>）；<code>/tf_static</code>：不变的变换，只发一次、Transient local（<code>StaticTransformBroadcaster</code> / <code>static_transform_publisher</code>）。</p>
+<p>REP 105：<code>map → odom</code>（全局定位 SLAM / AMCL / GPS，准但会跳）→ <code>odom → base_link</code>（里程计：轮编码器 + IMU 等融合，连续但会漂）→ <code>base_link → 传感器 / 连杆</code>（URDF，静态或由 robot_state_publisher 发）。控制用 odom，规划用 map。</p>
+<p>报"extrapolation into the future / past"：时间戳超出缓存范围，或 sim time 不一致。工具：<code>view_frames</code>、<code>tf2_echo</code>、RViz TF 显示。</p>
+<p>口诀：一个爹不成环；动 /tf 静 /tf_static；map 管准、odom 管顺。</p>
+</details>
+<h3 id="r32-urdf">R32 · URDF 由什么组成？四种常用关节？一个连杆的三种描述各给谁用？</h3>
+<p>来源：<a href="lessons/13-urdf-rviz.html">第 13 章 · 第 1–2 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>link（刚体连杆）+ joint（连接父子连杆）组成一棵树，每个 link 一个坐标系。joint 写 <code>parent</code>、<code>child</code>、<code>origin</code>（关节角为 0 时子相对父的变换）、<code>axis</code>（转 / 移的轴）、<code>limit</code>（effort、lower、upper、velocity）。</p>
+<p>关节：<code>fixed</code>（不动）、<code>continuous</code>（无限转，轮子）、<code>revolute</code>（有限位转动，弧度）、<code>prismatic</code>（有限位平移，米）；另有 planar、floating。</p>
+<p><code>&lt;visual&gt;</code> 给 RViz 显示（可用精细网格）；<code>&lt;collision&gt;</code> 给碰撞检测 / 规划（用简单形状，算得快，可放大留安全余量）；<code>&lt;inertial&gt;</code> 给物理仿真和动力学（mass 千克 + 3×3 inertia）。xacro：<code>xacro:property</code> 常量、<code>${}</code> 计算、<code>xacro:macro</code> 去重复、<code>xacro:include</code> 拆文件。Lyrical URDF 1.2：四元数、胶囊、加速度 / jerk 限位。</p>
+<p>口诀：link 是骨头，joint 连父子；visual 给人看，collision 给碰撞，inertial 给物理。</p>
+</details>
+<h3 id="r33-robot_state_publisher-joint_states-rviz-fixed-frame">R33 · robot_state_publisher 的输入输出是什么？<code>/joint_states</code> 在不同场景由谁发？RViz 的 Fixed Frame 有什么用？</h3>
+<p>来源：<a href="lessons/13-urdf-rviz.html">第 13 章 · 第 3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>输入：参数 <code>robot_description</code>（URDF 全文）+ 话题 <code>/joint_states</code>（<code>sensor_msgs/JointState</code>：名字、位置、速度、力矩）。输出：固定关节 → <code>/tf_static</code>；活动关节按正运动学 → <code>/tf</code>；同时发布 <code>robot_description</code> 话题（Lyrical 可设 <code>use_robot_description_topic</code> 改为订阅）。</p>
+<p><code>/joint_states</code>：只看模型 → <code>joint_state_publisher_gui</code> 滑条；仿真 → 仿真器插件；真机 → ros2_control 的 <code>joint_state_broadcaster</code>。</p>
+<p>RViz：Displays 里 Add RobotModel / TF / Image / LaserScan / Marker 等；Fixed Frame 是所有数据统一换算到的显示坐标系（看本体选 base_link，导航选 map / odom），不存在就全部报错。一键：<code>ros2 launch urdf_tutorial display.launch.py model:=...</code>。</p>
+<p>口诀：URDF 管长相，joint_states 管姿势，robot_state_publisher 合成 tf。</p>
+</details>
+<h2 id="_7">工程化</h2>
+<h3 id="r34-launch-if-launchconfiguration">R34 · launch 文件里的"替换"是什么？为什么不能直接 <code>if LaunchConfiguration(...)</code>？列出常用的条件、包含、分组、事件写法。</h3>
+<p>来源：<a href="lessons/14-launch-test-debug.html">第 14 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>launch 文件是描述不是脚本；<code>LaunchConfiguration('x')</code>、<code>PathJoinSubstitution</code>、<code>FindPackageShare</code>、<code>Command</code>、<code>PythonExpression</code> 都是<strong>替换</strong>：写文件时是占位，<strong>启动时</strong>才求值，所以 Python 里直接 if 拿不到值，要用 <code>condition=IfCondition(...)</code> / <code>UnlessCondition(...)</code>。</p>
+<ul>
+<li>参数：<code>DeclareLaunchArgument('x', default_value=...)</code>，命令行 <code>x:=值</code>，<code>--show-args</code> 查看；</li>
+<li>包含：<code>IncludeLaunchDescription(PathJoinSubstitution([FindPackageShare('pkg'), 'launch', 'a.launch.py']), launch_arguments={...}.items())</code>；</li>
+<li>分组：<code>GroupAction([PushRosNamespace('robot1'), Node(...)])</code>；</li>
+<li>参数 / 重映射：<code>Node(parameters=[yaml路径, {...}], remappings=[('a','b')])</code>；</li>
+<li>事件：<code>RegisterEventHandler(OnProcessExit(target_action=n, on_exit=[EmitEvent(event=Shutdown())]))</code>，另有 OnProcessStart / OnProcessIO / OnExecutionComplete / OnShutdown；</li>
+<li>延时：<code>TimerAction</code>；托管节点：<code>LifecycleNode</code>；组件：<code>ComposableNodeContainer</code> + <code>ComposableNode</code>。</li>
+</ul>
+<p>大项目：顶层只 include + 传参，参数进 YAML。</p>
+<p>口诀：替换启动时求值，判断用 IfCondition；关键进程退出就 Shutdown。</p>
+</details>
+<h3 id="r35-ros-2-launch_testing-c">R35 · ROS 2 的三层测试各用什么工具？<code>launch_testing</code> 的两类测试？C++ 节点崩溃怎么拿调用栈？回调耗时怎么量？</h3>
+<p>来源：<a href="lessons/14-launch-test-debug.html">第 14 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>单元测试：Python <code>pytest</code>（函数名 <code>test_</code> 开头，放 <code>test/</code>）、C++ gtest；集成测试：<code>launch_testing</code>（<code>generate_test_description()</code> 启动被测节点 + <code>ReadyToTest()</code>；<strong>活动测试</strong>在节点运行时断言行为，可用 <code>WaitForTopics</code>；<strong>关闭后测试</strong>在退出后检查退出码等）；静态检查：<code>ament_lint</code>。运行：<code>colcon test --packages-select &lt;包&gt;</code>、<code>colcon test-result --all --verbose</code>、<code>--pytest-args -k &lt;名&gt;</code>。</p>
+<p>崩溃：<code>ros2 run --prefix 'gdb -ex run --args' &lt;包&gt; &lt;节点&gt;</code>，崩溃后 <code>backtrace</code>，从下往上读；launch 里 <code>prefix=[...]</code>；编译用 RelWithDebInfo。</p>
+<p>耗时：ros2_tracing（LTTng 跟踪点，开销小）+ <code>tracetools_analysis</code> 画回调耗时与端到端延迟；Lyrical 有快照模式、<code>TRACETOOLS_RUNTIME_DISABLE=1</code> 关闭。</p>
+<p>口诀：pytest 测函数，launch_testing 测节点；崩溃 gdb 看栈，耗时 tracing 量。</p>
+</details>
+<h2 id="_8">控制与应用栈</h2>
+<h3 id="r36-ros">R36 · "实时"要求什么？哪些操作不能出现在实时控制回路里？为什么关节控制不用普通 ROS 节点写？</h3>
+<p>来源：<a href="lessons/15-realtime-ros2-control.html">第 15 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>实时 = 准时：周期性更新、在截止时间前完成、抖动小（不是"快"）。关节环 0.5–1 kHz，晚了会抖动、撞击。</p>
+<p>回路里的大忌：动态分配 / 释放内存；缺页（对策：启动时 <code>mlockall</code> + 预分配）；可能无限期阻塞的锁；日志、文件、网络 I/O。操作系统要 PREEMPT_RT（或 Xenomai），实时线程设高优先级、绑核。</p>
+<p>普通 executor 调度复杂、有优先级反转、开销大，Python 还有垃圾回收和 GIL，不适合硬实时；所以快回路放进 ros2_control（C++、共享接口、无消息传递），话题留在边上。</p>
+<p>口诀：实时是准时；不分配、不缺页、不阻塞、不 I/O。</p>
+</details>
+<h3 id="r37-ros2_control">R37 · ros2_control 由哪四部分组成？一个周期的三步？状态接口和命令接口的区别？怎么配置和启动？</h3>
+<p>来源：<a href="lessons/15-realtime-ros2-control.html">第 15 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>控制器管理器 CM（装载 / 激活控制器，配对接口，<code>update()</code> 驱动回路，提供服务）；资源管理器 RM（pluginlib 加载硬件组件，管生命周期，<code>read()</code> / <code>write()</code>）；控制器（<code>ControllerInterface</code> 插件，每拍 <code>update()</code>）；硬件组件（System 多自由度读写 / Sensor 只读 / Actuator 单自由度读写）。</p>
+<p>一拍：<code>read()</code> 硬件 → 状态接口；<code>update()</code> 控制器读状态、写命令接口；<code>write()</code> 命令接口 → 硬件。频率 = <code>update_rate</code>。</p>
+<p>状态接口只读（position / velocity / effort / force）；命令接口同一时刻只能一个控制器占用。接口是共享变量，没有序列化和内存分配。</p>
+<p>配置：URDF 里 <code>&lt;ros2_control name type="system"&gt;</code> 写 <code>&lt;hardware&gt;&lt;plugin&gt;</code> 和每个 joint 的 command / state interface；控制器在 YAML（<code>controller_manager: ros__parameters: update_rate, 控制器名: type:</code>）；launch 起 <code>ros2_control_node</code> + <code>ros2 run controller_manager spawner &lt;控制器&gt;</code>；查看 <code>ros2 control list_controllers / list_hardware_interfaces</code>。换 <code>mock_components/GenericSystem</code> 或仿真插件，控制器不改。</p>
+<p>口诀：CM 管节拍，RM 管硬件；read、update、write；命令接口独占。</p>
+</details>
+<h3 id="r38-ros2_control">R38 · 写一个 ros2_control 硬件组件要实现哪些函数？各生命周期步骤对应什么硬件动作？接口从哪来？</h3>
+<p>来源：<a href="lessons/16-hardware-controllers.html">第 16 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>继承 <code>hardware_interface::SystemInterface</code>（或 Actuator / Sensor）的 C++ 插件：
+- <code>on_init(info)</code>：调父类 on_init，读 URDF <code>&lt;ros2_control&gt;</code> 参数、检查关节接口（→ UNCONFIGURED，不通信）；
+- <code>on_configure</code>：建立通信（串口 / CAN / EtherCAT）（→ INACTIVE，可读状态）；
+- <code>on_activate</code>：上电、松刹车，命令生效（→ ACTIVE）；<code>on_deactivate</code> 反之；<code>on_cleanup</code> 断开通信；<code>on_shutdown</code> / <code>on_error</code>；
+- <code>read()</code>：<code>set_state("关节/类型", 值)</code>；<code>write()</code>：<code>get_command("关节/类型")</code> 发给硬件。返回 SUCCESS / FAILURE / ERROR。</p>
+<p>接口由框架按 URDF <code>&lt;ros2_control&gt;</code> 标签自动导出，名字 <code>&lt;关节&gt;/&lt;类型&gt;</code>。导出：<code>PLUGINLIB_EXPORT_CLASS</code> + 插件描述 XML + <code>pluginlib_export_plugin_description_file(hardware_interface xxx.xml)</code>。read / write 在实时回路里：慢通信放另一线程或异步组件；诊断信息用框架状态发布器或 <code>get_node()</code>。无硬件用 <code>mock_components/GenericSystem</code>。</p>
+<p>口诀：init 读配置，configure 通信，activate 上电松刹车，read / write 每拍收发。</p>
+</details>
+<h3 id="r39-jtc-update">R39 · 关节轨迹控制器（JTC）的输入、两个入口和执行方式？差速控制器收发什么？写控制器时订阅回调和 <code>update()</code> 怎么交换数据？</h3>
+<p>来源：<a href="lessons/16-hardware-controllers.html">第 16 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>JTC：输入关节空间路点（时刻 + 位置，可选速度 / 加速度），按时间插值、每拍算当前目标；入口 <code>&lt;名&gt;/joint_trajectory</code> 话题（无反馈）和 <code>&lt;名&gt;/follow_joint_trajectory</code> 动作（<code>FollowJointTrajectory</code>，有反馈结果，MoveIt 用）；新轨迹替换旧的，动作新目标使旧目标 abort；位置接口直接转发，速度 / 力矩接口经 PID；实时安全、处理连续关节、取消可平滑减速。</p>
+<p>差速：订阅 <code>~/cmd_vel</code>（<code>TwistStamped</code>），按轮距轮径算左右轮速写命令接口；发布 <code>~/odom</code>（<code>nav_msgs/Odometry</code>），可选发 <code>odom → base_link</code> tf。</p>
+<p>写控制器：实现 <code>command_interface_configuration()</code> / <code>state_interface_configuration()</code> 声明接口，<code>on_configure</code> 读参数建订阅，<code>update()</code> 实时安全。订阅回调在普通 executor（非实时），<code>update()</code> 在实时线程，两者用 <code>realtime_tools</code> 的实时缓冲区交换，不能直接共享普通成员变量。级联：控制器导出参考接口给上一级写。</p>
+<p>口诀：JTC 路点插值，话题无反馈动作有反馈；回调与 update 之间用实时缓冲区。</p>
+</details>
+<h3 id="r40-nav2-mppi">R40 · Nav2 有哪五个服务器、各做什么？"别名 + 插件"有什么好处？MPPI 怎么算速度？</h3>
+<p>来源：<a href="lessons/17-nav2.html">第 17 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>规划服务器（全局代价地图上算全局路径：NavFn、Smac、Theta*）、控制服务器（局部代价地图上每周期算 <code>cmd_vel</code> 跟路径：MPPI、RPP、DWB…；ROS 1 叫局部规划器）、平滑服务器（修平路径、远离障碍）、行为服务器（清代价地图、原地转、等待、后退等恢复）、路线服务器（在预定义导航图上找路线）。都是动作服务器，算法是插件。</p>
+<p>别名：行为树里写 <code>FollowPath</code>，配置里决定用 MPPI，参数在 <code>FollowPath.&lt;参数&gt;</code>；换算法不改树；同一服务器装多个插件共用一份代价地图。</p>
+<p>MPPI：以上周期最优控制为基础随机采样一批扰动控制序列 → 前向模拟轨迹 → 插件式评价函数打分 → softmax 加权得新控制，迭代几次；评价函数不需凸、不需可导；支持差速 / 全向 / 阿克曼，100 Hz+。</p>
+<p>口诀：规划算路、控制跟路、平滑修路、行为救急、路线走图。</p>
+</details>
+<h3 id="r41">R41 · 全局和局部代价地图有何区别？代价地图有哪些层？默认导航行为树遇到失败怎么做？</h3>
+<p>来源：<a href="lessons/17-nav2.html">第 17 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>代价地图：二维栅格，格子代价为未知 / 空闲 / 被占 / 膨胀。全局：整张图、<code>map</code> 坐标系、给规划器 / 平滑器；局部：机器人周围滚动窗口、<code>odom</code> 坐标系（连续不跳）、给控制器 / 行为服务器。层：静态层（读 <code>/map</code>）、障碍层 / 体素层（激光、深度实时障碍）、膨胀层（障碍周围递减代价，配合 <code>robot_radius</code> / <code>footprint</code>）；过滤器做禁行区、限速区、优先车道。</p>
+<p>默认 NavigateToPose 树：每秒重规划；规划失败清全局图、控制失败清局部图后重试；仍失败进入恢复子树依次清图、原地转、等待、后退，每次恢复后重试导航；整体最多重试 6 次；<code>GoalUpdated</code> 让新目标随时抢占。入口动作 <code>NavigateToPose</code>；服务器均为托管节点，由 <code>lifecycle_manager</code> 拉起；需要 <code>map → odom → base_link</code>。</p>
+<p>口诀：全局在 map 给规划，局部在 odom 给控制；失败先清图，再转、等、退，最多六次。</p>
+</details>
+<h3 id="r42-move_group-srdf">R42 · move_group 需要哪三类配置？SRDF 写什么？它和机器人之间通过什么交互、哪些不由它提供？</h3>
+<p>来源：<a href="lessons/18-moveit2.html">第 18 章 · 第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>URDF（<code>robot_description</code>：外形和关节）、SRDF（<code>robot_description_semantic</code>：规划组、末端执行器、预定义姿态、不需检查碰撞的连杆对）、MoveIt YAML（关节限位、运动学求解器、规划器、感知）；SRDF 和 YAML 用 MoveIt Setup Assistant 生成。</p>
+<p>交互：读 <code>/joint_states</code>（自己不发布）、读 tf（需 robot_state_publisher）、通过 <code>FollowJointTrajectory</code> 动作把轨迹交给控制器（动作服务器不由 MoveIt 提供，是 ros2_control 的 JTC）。维护规划场景 = 机器人状态 + 障碍物 + 手持物体。</p>
+<p>口诀：URDF 长相、SRDF 分组和免查碰撞、YAML 管参数；状态别人给，执行别人做。</p>
+</details>
+<h3 id="r43-moveit-servo">R43 · MoveIt 规划流水线的步骤？路径和轨迹的区别？什么时候用 Servo？</h3>
+<p>来源：<a href="lessons/18-moveit2.html">第 18 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>请求（关节或末端位姿目标 + 位置 / 姿态 / 关节 / 可见性约束，默认查碰撞）→ 逆运动学（默认 KDL 数值雅可比）→ 规划器插件（OMPL 采样如 RRT；Pilz 工业 LIN / PTP / CIRC；CHOMP 优化）→ 规划请求适配器（如 CheckStartStateBounds 修起点）→ 时间参数化（TOTG，默认步长 0.1 s，起止静止，限值来自 <code>joint_limits.yaml</code>）→ <code>FollowJointTrajectory</code> 交给 JTC 执行。</p>
+<p>路径 = 一串关节位形，无时间；轨迹 = 带时刻、速度、加速度，满足限制。规划器出路径，时间参数化变轨迹。</p>
+<p>Servo：不规划整条轨迹，持续接收关节速度 / 末端速度 / 末端位姿指令实时转关节命令，带奇异点和碰撞减速、平滑、限位；用于遥操作、视觉伺服、学习策略持续输出末端运动。Python 用 MoveItPy：<code>get_planning_component</code> → <code>set_start_state_to_current_state</code> / <code>set_goal_state</code> → <code>plan()</code> → <code>execute()</code>。</p>
+<p>口诀：路径没时间，轨迹有时间；整段用规划，持续用 Servo。</p>
+</details>
+<h2 id="_9">仿真、部署与策略</h2>
+<h3 id="r44-ros-2">R44 · 从仿真切到真机，最少要改哪几样？仿真器怎么接入 ROS 2？</h3>
+<p>来源：<a href="lessons/19-sim-deploy.html">第 19 章 · 总图与第 1 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>上层（Nav2、MoveIt、策略）只认话题 / 动作 / ros2_control 接口，不改。要改：① URDF <code>&lt;ros2_control&gt;</code> 的 <code>&lt;plugin&gt;</code>（mock_components/GenericSystem → gz_ros2_control / mujoco_ros2_control → 自己的硬件组件）；② <code>use_sim_time</code>（仿真时全体 true、真机全体 false）；③ 传感器来源（仿真器经 ros_gz_bridge 等发标准话题 → 真实驱动）。</p>
+<p>接入：关节经 ros2_control 仿真插件（read / write 读写物理引擎）；传感器经桥接成 <code>sensor_msgs</code> 话题；时间经 <code>/clock</code>。ros2_control 官方集成 Gazebo、MuJoCo、topic-based；社区有 Isaac Sim、Webots、AGX。Gazebo 版本搭配按 REP 2000，<code>gz sim</code> 自检。RL / VLA 多在 MuJoCo / Isaac Lab 里直接训练，再经 ROS 2 节点在仿真版 ros2_control 上验证，最后换真机（sim-to-real）。</p>
+<p>口诀：上层不动，换插件、关 sim time、换传感器来源。</p>
+</details>
+<h3 id="r45-ros-2-docker-wi-fi-30">R45 · ROS 2 系统怎么用 Docker 部署？Wi-Fi 传大消息为什么会卡 30 秒、怎么办？</h3>
+<p>来源：<a href="lessons/19-sim-deploy.html">第 19 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>Docker：<code>FROM ros:lyrical-ros-base</code>（机器人上不要 desktop）→ rosdep + colcon 编译 → 多阶段构建只拷 <code>install/</code> → <code>docker compose</code> 编排子系统，常用 <code>network_mode: host</code>（默认网络组播常不通）→ <code>restart: always</code> / systemd 开机自启；ARM 板子用交叉编译或 buildx；也可打 deb 包。</p>
+<p>卡顿：大消息被拆成多个 IP 分片，丢一片后其余分片堆在内核缓冲区，Linux 默认 30 s（<code>ipfrag_time</code>）才放弃重组，缓冲区满了新数据进不来。对策：Best effort QoS、调小 <code>net.ipv4.ipfrag_time</code>、调大分片 / 接收缓冲区、压缩图像或降分辨率帧率；远程跨网用 Zenoh / 发现服务器。联网产品开 SROS2（认证、加密、访问控制）；急停是硬件回路。</p>
+<p>口诀：最小镜像多阶段，host 网络开机起；大消息 Wi-Fi 卡三十秒，尽力而为加压缩。</p>
+</details>
+<h3 id="r46">R46 · 学习策略节点的输入要注意什么？为什么要"快慢分离"，怎么做？</h3>
+<p>来源：<a href="lessons/20-policy-node.html">第 20 章 · 第 1–2 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>输入：相机用 <code>qos_profile_sensor_data</code>（Best effort）订阅；<code>message_filters</code> 近似时间同步按<strong>采集</strong>时间戳配对图像和 <code>/joint_states</code>，多机要 NTP / PTP 对时；<code>cv_bridge</code> 转图像，颜色顺序 / 分辨率 / 归一化与训练一致；末端类输出用 tf 对齐到 <code>base_link</code>，外参来自手眼标定。</p>
+<p>快慢分离：推理 100–300 ms（5–10 Hz），关节命令要 50 Hz+。推理放回调组 A（单独线程 / 进程，GPU），产出动作块 + 起始时刻写入短锁缓冲区；执行放回调组 B 的 50 Hz 定时器，取当前步、块间平滑衔接（时间集成 / RTC）、限幅后发出；多线程 executor。推理更重时放单独进程或 C++ 组件，用进程内通信 / <code>rosidl::Buffer</code>。</p>
+<p>口诀：图像尽力而为，时间戳用采集时刻；推理慢执行快，分组分线程。</p>
+</details>
+<h3 id="r47-jtc-2026">R47 · 策略输出该接哪个控制器？JTC 的 2026 新功能如何帮助动作块衔接？策略节点的安全措施和生命周期？</h3>
+<p>来源：<a href="lessons/20-policy-node.html">第 20 章 · 第 2–3 步</a> · 加入 2026-11-13 · 复习记录：</p>
+<details>
+<summary>答案</summary>
+<p>关节位置逐点 → <code>forward_command_controller</code>（平滑全靠自己）；短轨迹 / 整个动作块 → JTC <code>joint_trajectory</code> 话题（R-M10）；末端位姿块 → <code>cartesian_trajectory_controller</code>；末端速度 → MoveIt Servo；底盘速度 → diff_drive <code>cmd_vel</code>。</p>
+<p>JTC（GSoC 2026，<code>gsoc2026_physical_ai.rst</code>）：<code>allow_trajectory_replacement</code>（默认开）把新轨迹与执行中的旧轨迹融合：前缀 + 解析采样的桥接点（带真实速度加速度）+ 新路点 + 未覆盖关节的后缀；<code>positions_upsampling</code> 在非实时回调里解三对角方程得节点速度，实时回路三次埃尔米特插值得 C2 轨迹，可按策略频率补时间；块起点速度钳到上一个命令速度，消除接缝停顿；5 Hz 抓放 jerk 峰值约降为 1/4。</p>
+<p>安全：限幅；动作块过期（如 &gt;0.5 s）就保持当前位置，不外推；输入断就停；关键节点退出整体停机；急停在硬件。托管节点：configure 加载权重并预热，activate 才动，deactivate 保持不动。测量：tracing 量端到端延迟看 p99，bag 录输入和动作。</p>
+<p>口诀：短轨迹给 JTC，末端速度给 Servo；过期即停，量 p99。</p>
+</details>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

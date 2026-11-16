@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 14 章 · launch 进阶、测试与调试 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="14-launch">第 14 章 · launch 进阶、测试与调试</h1><p><a class="btn" href="../animations/14-launch-expand.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：真实机器人的 launch 文件动辄几百行，怎么组织？参数、条件、"某个节点挂了就全关"怎么写？ROS 2 程序怎么写自动测试？节点崩了怎么拿到崩溃位置？回调到底花了多久怎么量？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/13-urdf-rviz.html">第 13 章 URDF 与 RViz</a> · 下一章：<a href="../lessons/15-realtime-ros2-control.html">第 15 章 实时与 ros2_control 架构</a><br />
+对应原文：<code>ros2_documentation/source/Developer-Tools/Launch/</code> 下的 <code>Using-Substitutions.rst</code>、<code>Using-Event-Handlers.rst</code>、<code>Using-ROS2-Launch-For-Large-Projects.rst</code>；<code>ros2_documentation/source/Developer-Tools/Debugging/Testing/Integration.rst</code>；<code>ros2_documentation/source/Developer-Tools/Debugging/Getting-Backtraces-in-ROS-2.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 E1–E4，动手里程碑 R-M5（lifecycle + launch 事件 + 一个 launch_testing 测试）。<br />
+本章缩写：gdb = GNU Debugger（GNU 调试器）；LTTng = Linux Trace Toolkit next generation（Linux 跟踪工具包：ros2_tracing 的底层）；CI = Continuous Integration（持续集成：每次提交自动跑测试）；<code>pytest</code>（Python 测试框架，不是缩写）；<code>unittest</code>（Python 标准库的测试框架）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：一次 <code>ros2 launch</code> 的展开过程</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>launch 进阶：参数、替换、条件、包含、分组、事件</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>测试：单元测试、<code>colcon test</code>、<code>launch_testing</code> 集成测试</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>调试：gdb 拿崩溃栈、日志、ros2_tracing 测回调耗时</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="launch">总图 · 一次 launch 的展开</h3>
+<p><img alt="launch 文件的展开过程" src="../animations/14-launch-expand.gif" /></p>
+<p>可交互版：<a href="../animations/14-launch-expand.html">animations/14-launch-expand.html</a>（内置浏览器：<code>http://localhost:8340/14-launch-expand.html</code>）。</p>
+<p><strong>关键概念：launch 文件是"描述"，不是"脚本"。</strong> <code>generate_launch_description()</code> 返回的是一张清单（第 3 章），里面的 <code>LaunchConfiguration('x')</code> 之类叫<strong>替换（substitution）</strong>：写文件时只是个占位，<strong>启动时</strong>才求值（<code>Developer-Tools/Launch/Using-Substitutions.rst</code>）。所以在 Python launch 文件里不能直接 <code>if LaunchConfiguration('sim') == 'true':</code>，因为那时它还没有值；要用条件动作。</p>
+<h3 id="1-launch">第 1 步 · launch 进阶</h3>
+<p>依据：<code>Developer-Tools/Launch/</code> 下的教程及其 <code>launch/</code> 示例文件（下称"launch 示例"）。</p>
+<p><strong>参数（launch argument）+ 替换</strong>（<code>launch/example_substitutions_launch.py</code>）：</p>
+<pre><code class="language-python">from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, TimerAction, ExecuteProcess
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    turtlesim_ns = LaunchConfiguration('turtlesim_ns')                 # 占位
+    return LaunchDescription([
+        DeclareLaunchArgument('turtlesim_ns', default_value='turtlesim1'),  # 声明 + 默认值
+        Node(package='turtlesim', executable='turtlesim_node',
+             namespace=turtlesim_ns, name='sim'),                     # 启动时才代入
+        TimerAction(period=2.0, actions=[ ... ]),                      # 2 秒后再做
+    ])
+</code></pre>
+<p>命令行传值：<code>ros2 launch launch_tutorial example_substitutions_launch.py turtlesim_ns:=robot7</code>。<code>ros2 launch &lt;包&gt; &lt;文件&gt; --show-args</code> 列出所有可传的参数。</p>
+<p><strong>常用替换和动作：</strong></p>
+<table>
+<thead>
+<tr>
+<th>名字</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LaunchConfiguration('x')</code></td>
+<td>取 launch 参数 x 的值</td>
+</tr>
+<tr>
+<td><code>PathJoinSubstitution([FindPackageShare('pkg'), 'config', 'a.yaml'])</code></td>
+<td>拼出某个包安装目录下的文件路径</td>
+</tr>
+<tr>
+<td><code>Command(['xacro ', urdf_path])</code></td>
+<td>启动时执行命令，取输出（第 13 章把 xacro 展开成 URDF）</td>
+</tr>
+<tr>
+<td><code>PythonExpression([...])</code></td>
+<td>启动时求一个 Python 表达式</td>
+</tr>
+<tr>
+<td><code>IfCondition(...)</code> / <code>UnlessCondition(...)</code></td>
+<td>条件：满足才执行这个动作（比如只在仿真时启动 Gazebo）</td>
+</tr>
+<tr>
+<td><code>TimerAction(period=, actions=)</code></td>
+<td>延时执行</td>
+</tr>
+<tr>
+<td><code>ExecuteProcess(cmd=...)</code></td>
+<td>启动任意命令</td>
+</tr>
+<tr>
+<td><code>IncludeLaunchDescription(...)</code></td>
+<td><strong>包含</strong>另一个 launch 文件，并传参</td>
+</tr>
+<tr>
+<td><code>GroupAction</code> + <code>PushRosNamespace('ns')</code></td>
+<td>把一组节点统一放进某个命名空间</td>
+</tr>
+<tr>
+<td><code>SetParameter</code> / <code>Node(parameters=[yaml路径, {...}])</code></td>
+<td>设参数：可混用 YAML 文件和字典</td>
+</tr>
+<tr>
+<td><code>Node(remappings=[('cmd_vel', 'base/cmd_vel')])</code></td>
+<td>重映射话题</td>
+</tr>
+</tbody>
+</table>
+<p><strong>大项目的组织方式</strong>（<code>Using-ROS2-Launch-For-Large-Projects.rst</code>，<code>launch/example_main_launch.py</code>）：一个<strong>顶层</strong> launch 文件只负责 <code>IncludeLaunchDescription</code> 各子系统（底盘、传感器、导航、机械臂），通过参数把"用哪个机器人型号、是否仿真"往下传；参数统一放 <code>config/*.yaml</code>。</p>
+<pre><code class="language-python">IncludeLaunchDescription(
+    PathJoinSubstitution([FindPackageShare('launch_tutorial'), 'launch', 'example_substitutions_launch.py']),
+    launch_arguments={'turtlesim_ns': 'turtlesim2', 'use_provided_red': 'True'}.items())
+</code></pre>
+<p><strong>事件处理</strong>（<code>Using-Event-Handlers.rst</code>，<code>launch/example_event_handlers_launch.py</code>）：监听"进程启动 / 有输出 / 动作执行完 / 进程退出 / launch 要关闭"，触发别的动作。</p>
+<table>
+<thead>
+<tr>
+<th>处理器</th>
+<th>什么时候触发</th>
+<th>典型用法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>OnProcessStart</code></td>
+<td>某进程启动后</td>
+<td>模拟器起来后再去调 <code>/spawn</code></td>
+</tr>
+<tr>
+<td><code>OnProcessIO</code></td>
+<td>某进程有输出时</td>
+<td>看到某行日志再做下一步</td>
+</tr>
+<tr>
+<td><code>OnExecutionComplete</code></td>
+<td>某动作执行完</td>
+<td>串行步骤</td>
+</tr>
+<tr>
+<td><code>OnProcessExit</code></td>
+<td>某进程退出</td>
+<td><strong>关键节点退出，就 <code>EmitEvent(Shutdown())</code> 关掉全部</strong></td>
+</tr>
+<tr>
+<td><code>OnShutdown</code></td>
+<td>launch 整体要关闭时</td>
+<td>打印原因、收尾</td>
+</tr>
+</tbody>
+</table>
+<p>官方例子里：turtlesim 窗口被关闭（进程退出）→ 打日志 + 发出 Shutdown 事件，整个 launch 退出。真机上，驱动节点崩了就让整套系统停下，比"半残运行"安全得多。</p>
+<p><strong>托管节点 + launch</strong>（接第 11 章）：用 <code>launch_ros.actions.LifecycleNode</code> 启动，再用事件处理器监听它的状态变化，"进入 inactive 后自动发 activate"。节点多时直接用 Nav2 式的生命周期管理器更省事。</p>
+<p><strong>组件 + launch</strong>（接第 10 章）：<code>ComposableNodeContainer(package='rclcpp_components', executable='component_container', composable_node_descriptions=[ComposableNode(...), ...])</code>（<code>Launching-composable-nodes.rst</code>）。</p>
+<p><strong>Python / XML / YAML 怎么选</strong>（<code>Launch-file-different-formats.rst</code>）：简单的启动清单用 XML / YAML，短且好读；需要复杂逻辑用 Python。Lyrical 给 XML / YAML 加了 <code>string-join</code>、<code>path-join</code> 替换，也支持在 launch 里按条设日志级别（<code>Release-Lyrical-Luth.rst</code>）。</p>
+<h3 id="2">第 2 步 · 测试</h3>
+<p>依据：<code>Developer-Tools/Debugging/Testing/</code> 下各页。</p>
+<p><strong>三层测试：</strong></p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>测什么</th>
+<th>工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>单元测试</td>
+<td>一个函数、一个类，不起 ROS</td>
+<td>Python 用 <code>pytest</code>；C++ 用 gtest</td>
+</tr>
+<tr>
+<td>节点 / 集成测试</td>
+<td>把节点真的启动起来，看它对外的话题、服务行为对不对</td>
+<td><code>launch_testing</code></td>
+</tr>
+<tr>
+<td>静态检查</td>
+<td>代码风格、拷贝许可证头等</td>
+<td><code>ament_lint</code>（建包时自动带的 <code>test_depend</code>）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>跑测试</strong>（<code>Testing/CLI.rst</code>）：</p>
+<pre><code class="language-bash">colcon test --packages-select my_package
+colcon test-result --all --verbose       # 看结果
+colcon test --packages-select my_package --pytest-args -k test_speed_limit   # 只跑某个测试
+</code></pre>
+<p>Python 包要在 <code>setup.py</code> 的 <code>extras_require</code> / <code>tests_require</code> 里声明 <code>pytest</code>，测试文件放 <code>test/</code>，函数名以 <code>test_</code> 开头（<code>Testing/Python.rst</code>）。</p>
+<p><strong>集成测试 <code>launch_testing</code></strong>（<code>Testing/Integration.rst</code>）：在一个 Python 文件里：</p>
+<ol>
+<li><code>generate_test_description()</code>：像 launch 文件一样启动被测节点，最后加 <code>launch_testing.actions.ReadyToTest()</code>；</li>
+<li><strong>活动测试</strong>（active tests）：节点运行期间执行的 <code>unittest.TestCase</code>，比如"发一条 <code>cmd_vel</code>，在 2 秒内应该收到位姿变化"，可以用 <code>launch_testing_ros</code> 的 <code>WaitForTopics</code> 等待话题；</li>
+<li><strong>关闭后测试</strong>（post-shutdown tests）：所有节点退出后检查，比如"退出码都是 0"。</li>
+</ol>
+<p>CMake 包里用 <code>add_launch_test(test/my_test.py)</code> 注册，<code>colcon test</code> 一起跑。<strong>每次提交都自动跑一遍</strong>（CI），是避免"改了 A 坏了 B"的唯一可靠办法。</p>
+<h3 id="3">第 3 步 · 调试</h3>
+<p><strong>崩溃：用 gdb 拿调用栈</strong>（<code>Developer-Tools/Debugging/Getting-Backtraces-in-ROS-2.rst</code>，C++ 节点）：</p>
+<pre><code class="language-bash">ros2 run --prefix 'gdb -ex run --args' my_package my_node
+# 崩溃后在 (gdb) 提示符下输入：backtrace，从下往上读
+</code></pre>
+<p>launch 里给 <code>Node(...)</code> 加 <code>prefix=['xterm -e gdb -ex run --args']</code>。编译时用 <code>--cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo</code> 保留调试信息。Python 节点崩溃本来就有完整的异常栈。</p>
+<p><strong>日志</strong>（第 3 章）：<code>--log-level debug</code>、<code>rqt_console</code> 过滤、<code>~/.ros/log/</code> 里翻历史。</p>
+<p><strong>"回调到底花了多久"：ros2_tracing</strong>（<code>Developer-Tools/Introspection-and-analysis/Tracing/ROS2-Tracing-Trace-and-Analyze.rst</code>）：ROS 2 的核心库里预埋了跟踪点，用 LTTng 记录每次回调的开始、结束、消息发布与接收，开销很小；再用 <code>tracetools_analysis</code> 在 Jupyter 里画出回调耗时分布、端到端延迟。Linux 二进制默认已编入跟踪点；Lyrical 起可用环境变量 <code>TRACETOOLS_RUNTIME_DISABLE=1</code> 完全关掉，还新增了"快照模式"（只在内存里滚动保存，出事时才落盘，像飞机黑匣子）（<code>Release-Lyrical-Luth.rst</code> 对应两节）。</p>
+<p><strong>其他排查命令回顾</strong>：<code>ros2 doctor --report</code>（第 8 章）、<code>topic info -v</code>（第 7 章）、<code>view_frames</code>（第 12 章）、<code>ros2 lifecycle get</code>（第 11 章）。</p>
+<p><strong>和本仓库的连接</strong>：R-M10 要量"图像进来 → 动作出去"的端到端延迟和抖动，ros2_tracing 是最准的工具；VLA 策略节点的回归测试（"给定这张图，动作输出的形状和范围对不对"）用 <code>launch_testing</code> 写。</p>
+<h2 id="_2">练习与作答记录</h2>
+<p><strong>练习 14-1</strong>（第 1 步）：写一个 launch 参数 <code>use_sim</code>（默认 <code>false</code>），只有 <code>use_sim</code> 为 true 时才启动一个 <code>gazebo</code> 进程。用到哪两个类？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 14-2</strong>（第 1 步）：你想让"底盘驱动节点一退出，整个 launch 就关闭"。用哪个事件处理器、触发什么动作？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 14-3</strong>（第 2 步）：<code>launch_testing</code> 里的"活动测试"和"关闭后测试"各适合检查什么？各举一个例子。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 14-4</strong>（第 3 步）：一个 C++ 节点启动后立刻段错误（segfault）退出，你怎么拿到崩溃位置？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_3">口诀</h2>
+<ul>
+<li><strong>launch 是描述不是脚本</strong>：替换启动时才求值，判断要用 <code>IfCondition</code>。</li>
+<li><strong>大项目</strong>：顶层只做 include，参数往下传，配置进 YAML，命名空间分组。</li>
+<li><strong>事件</strong>：关键进程退出就 Shutdown，别让系统半残。</li>
+<li><strong>测试三层</strong>：pytest 测函数，launch_testing 测节点，ament_lint 查风格；<code>colcon test</code> 一起跑。</li>
+<li><strong>调试</strong>：崩溃 gdb 看栈，行为看日志，耗时用 tracing。</li>
+</ul>
+<h2 id="_4">本章复习卡片编号</h2>
+<p>R34–R35，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_5">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_6">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>Launch</code></td>
+<td><code>materials/ros2_documentation/source/Developer-Tools/Launch/</code></td>
+<td><code>Creating-Launch-Files.rst</code>、<code>Using-Substitutions.rst</code>、<code>Using-Event-Handlers.rst</code>、<code>Using-ROS2-Launch-For-Large-Projects.rst</code>、<code>Launching-composable-nodes.rst</code>、<code>Launch-file-different-formats.rst</code>，示例在 <code>launch/</code> 子目录（Py / XML / YAML 三种写法并列）。</td>
+</tr>
+<tr>
+<td><code>150_roslaunch.md</code></td>
+<td><code>materials/design/articles/150_roslaunch.md</code>、<code>151_roslaunch_xml.md</code>、<code>152_roslaunch_frontend.md</code></td>
+<td>launch 系统设计。</td>
+</tr>
+<tr>
+<td>★ <code>Testing</code></td>
+<td><code>Developer-Tools/Debugging/Testing/</code></td>
+<td><code>CLI.rst</code>（colcon test）、<code>Python.rst</code>、<code>Cpp.rst</code>、<code>Integration.rst</code>（launch_testing）。</td>
+</tr>
+<tr>
+<td><code>Getting-Backtraces-in-ROS-2.rst</code></td>
+<td><code>Developer-Tools/Debugging/Getting-Backtraces-in-ROS-2.rst</code>、<code>ROS-2-IDEs.rst</code>、<code>Debugging-Tf2-Problems/</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>ROS2-Tracing-Trace-and-Analyze.rst</code></td>
+<td><code>Developer-Tools/Introspection-and-analysis/Tracing/ROS2-Tracing-Trace-and-Analyze.rst</code>、<code>Developer-Tools/Debugging/Building-ROS-2-with-Tracing.rst</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>论文</td>
+<td>Bédard et al., "ros2_tracing: Multipurpose Low-Overhead Framework for Real-Time Tracing of ROS 2"（IEEE RA-L 2022），ros2_tracing 的设计与开销评估（本地未收录）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">数学原理</h3>
+<ul>
+<li>本章没有用到数学。</li>
+</ul>
+<h3 id="_8">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>参数取值：命令行 <code>name:=value</code> 优先于 <code>default_value</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch14_launch_subst.py</code>，配套测试 <code>tests/test_ch11_15.py</code>；同名 notebook 在 <code>notebooks/ch14_launch_subst.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch14_launch_subst.py   # 一步一步打印  
+uv run pytest tests/test_ch11_15.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总图 描述不是脚本</td>
+<td>写下来的是占位</td>
+<td><code>type(description[0]['namespace'])</code></td>
+<td><code>LaunchConfiguration</code></td>
+</tr>
+<tr>
+<td>第 1 步 默认值</td>
+<td><code>default_value='turtlesim1'</code></td>
+<td><code>launch(description, declared, {})</code></td>
+<td><code>/turtlesim1/sim</code></td>
+</tr>
+<tr>
+<td>第 1 步 命令行传参</td>
+<td><code>turtlesim_ns:=robot7</code></td>
+<td><code>launch(..., {'turtlesim_ns': 'robot7'})</code></td>
+<td><code>/robot7/sim</code></td>
+</tr>
+<tr>
+<td>第 1 步 Include 传参</td>
+<td><code>launch_arguments</code></td>
+<td>同上传 turtlesim2</td>
+<td><code>/turtlesim2/sim</code></td>
+</tr>
+<tr>
+<td>第 1 步 PushRosNamespace</td>
+<td>整组再套一层</td>
+<td><code>launch(..., namespace='robot1')</code></td>
+<td><code>/robot1/turtlesim1/sim</code></td>
+</tr>
+<tr>
+<td>第 1 步 其他替换</td>
+<td>PathJoin、PythonExpression</td>
+<td><code>launch([node], ...)</code></td>
+<td>路径拼好；<code>0.5 * 2</code> → 1.0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">turtlesim_ns = LaunchConfiguration(&quot;turtlesim_ns&quot;)      # 占位，不是值
+ctx = {**declared, **cli}                              # 命令行覆盖默认值
+value.perform(ctx) if hasattr(value, &quot;perform&quot;) else value   # 启动时才算
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong><code>ctx = {**declared, **cli}</code></strong>：后面的字典覆盖前面的，所以命令行的值优先于默认值。</li>
+<li><strong>PythonExpression 用的是 <code>eval</code></strong>：真 launch 也是把几段拼成字符串再求值，所以字符串里的引号、空格都要自己写对。</li>
+<li><strong>条件（IfCondition）和事件处理器没有模拟</strong>，留给练习 14-1、14-2。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>在 <code>description</code> 里再加一个 Node（比如 <code>name='teleop'</code>，同一个 namespace），看两个节点的名字；</li>
+<li>把 <code>base_speed</code> 改成 <code>'0.3'</code>，看 <code>scale</code> 变成多少。</li>
+</ul><nav class="pager"><a href="13-urdf-rviz.html">← 第 13 章 · URDF、xacro、robot_state_publisher 与 RViz</a><a href="15-realtime-ros2-control.html">第 15 章 · 实时与 ros2_control 架构 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 19 章 · 仿真与部署 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="19">第 19 章 · 仿真与部署</h1><p><a class="btn" href="../animations/19-sim-to-real.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：同一套导航 / 机械臂代码，怎么先在仿真里跑通、再一键切到真机？Gazebo、MuJoCo、Isaac Sim 各接在 ROS 2 的哪一层？写好的系统怎么打包、装到机器人上、开机自启？Wi-Fi 下传大消息为什么会"卡死 30 秒"？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/18-moveit2.html">第 18 章 MoveIt 2</a> · 下一章：<a href="../lessons/20-policy-node.html">第 20 章 收尾：把学习策略部署成 ROS 2 节点</a><br />
+对应原文：<code>ecosystem/control.ros.org/doc/simulators/simulators.rst</code>；<code>ros2_documentation/source/Developer-Tools/Build/Deployment-Guidelines/Deployment-Guidelines.rst</code>；<code>ros2_documentation/source/Developer-Tools/Build/DDS-tuning.rst</code> L44–L85（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 I1、I2。接机器人软硬件架构专题第 9 章（仿真、数据、部署）。<br />
+本章缩写：SDF = Simulation Description Format（仿真 / 描述 / 格式：Gazebo 的世界与模型格式）；gz = Gazebo（新版 Gazebo 的命令名）；MJCF = MuJoCo XML Format；OTA = Over-The-Air（空中 / 远程升级）；IP = Internet Protocol；SROS2 = Secure ROS 2（安全 ROS 2 工具集）；GPU = Graphics Processing Unit；MTU = Maximum Transmission Unit（最大 / 传输 / 单元：一个网络包最多多大，常见 1500 字节）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：同一套上层，换一层硬件插件，仿真 ↔ 真机</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>仿真器怎么接：Gazebo、MuJoCo、Isaac Sim、Webots，和仿真时间</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>部署：Docker 镜像、开机自启、交叉编译</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>现场网络与安全：DDS 调优、Wi-Fi 大消息、SROS2</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 仿真到真机只换一层</h3>
+<p><img alt="仿真与真机切换" src="../animations/19-sim-to-real.gif" /></p>
+<p>可交互版：<a href="../animations/19-sim-to-real.html">animations/19-sim-to-real.html</a>（内置浏览器：<code>http://localhost:8340/19-sim-to-real.html</code>）。</p>
+<p>前 18 章的设计在这里汇合：<strong>上层（Nav2、MoveIt、你的策略）只认话题、动作和 ros2_control 的接口；下层换成假硬件、仿真器插件还是真驱动，上层一行不改。</strong> 唯一要变的通常是三样东西：URDF 里 <code>&lt;ros2_control&gt;</code> 的 <code>&lt;plugin&gt;</code>、<code>use_sim_time</code>、传感器的数据来源。</p>
+<p><strong>类比：飞行模拟器。</strong> 驾驶舱（上层）一模一样，窗外和操纵杆背后接的是模拟器还是真飞机，飞行员不用重新学。</p>
+<h3 id="1">第 1 步 · 仿真器怎么接</h3>
+<p><strong>ros2_control 认可的仿真集成</strong>（<code>materials/ecosystem/control.ros.org/doc/simulators/simulators.rst</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>仿真器</th>
+<th>接入方式</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gazebo</strong>（新版，原 Ignition）</td>
+<td><code>gz_ros2_control</code> 硬件插件 + <code>ros_gz_bridge</code> 桥接话题</td>
+<td>ROS 官方配套；传感器种类全；用 SDF 描述世界</td>
+</tr>
+<tr>
+<td><strong>MuJoCo</strong></td>
+<td><code>mujoco_ros2_control</code> 插件</td>
+<td>接触和动力学精确、快；学习型控制（RL、模仿学习）首选之一</td>
+</tr>
+<tr>
+<td><strong>topic-based</strong></td>
+<td>通用"话题硬件接口"</td>
+<td>任意仿真器只要按约定收发关节话题就能接</td>
+</tr>
+<tr>
+<td>Isaac Sim、Webots、AGX Dynamics、FZI 的 MuJoCo 方案</td>
+<td>社区集成</td>
+<td>Isaac Sim 有 GPU 加速渲染和大规模并行，适合合成数据</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gazebo 版本</strong>：ROS 和 Gazebo 的版本有固定搭配，每个 ROS 发行版的默认 Gazebo 版本由 REP 2000 规定；<code>gz sim</code> 能启动就说明装好了（<code>Integrations-and-related/Simulators/Gazebo/Gazebo.rst</code>）。这里说的是新版 Gazebo，不是已停止维护的 Gazebo Classic。</p>
+<p><strong>仿真里的数据流</strong>：</p>
+<ul>
+<li><strong>关节</strong>：仿真器插件实现第 16 章的硬件组件接口：<code>read()</code> 从物理引擎读关节状态，<code>write()</code> 把命令施加到物理引擎。所以 JTC、diff_drive_controller 原样可用。</li>
+<li><strong>传感器</strong>：相机、激光、IMU 由仿真器生成，经桥接（如 <code>ros_gz_bridge</code>）发成标准 ROS 话题（<code>sensor_msgs/Image</code>、<code>LaserScan</code>……）。</li>
+<li><strong>时间</strong>：仿真器往 <code>/clock</code> 发仿真时间，<strong>所有节点</strong>设 <code>use_sim_time:=true</code>（第 11 章）。漏一个，tf 就报"在未来 / 过去"。</li>
+</ul>
+<p><strong>还有两个轻量选择</strong>（本地文档都有）：Webots（<code>Integrations-and-related/Simulators/Webots/</code>，跨平台，macOS 上也有安装说明）和 MVSim（<code>.../MVSim/</code>，轻量的 2D / 2.5D 移动机器人仿真）。在 Mac 虚拟机里跑 Gazebo 帧率低时（study-plan 已提示），可以先用它们或 turtlesim 级别的 demo 过流程。</p>
+<p><strong>和学习型方法的关系</strong>：RL / VLA 训练通常在 MuJoCo、Isaac Lab 这类可大规模并行的仿真器里直接跑，不经过 ROS；训练好的策略再通过 ROS 2 节点接到"仿真版 ros2_control"上验证，最后换真机插件（第 20 章）。这一步叫<strong>sim-to-real</strong>，中间差的物理参数、传感器噪声、延迟，正是第 20 章要测的东西。</p>
+<h3 id="2">第 2 步 · 部署</h3>
+<p>依据：<code>Developer-Tools/Build/Deployment-Guidelines/Deployment-Guidelines.rst</code>（下称"部署指南"）、<code>.../Run-2-nodes-in-single-or-separate-docker-containers.rst</code>、<code>.../Cross-compilation.rst</code>。</p>
+<p><strong>Docker 是最常见的交付方式</strong>（部署指南："典型的部署是把容器化应用或软件包发到远程系统"）：</p>
+<pre><code class="language-dockerfile">FROM ros:lyrical-ros-base                 # 官方镜像，只含核心库（不含 GUI）
+COPY src/ /ws/src/
+RUN . /opt/ros/lyrical/setup.sh &amp;&amp; cd /ws &amp;&amp; \
+    apt-get update &amp;&amp; rosdep install -i --from-path src -y &amp;&amp; \
+    colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
+CMD [&quot;bash&quot;, &quot;-c&quot;, &quot;. /ws/install/setup.bash &amp;&amp; ros2 launch my_robot robot.launch.py&quot;]
+</code></pre>
+<ul>
+<li>基础镜像选最小够用的（<code>ros-core</code> &lt; <code>ros-base</code> &lt; <code>desktop</code>），机器人上通常不需要 RViz。</li>
+<li>多阶段构建：编译阶段装编译器和开发包，运行阶段只拷 <code>install/</code>，镜像小很多。</li>
+<li>用 <code>docker compose</code> 描述多个服务（驱动、感知、导航各一个容器），容器之间默认能用 DDS 通信；需要时用 <code>network_mode: host</code>（第 8 章：组播在 Docker 默认网络里常常不通）。部署指南的例子用 compose 起了三个容器并共享密钥目录。</li>
+<li>开机自启：systemd 服务或 compose 的 <code>restart: always</code>；更新：拉新镜像（OTA）。</li>
+</ul>
+<p><strong>不用 Docker 时</strong>：在目标机上 <code>colcon build</code>，或打成 deb 包（<code>Developer-Tools/Build/Building-a-Custom-Deb-Package.rst</code>）用 apt 安装。</p>
+<p><strong>交叉编译</strong>（<code>Cross-compilation.rst</code>）：在 x86 电脑上编出给 ARM 机器人（Jetson、树莓派）用的程序，省掉在小板子上慢慢编。用 Docker 的多架构构建（buildx）是常见做法。</p>
+<h3 id="3">第 3 步 · 现场网络与安全</h3>
+<p><strong>DDS 调优</strong>（<code>Developer-Tools/Build/DDS-tuning.rst</code>）：</p>
+<ul>
+<li><strong>问题</strong>：Wi-Fi 下发大消息（图像、点云），一个 UDP 包被拆成很多 IP 分片；丢了任何一片，其余分片就堆在内核缓冲区里，Linux 默认要等 <strong>30 秒</strong>才放弃重组；缓冲区（默认 256 KB）满了，新分片进不来，连接看起来就"卡死"了。</li>
+<li><strong>办法</strong>：对这类数据用 Best effort QoS（第 7 章）；调小 <code>net.ipv4.ipfrag_time</code>；调大 <code>net.ipv4.ipfrag_high_thresh</code> 和接收缓冲区；或者压缩图像（<code>image_transport</code> 的压缩话题）、降低分辨率帧率。</li>
+<li>跨网段、跨 Wi-Fi 的远程监控，用 Zenoh 或发现服务器更稳（第 8 章）。</li>
+</ul>
+<p><strong>安全（SROS2）</strong>（<code>Developer-Tools/Launch/Security/</code>、<code>design/articles/180_ros2_dds_security.md</code>）：DDS 支持认证、加密和访问控制。SROS2 工具生成密钥库（keystore），给每个节点签发证书、规定它能发布 / 订阅哪些话题。默认关闭；机器人联网、多人共用网络或产品化时要打开。部署指南的 Docker 例子演示的就是带安全配置的 talker / listener。</p>
+<p><strong>上线前检查清单</strong>：</p>
+<ol>
+<li>所有节点 <code>use_sim_time</code> 已关（真机）；</li>
+<li>域号、中间件、发现范围设对（第 8 章）；</li>
+<li>关键节点退出就整体停机（第 14 章事件）；</li>
+<li>驱动有超时停车（第 7 章 Deadline / 第 16 章硬件组件）；</li>
+<li>日志落盘位置和大小有上限；黑匣子 bag 循环录制（第 3 章，Lyrical 的 <code>--max-bag-files</code>）；</li>
+<li>急停是硬件回路，不依赖 ROS（机器人软硬件架构专题第 10 章）。</li>
+</ol>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 19-1</strong>（第 1 步）：你在 Gazebo 里调好了 JTC 和 MoveIt，要换到真机。最少需要改哪些地方？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 19-2</strong>（第 1 步）：仿真里 RViz 一直报 tf "extrapolation into the future"。最可能的原因？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 19-3</strong>（第 2 步）：为什么机器人上的 Docker 镜像通常基于 <code>ros-base</code> 而不是 <code>desktop</code>？多阶段构建省掉了什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 19-4</strong>（第 3 步）：机器人在 Wi-Fi 下传 1080p 原始图像，偶尔整条连接停住半分钟。用本章的知识解释原因，并给出两种缓解办法。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>仿真到真机</strong>：上层不动，换 <code>&lt;plugin&gt;</code>、关 <code>use_sim_time</code>、换传感器来源。</li>
+<li><strong>仿真器</strong>：Gazebo 官方配套，MuJoCo 动力学准，Isaac 能并行；都通过 ros2_control 插件 + 话题桥接入。</li>
+<li><strong>部署</strong>：Docker 打包、最小镜像、多阶段构建、compose 编排、开机自启。</li>
+<li><strong>现场网络</strong>：大消息 + Wi-Fi = 分片丢失卡 30 秒；Best effort、调内核参数、压缩图像。</li>
+<li><strong>安全</strong>：SROS2 认证加密访问控制，联网产品要开；急停不靠 ROS。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R44–R45，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>simulators.rst</code></td>
+<td><code>materials/ecosystem/control.ros.org/doc/simulators/simulators.rst</code></td>
+<td>ros2_control 的仿真集成列表。</td>
+</tr>
+<tr>
+<td>★ <code>Simulators</code></td>
+<td><code>materials/ros2_documentation/source/Integrations-and-related/Simulators/</code></td>
+<td><code>Gazebo/</code>、<code>Webots/</code>、<code>MVSim/</code>、<code>Simulation-Main.rst</code>。</td>
+</tr>
+<tr>
+<td><code>About-Simulation.rst</code></td>
+<td><code>Capabilities/About-Simulation.rst</code></td>
+<td>仿真在 ROS 生态里的位置。</td>
+</tr>
+<tr>
+<td>★ <code>Deployment-Guidelines</code></td>
+<td><code>Developer-Tools/Build/Deployment-Guidelines/</code>、<code>Run-2-nodes-in-single-or-separate-docker-containers.rst</code>、<code>Setup-ROS-2-with-VSCode-and-Docker-Container.rst</code>、<code>Cross-compilation.rst</code>、<code>About-Cross-Compilation.rst</code>、<code>Building-a-Custom-Deb-Package.rst</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>DDS-tuning.rst</code></td>
+<td><code>Developer-Tools/Build/DDS-tuning.rst</code></td>
+<td>Wi-Fi 大消息、分片、内核参数。</td>
+</tr>
+<tr>
+<td><code>Security</code></td>
+<td><code>Developer-Tools/Launch/Security/</code>（<code>Introducing-ros2-security.rst</code>、<code>Access-Controls.rst</code>、<code>Security-on-Two.rst</code>）；<code>materials/design/articles/180–183</code></td>
+<td>DDS 安全、访问控制策略、安全飞地、威胁模型。</td>
+</tr>
+<tr>
+<td><code>Nvidia-ROS2-Projects.rst</code></td>
+<td><code>Integrations-and-related/Related-Projects/Nvidia-ROS2-Projects.rst</code>、<code>Visualizing-ROS-2-Data-With-Foxglove.rst</code></td>
+<td>GPU 加速包与远程可视化。</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>robot-system-architecture 第 9 章（仿真、数据、部署）、第 10 章（安全）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>独立事件都发生</strong>：每片以 <span class="arithmatex">\(1-p\)</span> 的概率到达、互不影响，<span class="arithmatex">\(n\)</span> 片都到的概率是 <span class="arithmatex">\((1-p)^n\)</span>。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>整包丢失概率 <span class="arithmatex">\(=1-(1-p)^n\)</span></td>
+</tr>
+<tr>
+<td>64 KB 的 UDP 包 ≈ 45 片（每片约 1480 字节）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch19_fragments.py</code>，配套测试 <code>tests/test_ch16_20.py</code>；同名 notebook 在 <code>notebooks/ch19_fragments.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch19_fragments.py   # 一步一步打印  
+uv run pytest tests/test_ch16_20.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 3 步 分片</td>
+<td>大消息拆成很多 IP 分片</td>
+<td><code>fragments_per_datagram()</code></td>
+<td>每个 64 KB 的 UDP 包 45 片</td>
+</tr>
+<tr>
+<td>同上</td>
+<td>一张 1080p 原始图</td>
+<td><code>ceil(6,220,800 / 65,507)</code></td>
+<td>95 个 UDP 包，约 4275 片</td>
+</tr>
+<tr>
+<td>第 3 步 丢一片全包作废</td>
+<td><span class="arithmatex">\(1-(1-p)^n\)</span></td>
+<td><code>datagram_loss(0.01, 45)</code></td>
+<td>约 36%</td>
+</tr>
+<tr>
+<td>第 3 步 缓冲区占满</td>
+<td>256 KB、等 30 秒</td>
+<td><code>incomplete_datagrams_to_fill_buffer()</code></td>
+<td>约 4 个残缺包就占满</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">math.ceil(size / 1480)               # MTU 1500 减 20 字节 IP 头，每片约 1480 字节
+1 - (1 - p) ** n                     # 每片都到才拼得回来
+262_144 / 65_507                     # 256 KB 缓冲区装得下几个残缺的大包
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>30 秒和 256 KB 来自 DDS-tuning.rst L47–L48</strong>；64 KB 的 UDP 上限、1500 字节 MTU 是常见网络默认值，不是 ROS 文档里的数；1% 的丢包率是编的。</li>
+<li><strong><span class="arithmatex">\((1-p)^n\)</span> 是"n 片都到"的概率</strong>：每片独立地以 1−p 的概率到达，n 片都到才算这个包到了。1% 看起来很小，乘 45 次就剩 64%。</li>
+<li><strong>DDS 自己也会切片</strong>：很多 DDS 实现会把大消息先切成小于 64 KB 的块再交给 UDP，具体大小看中间件配置。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把丢包率改成 0.1%，看整包丢失的概率；</li>
+<li>把消息换成压缩后的 200 KB 图像，算要几个 UDP 包、几片。</li>
+</ul><nav class="pager"><a href="18-moveit2.html">← 第 18 章 · MoveIt 2：机械臂运动规划</a><a href="20-policy-node.html">第 20 章 · 收尾：把学习策略部署成 ROS 2 节点 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 7 章 · QoS：通信质量设置 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="7-qos">第 7 章 · QoS：通信质量设置</h1><p><a class="btn" href="../animations/07-qos-matching.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：同一个话题，相机图像要"最新的、丢几帧无所谓"，控制指令要"一条都不能丢"，地图要"后来的人也能拿到"，这些怎么设？两边设置不一样会怎样？为什么有时节点明明在、话题名也对，却收不到消息？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/06-interfaces-actions.html">第 6 章 自定义接口与动作</a> · 下一章：<a href="../lessons/08-middleware-discovery.html">第 8 章 中间件、发现与网络</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/interfaces/topics/About-Quality-of-Service-Settings.rst</code>（QoS policies、QoS profiles、QoS compatibilities、QoS events 四节）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 C1，动手里程碑 R-M3。<br />
+本章缩写：QoS = Quality of Service（服务 / 质量）；TCP = Transmission Control Protocol（传输 / 控制 / 协议：保证送达、按序的网络协议）；UDP = User Datagram Protocol（用户 / 数据报 / 协议：不保证送达）；Wi-Fi（无线局域网的商标名，不是缩写）；RMW = ROS MiddleWare。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：发布者"提供"、订阅者"要求"，三种情形</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>七个策略：历史 / 深度 / 可靠性 / 持久性 / 截止时间 / 寿命 / 活性</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>预设配置与兼容规则："要求 vs 提供"</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>代码里怎么设、怎么查、出事件怎么知道</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · "要求"不能高于"提供"</h3>
+<p><img alt="QoS 匹配" src="../animations/07-qos-matching.gif" /></p>
+<p>可交互版：<a href="../animations/07-qos-matching.html">animations/07-qos-matching.html</a>（内置浏览器：<code>http://localhost:8340/07-qos-matching.html</code>）。</p>
+<p><strong>类比：快递。</strong> 寄件方（发布者）说"我<strong>提供</strong>次日达、保价"，收件方（订阅者）说"我<strong>要求</strong>至少两日达"。提供的比要求的好或一样，就成交；收件方要求"必须保价"，寄件方偏偏不提供，就谈不成，<strong>包裹根本不会发</strong>。</p>
+<h3 id="1">第 1 步 · 七个策略</h3>
+<p>依据：<code>ROS-Framework/interfaces/topics/About-Quality-of-Service-Settings.rst</code>（下称"QoS 文档"）QoS policies 一节。一组策略合起来叫一个 <strong>QoS 配置（profile）</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>选项</th>
+<th>白话</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>History 历史</strong></td>
+<td>Keep last（只留最近 N 条）/ Keep all（全留，受中间件资源上限）</td>
+<td>没处理完的消息留多少</td>
+<td>几乎都用 Keep last</td>
+</tr>
+<tr>
+<td><strong>Depth 深度</strong></td>
+<td>N</td>
+<td>Keep last 时留几条</td>
+<td>默认 10；传感器常用 5</td>
+</tr>
+<tr>
+<td><strong>Reliability 可靠性</strong></td>
+<td>Reliable（保证送达，丢了重传）/ Best effort（尽量送，丢了就丢）</td>
+<td>丢包时重不重发</td>
+<td>指令用 Reliable，高频传感器用 Best effort</td>
+</tr>
+<tr>
+<td><strong>Durability 持久性</strong></td>
+<td>Volatile（不保存）/ Transient local（发布者保存最近的消息，<strong>后来加入</strong>的订阅者也能收到）</td>
+<td>晚来的人能不能拿到旧消息</td>
+<td>地图、机器人描述、静态坐标用 Transient local</td>
+</tr>
+<tr>
+<td><strong>Deadline 截止时间</strong></td>
+<td>时长</td>
+<td>相邻两条消息最多隔多久</td>
+<td>心跳、控制指令：超时就报警</td>
+</tr>
+<tr>
+<td><strong>Lifespan 寿命</strong></td>
+<td>时长</td>
+<td>消息从发出到收到，超过多久算过期（过期直接丢掉）</td>
+<td>老旧的传感器数据不要用</td>
+</tr>
+<tr>
+<td><strong>Liveliness 活性 + Lease duration 租期</strong></td>
+<td>Automatic / Manual by topic + 时长</td>
+<td>发布者多久不"报平安"就算它挂了</td>
+<td>检测关键节点是否还活着</td>
+</tr>
+</tbody>
+</table>
+<p><strong>几个细节</strong>（QoS 文档 Comparison to ROS 1）：</p>
+<ul>
+<li>ROS 1 的 <code>queue_size</code> ≈ ROS 2 的 History + Depth。</li>
+<li><strong>Reliable 也是基于 UDP 实现的</strong>（DDS 自己做确认和重传），不是 TCP。所以它仍然能用组播。</li>
+<li>Transient local ≈ ROS 1 的"latched（锁存）"话题。</li>
+</ul>
+<p><strong>Reliable 不是越可靠越好。</strong> 网络差时，Reliable 会不停重传旧的图像帧，新帧排在后面，延迟越积越大。对 30 Hz 的相机，<strong>宁可丢一帧也要最新的</strong>，所以传感器数据默认用 Best effort。</p>
+<h3 id="2">第 2 步 · 预设配置与兼容规则</h3>
+<p><strong>预设配置</strong>（QoS 文档 QoS profiles 一节）：</p>
+<table>
+<thead>
+<tr>
+<th>预设</th>
+<th>设置</th>
+<th>用于</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>默认（发布 / 订阅）</td>
+<td>Keep last 10、Reliable、Volatile</td>
+<td>一般话题；和 ROS 1 行为接近</td>
+</tr>
+<tr>
+<td>Services</td>
+<td>Reliable、Volatile</td>
+<td>服务。必须 Volatile：否则重启的服务端可能收到过时的旧请求</td>
+</tr>
+<tr>
+<td><strong>Sensor data</strong></td>
+<td><strong>Best effort</strong>、较小队列</td>
+<td>相机、激光雷达、IMU</td>
+</tr>
+<tr>
+<td>Parameters</td>
+<td>和服务类似，但队列深得多</td>
+<td>参数服务</td>
+</tr>
+<tr>
+<td>System default</td>
+<td>全用中间件自己的默认值</td>
+<td>不同中间件可能不同</td>
+</tr>
+</tbody>
+</table>
+<p>Python 里：<code>from rclpy.qos import qos_profile_sensor_data</code>；C++ 里 <code>rclcpp::SensorDataQoS()</code>。</p>
+<p><strong>兼容规则："要求 vs 提供"</strong>（QoS 文档 QoS compatibilities 一节）：订阅者<strong>要求</strong>的是它能接受的最低质量，发布者<strong>提供</strong>的是它能给的最高质量。<strong>每一项要求都不高于提供，才能连上。</strong></p>
+<p>可靠性：</p>
+<table>
+<thead>
+<tr>
+<th>发布者提供</th>
+<th>订阅者要求</th>
+<th>能连上？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Best effort</td>
+<td>Best effort</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Best effort</td>
+<td><strong>Reliable</strong></td>
+<td>❌</td>
+</tr>
+<tr>
+<td>Reliable</td>
+<td>Best effort</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Reliable</td>
+<td>Reliable</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p>持久性：</p>
+<table>
+<thead>
+<tr>
+<th>发布者提供</th>
+<th>订阅者要求</th>
+<th>能连上？</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volatile</td>
+<td>Volatile</td>
+<td>✅</td>
+<td>只收新消息</td>
+</tr>
+<tr>
+<td>Volatile</td>
+<td><strong>Transient local</strong></td>
+<td>❌</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Transient local</td>
+<td>Volatile</td>
+<td>✅</td>
+<td>只收新消息</td>
+</tr>
+<tr>
+<td>Transient local</td>
+<td>Transient local</td>
+<td>✅</td>
+<td><strong>新消息和旧消息都收</strong></td>
+</tr>
+</tbody>
+</table>
+<p>截止时间、租期同理：订阅者要求的时长<strong>不能比</strong>发布者提供的<strong>更短</strong>（要求更频繁 = 要求更高）。</p>
+<p><strong>最常见的坑</strong>：订阅者用默认（Reliable），发布者是相机驱动（Best effort）。<strong>连不上，也不会报错退出</strong>，只是收不到消息。ROS 1 里同类型同名话题一定能连，所以 ROS 1 转过来的人特别容易踩（QoS 文档兼容一节末尾）。</p>
+<p><strong>另一个坑</strong>：订阅 <code>/map</code>（地图服务器用 Transient local 发，只发一次），订阅者却用默认的 Volatile。能连上，但因为地图早就发过了，<strong>晚来的订阅者永远等不到</strong>。要收"锁存"的消息，两边都得是 Transient local。</p>
+<p>另外：一个发布者可以同时连多个要求不同的订阅者，每一对单独判断，互不影响。</p>
+<h3 id="3">第 3 步 · 代码里怎么设、怎么查、出事件怎么知道</h3>
+<p><strong>设</strong>：第 5 章 <code>create_publisher(String, 'topic', 10)</code> 里的 <code>10</code> 是简写，等于"默认配置 + 深度 10"。完整写法：</p>
+<pre><code class="language-python">from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy, qos_profile_sensor_data
+
+# 传感器订阅：直接用预设
+self.create_subscription(Image, 'camera/image_raw', self.on_image, qos_profile_sensor_data)
+
+# 地图订阅：要收&quot;锁存&quot;消息
+map_qos = QoSProfile(depth=1,
+                     reliability=ReliabilityPolicy.RELIABLE,
+                     durability=DurabilityPolicy.TRANSIENT_LOCAL)
+self.create_subscription(OccupancyGrid, 'map', self.on_map, map_qos)
+</code></pre>
+<p><strong>查</strong>：<code>ros2 topic info /话题 --verbose</code> 会列出每个发布者、订阅者的 QoS（第 2 章第 2 步）。收不到消息时<strong>第一个就查这个</strong>。命令行工具也能指定 QoS：<code>ros2 topic echo --qos-reliability best_effort /camera/image_raw</code>。</p>
+<p><strong>事件</strong>（QoS 文档 QoS events 一节）：可以给发布者 / 订阅者挂"QoS 事件回调"，像处理消息一样处理异常：</p>
+<table>
+<thead>
+<tr>
+<th>发布者一侧</th>
+<th>订阅者一侧</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Offered deadline missed：没按截止时间发</td>
+<td>Requested deadline missed：没按时收到</td>
+</tr>
+<tr>
+<td>Liveliness lost：没按时报平安</td>
+<td>Liveliness changed：某个发布者失联 / 恢复</td>
+</tr>
+<tr>
+<td>Offered incompatible QoS：发现要求比我高的订阅者，连不上</td>
+<td>Requested incompatible QoS：发现提供不够的发布者，连不上</td>
+</tr>
+</tbody>
+</table>
+<p><strong>用 Deadline 做安全停车</strong>：底盘驱动订阅 <code>cmd_vel</code>，设 Deadline 100 ms。上层控制节点卡死、超过 100 ms 没新指令，订阅者触发"requested deadline missed"，驱动立刻停车。这就是第 2 章"看门狗"的一种标准实现。</p>
+<p><strong>不改代码改 QoS</strong>：节点作者可以开放"QoS 覆盖"，用户在参数文件里改（<code>.../Working-with-topics/Configuring-QoS-Overrides.rst</code>）。第 2 章 <code>param dump</code> 里看到的 <code>qos_overrides./parameter_events.publisher...</code> 就是这个机制。</p>
+<p><strong>R-M3 要做什么</strong>：同一话题分别用 Reliable / Best effort、不同深度，用 Linux 的 <code>tc netem</code> 人为制造丢包和延迟，测接收率和延迟。体会"Reliable 在差网络下延迟会越积越大"。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 7-1</strong>（第 1 步）：给下面四个话题选 Reliability 和 Durability，并说明理由：(a) 30 Hz 彩色图像；(b) 底盘速度指令 <code>cmd_vel</code>；(c) 只发一次的静态地图 <code>/map</code>；(d) 急停信号。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 7-2</strong>（第 2 步）：激光雷达驱动用 Sensor data 预设发布 <code>/scan</code>，你的节点用 <code>create_subscription(LaserScan, 'scan', cb, 10)</code> 订阅。能收到吗？为什么？怎么改？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 7-3</strong>（第 2 步）：发布者 Deadline 设为 100 ms，订阅者要求 Deadline 50 ms。能连上吗？反过来呢？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 7-4</strong>（第 3 步）：你怀疑某个话题 QoS 不匹配，用哪条命令确认？在输出里看哪几项？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>七策略</strong>：历史、深度、可靠、持久，截止、寿命、活性。</li>
+<li><strong>匹配</strong>：订阅者要求，发布者提供；要求不高于提供才成交，不成交不报错、只是收不到。</li>
+<li><strong>常用搭配</strong>：传感器尽力而为（Best effort）；指令可靠（Reliable）；地图、静态信息两边都 Transient local。</li>
+<li><strong>排查</strong>：收不到消息，先 <code>topic info -v</code> 看 QoS。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R20–R21，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Quality-of-Service-Settings.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/interfaces/topics/About-Quality-of-Service-Settings.rst</code></td>
+<td>全部策略、预设、兼容表、事件（本章主要依据）。</td>
+</tr>
+<tr>
+<td><code>Quality-of-Service.rst</code></td>
+<td><code>.../topics/Working-with-topics/Quality-of-Service.rst</code></td>
+<td>用命令行和代码改 QoS 的动手教程；<code>Configuring-QoS-Overrides.rst</code>：参数文件覆盖 QoS。</td>
+</tr>
+<tr>
+<td>★ <code>qos.md</code></td>
+<td><code>materials/design/articles/qos.md</code>、<code>qos_deadline_liveliness_lifespan.md</code>、<code>qos_configurability.md</code></td>
+<td>设计动机。</td>
+</tr>
+<tr>
+<td><code>Overriding-QoS-Policies-For-Recording-And-Playback.rst</code></td>
+<td><code>Developer-Tools/Debugging/Testing/Overriding-QoS-Policies-For-Recording-And-Playback.rst</code></td>
+<td>bag 录放时 QoS 不匹配的处理。</td>
+</tr>
+<tr>
+<td><code>Content-Filtering-Subscription.rst</code></td>
+<td><code>ROS-Framework/interfaces/topics/Working-with-topics/Content-Filtering-Subscription.rst</code>、<code>Wait-for-Acknowledgment.rst</code></td>
+<td>内容过滤订阅、等待确认，属于更高级的通信控制。</td>
+</tr>
+<tr>
+<td>源码</td>
+<td><code>rmw/include/rmw/qos_profiles.h</code> 定义了各预设的具体数值（QoS 文档给了链接，本地未收录）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>偏序比较</strong>：给每个选项排高低，订阅者的每一项都不高于发布者才兼容（代码对照）。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>兼容：订阅者要求 ≤ 发布者提供（每一项都要满足）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch07_qos.py</code>，配套测试 <code>tests/test_ch06_10.py</code>；同名 notebook 在 <code>notebooks/ch07_qos.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch07_qos.py   # 一步一步打印  
+uv run pytest tests/test_ch06_10.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 Keep last</td>
+<td>深度 5 只留最近 5 条</td>
+<td><code>keep_last([...8 条], 5)</code></td>
+<td>scan4…scan8</td>
+</tr>
+<tr>
+<td>第 2 步 可靠性表</td>
+<td>要求不高于提供</td>
+<td><code>compatible(QoS(...), QoS(...))</code></td>
+<td>只有 BE 发 + REL 收 ❌</td>
+</tr>
+<tr>
+<td>第 2 步 持久性表</td>
+<td>同上</td>
+<td>同上</td>
+<td>只有 Volatile 发 + Transient local 收 ❌</td>
+</tr>
+<tr>
+<td>第 2 步 地图的坑</td>
+<td>晚来的 Volatile 收不到旧消息</td>
+<td><code>map_pub.late_join(...)</code></td>
+<td>Volatile：[]；Transient local：['map v1']</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">RELIABILITY = {&quot;BEST_EFFORT&quot;: 0, &quot;RELIABLE&quot;: 1}       # 数字越大质量越高
+DURABILITY = {&quot;VOLATILE&quot;: 0, &quot;TRANSIENT_LOCAL&quot;: 1}
+return (RELIABILITY[sub.reliability] &lt;= RELIABILITY[pub.reliability]
+        and DURABILITY[sub.durability] &lt;= DURABILITY[pub.durability])   # 要求 ≤ 提供
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>兼容规则就是"给选项排高低再比大小"</strong>：把 Best effort 记 0、Reliable 记 1，订阅者的数不大于发布者的就能连。</li>
+<li><strong>截止时间、租期这里没写</strong>：规则是"订阅者要求的时长不能比提供的短"，留给练习 7-3 自己判断。</li>
+<li><strong>连不上时真 ROS 2 不报错退出</strong>，只发一个 incompatible QoS 事件、打一条警告；模拟里 <code>compatible</code> 返回 False 就等于收不到。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>map_pub</code> 的 <code>depth</code> 改成 3，连发三版地图，看晚来的 Transient local 订阅者拿到几版；</li>
+<li>给 <code>QoS</code> 加一个 <code>history</code> 字段（Keep last / Keep all），想一想 Keep all 时 <code>keep_last</code> 该怎么改。</li>
+</ul><nav class="pager"><a href="06-interfaces-actions.html">← 第 6 章 · 自定义接口与动作</a><a href="08-middleware-discovery.html">第 8 章 · 中间件、发现与网络 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 13 章 · URDF、xacro、robot_state_publisher 与 RViz · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="13-urdfxacrorobot_state_publisher-rviz">第 13 章 · URDF、xacro、robot_state_publisher 与 RViz</h1><p><a class="btn" href="../animations/13-urdf-pipeline.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：机器人长什么样、关节怎么连、每段多重，用什么文件描述？关节转动后，连杆的坐标变换是谁算出来发到 tf 的？RViz 里怎么把机器人"画"出来？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/12-tf2.html">第 12 章 tf2</a> · 下一章：<a href="../lessons/14-launch-test-debug.html">第 14 章 launch 进阶、测试与调试</a><br />
+对应原文：<code>ros2_documentation/source/Capabilities/Simulation/URDF/</code> 下的教程（<code>Building-a-Movable-Robot-Model-with-URDF.rst</code> 等）；<code>ros2_documentation/source/Developer-Tools/Build/Using-Xacro-to-Clean-Up-a-URDF-File/</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 D3、D4，动手里程碑 R-M6（自己写一个 2 连杆臂的 xacro，在 RViz 里拖动）。<br />
+本章缩写：URDF = Unified Robot Description Format（统一 / 机器人 / 描述 / 格式）；xacro = XML macro（XML / 宏）；RViz = ROS Visualization（ROS 可视化工具）；MJCF = MuJoCo XML Format（MuJoCo 仿真器的模型格式）；SRDF = Semantic Robot Description Format（语义 / 机器人 / 描述 / 格式：MoveIt 用，第 18 章）；GUI = Graphical User Interface（图形 / 用户 / 界面）；DoF = Degrees of Freedom（自由度）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：xacro → URDF → robot_state_publisher + 关节角 → tf → RViz</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>URDF：link、joint、四种关节、visual / collision / inertial</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>xacro：属性、计算、宏</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>robot_state_publisher 与 RViz</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 从模型文件到屏幕上的机器人</h3>
+<p><img alt="URDF 到 RViz 的流水线" src="../animations/13-urdf-pipeline.gif" /></p>
+<p>可交互版：<a href="../animations/13-urdf-pipeline.html">animations/13-urdf-pipeline.html</a>（内置浏览器：<code>http://localhost:8340/13-urdf-pipeline.html</code>）。</p>
+<pre><code>robot.urdf.xacro ──xacro──▶ URDF 文本 ──▶ robot_state_publisher ──▶ /tf、/tf_static ──▶ RViz
+                                               ▲
+                     /joint_states（关节角）───┘  来自：滑条 GUI / 仿真器 / 真机驱动
+</code></pre>
+<h3 id="1-urdf">第 1 步 · URDF：连杆和关节</h3>
+<p>依据：<code>Capabilities/Simulation/URDF/</code> 下的教程（下称"URDF 教程"）。URDF 是一个 XML 文件，描述机器人的<strong>几何形状和结构</strong>（<code>URDF-Main.rst</code>）。</p>
+<p><strong>两个基本元素：</strong></p>
+<ul>
+<li><strong>link（连杆）</strong>：一个刚体部件，比如底座、上臂、夹爪。</li>
+<li><strong>joint（关节）</strong>：连接一个<strong>父连杆</strong>和一个<strong>子连杆</strong>，规定子连杆相对父连杆能怎么动。</li>
+</ul>
+<p>所有 link 和 joint 组成一棵<strong>树</strong>（和第 12 章的 tf 树一一对应：每个 link 一个坐标系）。</p>
+<p><strong>四种常用关节</strong>（URDF 教程 <code>Building-a-Movable-Robot-Model-with-URDF.rst</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>怎么动</th>
+<th>限位</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fixed</code></td>
+<td>不动</td>
+<td>—</td>
+<td>相机固定在底座上</td>
+</tr>
+<tr>
+<td><code>continuous</code></td>
+<td>绕轴无限转</td>
+<td>无</td>
+<td>轮子、R2D2 的头</td>
+</tr>
+<tr>
+<td><code>revolute</code></td>
+<td>绕轴转，有上下限</td>
+<td>弧度</td>
+<td>机械臂关节、夹爪</td>
+</tr>
+<tr>
+<td><code>prismatic</code></td>
+<td>沿轴平移，有上下限</td>
+<td><strong>米</strong></td>
+<td>升降柱、伸缩臂</td>
+</tr>
+</tbody>
+</table>
+<p>（另有 <code>planar</code>、<code>floating</code>，较少用。）</p>
+<p><strong>一个关节怎么写</strong>（取自 URDF 教程的 R2D2 例子）：</p>
+<pre><code class="language-xml">&lt;joint name=&quot;left_gripper_joint&quot; type=&quot;revolute&quot;&gt;
+  &lt;parent link=&quot;gripper_pole&quot;/&gt;
+  &lt;child link=&quot;left_gripper&quot;/&gt;
+  &lt;origin rpy=&quot;0 0 0&quot; xyz=&quot;0.2 0.01 0&quot;/&gt;                      &lt;!-- 关节在父连杆坐标系里的位置和朝向 --&gt;
+  &lt;axis xyz=&quot;0 0 1&quot;/&gt;                                          &lt;!-- 绕 z 轴转 --&gt;
+  &lt;limit effort=&quot;1000.0&quot; lower=&quot;0.0&quot; upper=&quot;0.548&quot; velocity=&quot;0.5&quot;/&gt;  &lt;!-- 力矩、角度范围、最大速度 --&gt;
+&lt;/joint&gt;
+</code></pre>
+<p><code>origin</code> 就是第 12 章的"子坐标系相对父坐标系的变换"（关节角为 0 时）。关节转了 θ 角，就在这个基础上再绕 <code>axis</code> 转 θ。</p>
+<p><strong>一个连杆的三种描述</strong>（<code>Adding-Physical-and-Collision-Properties-to-a-URDF-Model.rst</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>标签</th>
+<th>给谁用</th>
+<th>要点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;visual&gt;</code></td>
+<td>RViz 显示</td>
+<td>可以用精细的网格模型（mesh）</td>
+</tr>
+<tr>
+<td><code>&lt;collision&gt;</code></td>
+<td>碰撞检测、运动规划</td>
+<td>用<strong>简单形状</strong>（圆柱、盒子、球）：算得快；也可以故意画大一点，留出安全余量</td>
+</tr>
+<tr>
+<td><code>&lt;inertial&gt;</code></td>
+<td>物理仿真、动力学控制</td>
+<td><code>mass</code>（千克）+ 3×3 转动惯量 <code>inertia</code>；简单几何体的惯量可查表计算</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lyrical 的 URDF 新功能</strong>（<code>Release-Lyrical-Luth.rst</code> "URDF improvements"）：姿态可以直接写四元数、新增胶囊形状、关节可以写加速度 / 减速度 / 加加速度（jerk）限制。要在文件里声明 <code>version="1.2"</code> 才能用。</p>
+<p><strong>URDF 和 MJCF</strong>：MuJoCo 仿真器用自己的 MJCF 格式，能描述 URDF 写不了的东西（闭链、肌腱、接触参数）。学习型机器人项目常两种都有：URDF 给 ROS 工具链，MJCF 给训练仿真（机器人软硬件架构专题第 9 章）。</p>
+<h3 id="2-xacro-urdf">第 2 步 · xacro：让 URDF 不再重复</h3>
+<p>依据：<code>Developer-Tools/Build/Using-Xacro-to-Clean-Up-a-URDF-File/</code>（下称"xacro 教程"）。</p>
+<p>URDF 很快会变得又长又重复：左右两个轮子、六个结构相同的关节……<strong>xacro</strong> 是 XML 的宏语言，跑一遍就展开成普通 URDF（xacro 教程开头）：</p>
+<pre><code class="language-bash">xacro model.urdf.xacro &gt; model.urdf
+</code></pre>
+<p>三件法宝：</p>
+<pre><code class="language-xml">&lt;robot name=&quot;arm&quot; xmlns:xacro=&quot;http://www.ros.org/wiki/xacro&quot;&gt;
+  &lt;!-- 1. 属性：当常量用 --&gt;
+  &lt;xacro:property name=&quot;link_len&quot; value=&quot;0.3&quot;/&gt;
+
+  &lt;!-- 2. 计算：${} 里能写算式 --&gt;
+  &lt;origin xyz=&quot;0 0 ${link_len/2}&quot;/&gt;
+
+  &lt;!-- 3. 宏：一段可复用、带参数的模板 --&gt;
+  &lt;xacro:macro name=&quot;arm_link&quot; params=&quot;name length&quot;&gt;
+    &lt;link name=&quot;${name}&quot;&gt;
+      &lt;visual&gt;&lt;geometry&gt;&lt;cylinder length=&quot;${length}&quot; radius=&quot;0.03&quot;/&gt;&lt;/geometry&gt;&lt;/visual&gt;
+    &lt;/link&gt;
+  &lt;/xacro:macro&gt;
+  &lt;xacro:arm_link name=&quot;upper_arm&quot; length=&quot;${link_len}&quot;/&gt;
+  &lt;xacro:arm_link name=&quot;forearm&quot;   length=&quot;0.25&quot;/&gt;
+&lt;/robot&gt;
+</code></pre>
+<p>还能 <code>&lt;xacro:include filename="..."/&gt;</code> 拆成多个文件，用 <code>&lt;xacro:arg&gt;</code> 从 launch 传参（比如选不同型号的夹爪）。</p>
+<h3 id="3-robot_state_publisher-rviz">第 3 步 · robot_state_publisher 与 RViz</h3>
+<p>依据：URDF 教程 "Specifying the Pose" 一节、<code>Using-URDF-with-Robot-State-Publisher-py.rst</code>、<code>Developer-Tools/Visualization/RViz/RViz-User-Guide/</code>（下称"RViz 指南"）。</p>
+<p><strong>robot_state_publisher 做什么</strong>：</p>
+<ol>
+<li>读参数 <code>robot_description</code>（URDF 全文）；</li>
+<li>把 <code>fixed</code> 关节算成静态变换，发到 <code>/tf_static</code>；</li>
+<li>订阅 <code>/joint_states</code>（<code>sensor_msgs/msg/JointState</code>：每个关节的名字、角度 / 位置、速度、力矩），每收到一次，就用<strong>正运动学</strong>把每个活动关节对应的连杆变换算出来，发到 <code>/tf</code>。</li>
+</ol>
+<p><strong><code>/joint_states</code> 从哪来</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>发布者</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>只想看模型、手动拖</td>
+<td><code>joint_state_publisher_gui</code>：读 URDF 找出所有非固定关节和限位，每个关节一个滑条（URDF 教程 "Specifying the Pose"）</td>
+</tr>
+<tr>
+<td>仿真</td>
+<td>仿真器（Gazebo 等）的插件</td>
+</tr>
+<tr>
+<td>真机</td>
+<td>ros2_control 的 <code>joint_state_broadcaster</code>（第 15–16 章）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>完整链路</strong>（URDF 教程原话的意思）：GUI 解析 URDF 找到非固定关节 → 用滑条值发布 JointState → robot_state_publisher 算出各部件之间的变换 → RViz 用这棵 tf 树把各部分形状画出来。</p>
+<p><strong>Lyrical 小变化</strong>：<code>robot_state_publisher</code> 可以设 <code>use_robot_description_topic: true</code>，改为<strong>订阅</strong> <code>robot_description</code> 话题，而不是自己发布它，方便和自带机器人模型的框架对接（<code>Release-Lyrical-Luth.rst</code> 对应一节）。</p>
+<p><strong>RViz 基本用法</strong>（RViz 指南）：</p>
+<ul>
+<li>左边是 <strong>Displays（显示项）</strong> 列表，点 <strong>Add</strong> 加显示项。常用：<strong>RobotModel</strong>（读 <code>robot_description</code> 画机器人）、<strong>TF</strong>（画所有坐标轴）、<strong>Image</strong>、<strong>LaserScan</strong>、<strong>PointCloud2</strong>、<strong>Map</strong>、<strong>Marker</strong>（自己画箭头、方块等调试图形）。</li>
+<li><strong>Global Options → Fixed Frame</strong>：RViz 把所有数据换到这个坐标系下显示。看机器人本体选 <code>base_link</code>，看导航选 <code>map</code> 或 <code>odom</code>。Fixed Frame 填一个不存在的坐标系，所有显示项都会报错。</li>
+<li>配置可以存成 <code>.rviz</code> 文件，launch 时用 <code>-d</code> 加载。</li>
+</ul>
+<p><strong>一句话串起来</strong>（R-M6 的完整命令）：</p>
+<pre><code class="language-bash">ros2 launch urdf_tutorial display.launch.py model:=/path/to/my_arm.urdf.xacro
+# 等价于：xacro 展开 → robot_state_publisher → joint_state_publisher_gui → rviz2
+</code></pre>
+<p><strong>和本仓库的连接</strong>：VLA 数据集里的"本体感知状态"（proprioception）就是 <code>/joint_states</code>；动作如果是末端位姿，从关节角算末端位置用的正是 URDF 描述的运动学链（机器人软硬件架构专题第 2 章）。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 13-1</strong>（第 1 步）：一个两轮差速小车，有底座、左轮、右轮、一个固定的激光雷达。写出所需的 link 和 joint 列表，每个 joint 标明类型。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 13-2</strong>（第 1 步）：为什么 <code>&lt;collision&gt;</code> 通常用简单形状而不是和 <code>&lt;visual&gt;</code> 一样的精细网格？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 13-3</strong>（第 3 步）：RViz 里机器人模型一片白、所有连杆叠在原点。你检查发现 <code>/tf_static</code> 正常，但 <code>/tf</code> 里没有连杆的变换。最可能缺了哪个节点？或者哪个话题没人发？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>URDF</strong>：link 是骨头，joint 连父子；fixed 不动、continuous 无限转、revolute 有限转、prismatic 平移。</li>
+<li><strong>三件衣服</strong>：visual 给人看，collision 给碰撞（要简单），inertial 给物理（质量 + 惯量）。</li>
+<li><strong>xacro</strong>：属性当常量，<code>${}</code> 做计算，宏去重复。</li>
+<li><strong>链路</strong>：URDF + 关节角 → robot_state_publisher → tf → RViz；Fixed Frame 要存在。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R32–R33，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>URDF</code></td>
+<td><code>materials/ros2_documentation/source/Capabilities/Simulation/URDF/</code></td>
+<td>从零搭视觉模型 → 可动模型 → 碰撞与惯量 → 配合 robot_state_publisher（Py / C++）→ 从 CAD 导出。</td>
+</tr>
+<tr>
+<td>★ <code>Using-Xacro-to-Clean-Up-a-URDF-File</code></td>
+<td><code>Developer-Tools/Build/Using-Xacro-to-Clean-Up-a-URDF-File/</code></td>
+<td>xacro 属性、数学、宏、在 launch 里调用。</td>
+</tr>
+<tr>
+<td>★ <code>RViz-User-Guide</code></td>
+<td><code>Developer-Tools/Visualization/RViz/RViz-User-Guide/</code></td>
+<td>显示项、视图、Fixed Frame、工具；<code>Marker-*</code> 系列：用代码画调试图形。</td>
+</tr>
+<tr>
+<td><code>dummy-robot-demo.rst</code></td>
+<td><code>Capabilities/Simulation/dummy-robot/dummy-robot-demo.rst</code></td>
+<td>一个完整的假机器人 demo（URDF + 关节发布 + 激光）。</td>
+</tr>
+<tr>
+<td>URDF XML 规范</td>
+<td><a href="https://wiki.ros.org/urdf/XML">https://wiki.ros.org/urdf/XML</a>（URDF-Main 给出的链接）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>robot-system-architecture 第 2 章（运动学）、第 9 章（仿真与数据）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li>正运动学 = 沿关节链依次相乘每个关节的变换 <span class="arithmatex">\({}_{0}T_{n}=\prod_{i=1}^{n}{}_{i-1}T_{i}(\theta_i)\)</span>；惯性张量；推荐 Lynch &amp; Park《Modern Robotics》第 4 章（正运动学）、第 8 章（开链动力学）。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>正运动学 <span class="arithmatex">\({}_{0}T_{n}=\prod_{i=1}^{n}{}_{i-1}T_{i}(\theta_i)\)</span>：一个关节一个变换，依次相乘</td>
+</tr>
+<tr>
+<td>关节限位：revolute 用弧度，prismatic 用米</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch13_urdf_fk.py</code>，配套测试 <code>tests/test_ch11_15.py</code>；同名 notebook 在 <code>notebooks/ch13_urdf_fk.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch13_urdf_fk.py   # 一步一步打印  
+uv run pytest tests/test_ch11_15.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 2 步 xacro</td>
+<td>属性当常量，${} 能算</td>
+<td><code>expand_xacro(ARM_XACRO)</code></td>
+<td>elbow 的 origin 变成 <code>0.3 0 0</code></td>
+</tr>
+<tr>
+<td>第 1 步 link / joint</td>
+<td>每个 joint 连父、子 link</td>
+<td><code>read_joints(urdf)</code></td>
+<td>shoulder、elbow 是 revolute，tool_mount 是 fixed</td>
+</tr>
+<tr>
+<td>第 3 步 robot_state_publisher</td>
+<td>fixed → /tf_static，其余按 /joint_states → /tf</td>
+<td><code>state_publisher(...)</code></td>
+<td>/tf_static: tool；/tf: upper_arm、forearm</td>
+</tr>
+<tr>
+<td>第 3 步 正运动学</td>
+<td>从 tool 一路乘到 base_link</td>
+<td><code>tool_position(joints, {...})</code></td>
+<td>(0,0)→(0.55,0,0.1)；(90°,0)→(0,0.55,0.1)</td>
+</tr>
+<tr>
+<td>第 1 步 限位</td>
+<td>revolute 有上下限</td>
+<td>shoulder = 3.0</td>
+<td>被截到 1.57</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">props = {name: float(value) for &lt;xacro:property ...&gt;}       # 收集属性
+re.sub(r&quot;\$\{([^}]+)\}&quot;, lambda m: f&quot;{eval(m.group(1), {}, props):g}&quot;, text)   # ${link_len}
+tf[j[&quot;child&quot;]] = (j[&quot;parent&quot;], Transform(j[&quot;xyz&quot;], quat_from_yaw(angle)))   # 关节角 → 变换
+T = step * T                                                # 从 tool 往上一路乘
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>用了第 12 章的 <code>Transform</code></strong>：<code>from ch12_tf2 import Transform, quat_from_yaw, r3</code>，正运动学就是第 12 章的变换相乘，一个关节一个变换。notebook 里这几个定义已经抄进来了。</li>
+<li><strong>这个 2 连杆臂的两段长 0.3、0.25 取自讲义 xacro 例子</strong>，底座高 0.1、限位等其余数字是编的；所有关节都绕 z 转（平面臂）。</li>
+<li><strong>xacro 只展开了属性和 <code>${}</code></strong>，宏（<code>xacro:macro</code>）和 <code>include</code> 没实现。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>forearm_len</code> 改成 0.4，重新展开再算 tool 位置；</li>
+<li>试 shoulder = 0.5、elbow = −0.5，想一想为什么 tool 的朝向回到了 0。</li>
+</ul><nav class="pager"><a href="12-tf2.html">← 第 12 章 · tf2：坐标变换树</a><a href="14-launch-test-debug.html">第 14 章 · launch 进阶、测试与调试 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

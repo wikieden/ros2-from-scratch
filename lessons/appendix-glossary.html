@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>附录 · 缩写与术语表 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="_1">附录 · 缩写与术语表</h1>
+<blockquote>
+<p>ROS 2 专题里出现的缩写和术语，按第一次出现的章节登记。每章开头的"本章缩写"行是这张表的摘要。</p>
+</blockquote>
+<h2 id="1-ros-2">第 1 章 · ROS 2 是什么</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ROS</td>
+<td>Robot Operating System</td>
+<td>机器人 / 操作 / 系统。名字叫操作系统，其实是装在 Linux 上的一套通信库和工具</td>
+</tr>
+<tr>
+<td>node</td>
+<td>—</td>
+<td>节点：只干一件事的程序</td>
+</tr>
+<tr>
+<td>topic</td>
+<td>—</td>
+<td>话题：有名字的数据通道，发布 / 订阅</td>
+</tr>
+<tr>
+<td>service</td>
+<td>—</td>
+<td>服务：一问一答</td>
+</tr>
+<tr>
+<td>action</td>
+<td>—</td>
+<td>动作：长任务，有反馈、能取消</td>
+</tr>
+<tr>
+<td>parameter</td>
+<td>—</td>
+<td>参数：节点自己的设置</td>
+</tr>
+<tr>
+<td>DDS</td>
+<td>Data Distribution Service</td>
+<td>数据 / 分发 / 服务：工业标准的发布订阅中间件，ROS 2 默认底层</td>
+</tr>
+<tr>
+<td>RTPS</td>
+<td>Real-Time Publish-Subscribe</td>
+<td>实时 / 发布 / 订阅：DDS 在网络上用的线上协议</td>
+</tr>
+<tr>
+<td>RMW</td>
+<td>ROS MiddleWare</td>
+<td>ROS 中间件接口："插座"</td>
+</tr>
+<tr>
+<td>rcl</td>
+<td>ROS Client Library</td>
+<td>ROS 客户端库的 C 语言核心</td>
+</tr>
+<tr>
+<td>rclpy / rclcpp</td>
+<td>rcl + Python / C++</td>
+<td>Python 版、C++ 版客户端库</td>
+</tr>
+<tr>
+<td>QoS</td>
+<td>Quality of Service</td>
+<td>服务 / 质量：可靠性、队列深度等通信设置</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Application Programming Interface</td>
+<td>应用 / 编程 / 接口</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>User Datagram Protocol</td>
+<td>用户 / 数据报 / 协议：不保证送达的网络传输协议</td>
+</tr>
+<tr>
+<td>IDL</td>
+<td>Interface Definition Language</td>
+<td>接口 / 定义 / 语言</td>
+</tr>
+<tr>
+<td>rosidl</td>
+<td>ROS IDL</td>
+<td>把 <code>.msg</code> / <code>.srv</code> / <code>.action</code> 生成各语言代码的工具链</td>
+</tr>
+<tr>
+<td>executor</td>
+<td>—</td>
+<td>执行器：在 <code>spin()</code> 里查有没有新数据、再调用回调的调度器</td>
+</tr>
+<tr>
+<td>wait set</td>
+<td>—</td>
+<td>等待集：executor 用来询问"哪些队列有数据"的一组标志</td>
+</tr>
+<tr>
+<td>VLA</td>
+<td>Vision-Language-Action</td>
+<td>视觉 / 语言 / 动作模型</td>
+</tr>
+<tr>
+<td>IK</td>
+<td>Inverse Kinematics</td>
+<td>逆 / 运动学：由末端位置反算关节角</td>
+</tr>
+<tr>
+<td>LTS</td>
+<td>Long-Term Support</td>
+<td>长期支持版（ROS 2 的 LTS 支持 5 年）</td>
+</tr>
+<tr>
+<td>EOL</td>
+<td>End Of Life</td>
+<td>生命周期结束，不再维护</td>
+</tr>
+<tr>
+<td>master</td>
+<td>—</td>
+<td>ROS 1 的中心登记进程（<code>roscore</code>），ROS 2 已取消</td>
+</tr>
+<tr>
+<td>JSON</td>
+<td>JavaScript Object Notation</td>
+<td>JavaScript / 对象 / 表示法：一种文本数据格式；代码对照里用它代替 CDR 演示序列化</td>
+</tr>
+<tr>
+<td>CDR</td>
+<td>Common Data Representation</td>
+<td>通用 / 数据 / 表示：DDS 默认的二进制序列化格式（第 3 章 bag 里也会看到）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-turtlesim">第 2 章 · 用命令行看懂 turtlesim</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLI</td>
+<td>Command-Line Interface</td>
+<td>命令 / 行 / 界面：终端里敲命令</td>
+</tr>
+<tr>
+<td>package</td>
+<td>—</td>
+<td>包：ROS 软件的打包单位，里面可以有多个可执行文件</td>
+</tr>
+<tr>
+<td>remap</td>
+<td>—</td>
+<td>重映射：启动时改节点名 / 话题名 / 服务名</td>
+</tr>
+<tr>
+<td>Twist</td>
+<td>—</td>
+<td>"扭转"：线速度 + 角速度的消息类型，底盘的标准速度指令</td>
+</tr>
+<tr>
+<td>YAML</td>
+<td>YAML Ain't Markup Language</td>
+<td>一种写配置的文本格式</td>
+</tr>
+<tr>
+<td>rqt</td>
+<td>ROS Qt</td>
+<td>ROS 的图形工具集（Qt 是图形界面库）</td>
+</tr>
+<tr>
+<td>stdout</td>
+<td>standard output</td>
+<td>标准输出：终端打印的内容</td>
+</tr>
+<tr>
+<td>cancel / abort</td>
+<td>—</td>
+<td>动作结局：客户端取消 / 服务端放弃</td>
+</tr>
+<tr>
+<td>watchdog</td>
+<td>—</td>
+<td>看门狗：一段时间收不到指令就自动停车的保护</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-launch-bag">第 3 章 · 日志、launch 和 bag</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stderr</td>
+<td>standard error</td>
+<td>标准错误输出：终端里日志走的通道</td>
+</tr>
+<tr>
+<td>DEBUG / INFO / WARN / ERROR / FATAL</td>
+<td>—</td>
+<td>五个日志级别：调试 / 信息 / 警告 / 错误 / 致命</td>
+</tr>
+<tr>
+<td>logger</td>
+<td>—</td>
+<td>日志器：每个节点自带，名字含节点名和命名空间</td>
+</tr>
+<tr>
+<td><code>/rosout</code></td>
+<td>—</td>
+<td>汇集所有节点日志的话题</td>
+</tr>
+<tr>
+<td>launch</td>
+<td>—</td>
+<td>启动系统：用一个文件一次启动多个节点</td>
+</tr>
+<tr>
+<td>ns / namespace</td>
+<td>namespace</td>
+<td>命名空间：给节点的所有名字加前缀</td>
+</tr>
+<tr>
+<td>bag / rosbag2</td>
+<td>—</td>
+<td>ROS 的录放工具，"录像带"</td>
+</tr>
+<tr>
+<td>MCAP</td>
+<td>—</td>
+<td>一种机器人数据录制文件格式，rosbag2 默认存储</td>
+</tr>
+<tr>
+<td>SQLite</td>
+<td>—</td>
+<td>单文件数据库，rosbag2 旧默认存储（<code>.db3</code>）</td>
+</tr>
+<tr>
+<td>CDR</td>
+<td>Common Data Representation</td>
+<td>通用 / 数据 / 表示：DDS 的序列化格式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-colcon">第 4 章 · 工作区、colcon 和第一个包</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>workspace</td>
+<td>—</td>
+<td>工作区：放 ROS 包的目录，惯例 <code>~/ros2_ws</code></td>
+</tr>
+<tr>
+<td>overlay / underlay</td>
+<td>—</td>
+<td>上层 / 底层：你的工作区叠在已装 ROS 之上，同名包上层优先</td>
+</tr>
+<tr>
+<td>ament</td>
+<td>—</td>
+<td>ROS 2 的构建辅助工具集（<code>ament_cmake</code>、<code>ament_python</code>）</td>
+</tr>
+<tr>
+<td>colcon</td>
+<td>collective construction</td>
+<td>集体 / 构建：一次编译一堆包、排顺序的元构建工具</td>
+</tr>
+<tr>
+<td>CMake</td>
+<td>Cross-platform Make</td>
+<td>跨平台构建配置工具，C++ 常用</td>
+</tr>
+<tr>
+<td>setuptools</td>
+<td>—</td>
+<td>Python 标准的打包安装工具</td>
+</tr>
+<tr>
+<td>XML</td>
+<td>eXtensible Markup Language</td>
+<td>可扩展 / 标记 / 语言，<code>package.xml</code> 的格式</td>
+</tr>
+<tr>
+<td>rosdep</td>
+<td>ROS dependency</td>
+<td>按 <code>package.xml</code> 安装系统依赖的工具</td>
+</tr>
+<tr>
+<td>apt</td>
+<td>Advanced Package Tool</td>
+<td>Ubuntu 的软件安装工具</td>
+</tr>
+<tr>
+<td>entry_points</td>
+<td>—</td>
+<td><code>setup.py</code> 里登记可执行命令的地方</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-python">第 5 章 · 用 Python 写节点</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>callback</td>
+<td>—</td>
+<td>回调：事件发生时由 executor 调用的函数</td>
+</tr>
+<tr>
+<td>spin</td>
+<td>—</td>
+<td>把控制权交给 executor，持续处理回调</td>
+</tr>
+<tr>
+<td>timer</td>
+<td>—</td>
+<td>定时器：按固定周期触发回调</td>
+</tr>
+<tr>
+<td>RPC</td>
+<td>Remote Procedure Call</td>
+<td>远程 / 过程 / 调用：服务的本质</td>
+</tr>
+<tr>
+<td>future</td>
+<td>—</td>
+<td>"凭条"：异步调用先返回的对象，结果之后填入</td>
+</tr>
+<tr>
+<td>async</td>
+<td>asynchronous</td>
+<td>异步：不等结果就先返回</td>
+</tr>
+<tr>
+<td>deadlock</td>
+<td>—</td>
+<td>死锁：两件事互相等待，谁也完成不了</td>
+</tr>
+<tr>
+<td>ParameterDescriptor</td>
+<td>—</td>
+<td>参数描述：说明、取值范围、只读等约束</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6">第 6 章 · 自定义接口与动作</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>msg / srv</td>
+<td>message / service</td>
+<td>消息 / 服务定义文件</td>
+</tr>
+<tr>
+<td>bounded type</td>
+<td>—</td>
+<td>有界类型：<code>[&lt;=N]</code>、<code>string&lt;=N</code>，最大尺寸已知</td>
+</tr>
+<tr>
+<td>constant</td>
+<td>—</td>
+<td>常量：全大写、用 <code>=</code> 赋值，程序里不能改</td>
+</tr>
+<tr>
+<td>rosidl_generate_interfaces</td>
+<td>—</td>
+<td>CMake 里把接口文件生成各语言代码的命令</td>
+</tr>
+<tr>
+<td>goal handle</td>
+<td>—</td>
+<td>目标把手：服务端操作某一个动作目标的对象</td>
+</tr>
+<tr>
+<td>ID / UUID</td>
+<td>identifier / Universally Unique Identifier</td>
+<td>标识号 / 通用唯一标识：每个动作目标的编号</td>
+</tr>
+<tr>
+<td>ACCEPTED / EXECUTING / CANCELING</td>
+<td>—</td>
+<td>动作目标的中间状态：已接受 / 执行中 / 取消收尾中</td>
+</tr>
+<tr>
+<td>SUCCEEDED / ABORTED / CANCELED</td>
+<td>—</td>
+<td>动作目标的终态：成功 / 服务端放弃 / 已取消</td>
+</tr>
+<tr>
+<td>hidden topic</td>
+<td>—</td>
+<td>隐藏话题：名字带下划线前缀，<code>ros2 topic list</code> 默认不显示</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-qos">第 7 章 · QoS</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QoS profile</td>
+<td>—</td>
+<td>QoS 配置：一组策略的组合</td>
+</tr>
+<tr>
+<td>History / Depth</td>
+<td>—</td>
+<td>历史 / 深度：没处理完的消息留多少</td>
+</tr>
+<tr>
+<td>Reliable / Best effort</td>
+<td>—</td>
+<td>可靠（丢了重传）/ 尽力而为（丢了就丢）</td>
+</tr>
+<tr>
+<td>Volatile / Transient local</td>
+<td>—</td>
+<td>不保存 / 发布者保存最近消息给晚来的订阅者</td>
+</tr>
+<tr>
+<td>Deadline / Lifespan</td>
+<td>—</td>
+<td>截止时间（相邻消息最大间隔）/ 寿命（消息多久过期）</td>
+</tr>
+<tr>
+<td>Liveliness / Lease duration</td>
+<td>—</td>
+<td>活性 / 租期：多久不报平安算挂了</td>
+</tr>
+<tr>
+<td>latched</td>
+<td>—</td>
+<td>锁存：ROS 1 里"晚来也能收到最后一条"的话题，≈ Transient local</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>Transmission Control Protocol</td>
+<td>传输 / 控制 / 协议：保证送达、按序</td>
+</tr>
+<tr>
+<td>Sensor data profile</td>
+<td>—</td>
+<td>传感器预设：Best effort + 小队列</td>
+</tr>
+<tr>
+<td>QoS event</td>
+<td>—</td>
+<td>QoS 事件：deadline missed、incompatible QoS 等，可挂回调</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8">第 8 章 · 中间件、发现与网络</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Domain ID</td>
+<td>—</td>
+<td>域号：同一网络上的"频道号"，默认 0</td>
+</tr>
+<tr>
+<td>multicast</td>
+<td>—</td>
+<td>组播：一次发给网段里所有听众</td>
+</tr>
+<tr>
+<td><code>ROS_AUTOMATIC_DISCOVERY_RANGE</code></td>
+<td>—</td>
+<td>发现范围：SUBNET / LOCALHOST / OFF / SYSTEM_DEFAULT</td>
+</tr>
+<tr>
+<td><code>ROS_STATIC_PEERS</code></td>
+<td>—</td>
+<td>点名去找的对端地址列表</td>
+</tr>
+<tr>
+<td>Fast DDS / Cyclone DDS / Connext DDS</td>
+<td>—</td>
+<td>三种 DDS 实现；Fast DDS 是默认</td>
+</tr>
+<tr>
+<td>Zenoh</td>
+<td>—</td>
+<td>一种非 DDS 的发布订阅协议，<code>rmw_zenoh_cpp</code></td>
+</tr>
+<tr>
+<td><code>rmw_zenohd</code></td>
+<td>—</td>
+<td>Zenoh 路由器进程，负责发现和跨机转发</td>
+</tr>
+<tr>
+<td>gossip scouting</td>
+<td>—</td>
+<td>"传话式"发现：路由器把各节点地址转告给其他节点</td>
+</tr>
+<tr>
+<td>discovery server</td>
+<td>—</td>
+<td>Fast DDS 的集中式发现服务器</td>
+</tr>
+<tr>
+<td>ros2 daemon</td>
+<td>—</td>
+<td>命令行工具背后缓存计算图的后台进程</td>
+</tr>
+<tr>
+<td>IP</td>
+<td>Internet Protocol</td>
+<td>网际协议：网络地址</td>
+</tr>
+<tr>
+<td>VPN</td>
+<td>Virtual Private Network</td>
+<td>虚拟 / 专用 / 网络</td>
+</tr>
+<tr>
+<td>SHM</td>
+<td>Shared Memory</td>
+<td>共享内存：同机进程间免拷贝传数据</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-executor">第 9 章 · Executor 与回调组</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SingleThreadedExecutor / MultiThreadedExecutor</td>
+<td>—</td>
+<td>单线程 / 多线程执行器</td>
+</tr>
+<tr>
+<td>EventsCBGExecutor</td>
+<td>Events Callback Group Executor</td>
+<td>事件 / 回调组执行器：Lyrical 新增，就绪事件进队列</td>
+</tr>
+<tr>
+<td>CBG</td>
+<td>Callback Group</td>
+<td>回调组</td>
+</tr>
+<tr>
+<td>MutuallyExclusive / Reentrant</td>
+<td>—</td>
+<td>互斥组（组内不并行）/ 可重入组（组内可并行）</td>
+</tr>
+<tr>
+<td>round-robin</td>
+<td>—</td>
+<td>轮转：挨个轮流处理</td>
+</tr>
+<tr>
+<td>FIFO</td>
+<td>First In, First Out</td>
+<td>先进先出</td>
+</tr>
+<tr>
+<td>priority inversion</td>
+<td>—</td>
+<td>优先级反转：高优先级任务被低优先级任务挡住</td>
+</tr>
+<tr>
+<td>GIL</td>
+<td>Global Interpreter Lock</td>
+<td>全局解释器锁：Python 同一时刻只让一个线程跑 Python 代码</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Central Processing Unit</td>
+<td>中央处理器</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10">第 10 章 · 组合、进程内通信与零拷贝</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>component</td>
+<td>—</td>
+<td>组件：没有 main、编成动态库的节点</td>
+</tr>
+<tr>
+<td>component container</td>
+<td>—</td>
+<td>组件容器：加载组件的宿主进程</td>
+</tr>
+<tr>
+<td>nodelet</td>
+<td>—</td>
+<td>ROS 1 里组件的前身</td>
+</tr>
+<tr>
+<td>intra-process</td>
+<td>—</td>
+<td>进程内：同一进程里的节点之间</td>
+</tr>
+<tr>
+<td>IPC</td>
+<td>Inter-Process Communication</td>
+<td>进程间通信</td>
+</tr>
+<tr>
+<td><code>unique_ptr</code></td>
+<td>—</td>
+<td>C++ 独占智能指针：同一时刻只有一个主人</td>
+</tr>
+<tr>
+<td>zero-copy</td>
+<td>—</td>
+<td>零拷贝：不复制数据，只传递所有权或地址</td>
+</tr>
+<tr>
+<td>loaned message</td>
+<td>—</td>
+<td>借出的消息：向中间件借共享内存来发布</td>
+</tr>
+<tr>
+<td><code>rosidl::Buffer</code></td>
+<td>—</td>
+<td>Lyrical 新增：可挂 CPU / GPU 等内存后端的数组容器</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>Graphics Processing Unit</td>
+<td>图形处理器</td>
+</tr>
+<tr>
+<td>POD</td>
+<td>Plain Old Data</td>
+<td>普通老式数据：大小固定、无指针的简单结构</td>
+</tr>
+<tr>
+<td><code>dlopen</code></td>
+<td>dynamic load open</td>
+<td>运行时加载动态库</td>
+</tr>
+<tr>
+<td>RGB</td>
+<td>Red, Green, Blue</td>
+<td>红 / 绿 / 蓝：每个像素 3 个字节的彩色图像格式</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11">第 11 章 · 时间与托管节点</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SystemTime / SteadyTime / ROSTime</td>
+<td>—</td>
+<td>系统时间（会跳）/ 稳定时间（单调）/ ROS 时间（可跟随 <code>/clock</code>）</td>
+</tr>
+<tr>
+<td>sim time</td>
+<td>simulation time</td>
+<td>仿真时间</td>
+</tr>
+<tr>
+<td><code>/clock</code></td>
+<td>—</td>
+<td>发布仿真时间的话题</td>
+</tr>
+<tr>
+<td><code>use_sim_time</code></td>
+<td>—</td>
+<td>节点参数：是否使用仿真时间</td>
+</tr>
+<tr>
+<td>NTP / PTP</td>
+<td>Network Time Protocol / Precision Time Protocol</td>
+<td>网络时间协议 / 精确时间协议：校准电脑时钟</td>
+</tr>
+<tr>
+<td>lifecycle node / managed node</td>
+<td>—</td>
+<td>生命周期节点 / 托管节点：带状态机的节点</td>
+</tr>
+<tr>
+<td>Unconfigured / Inactive / Active / Finalized</td>
+<td>—</td>
+<td>托管节点的四个主状态</td>
+</tr>
+<tr>
+<td>configure / activate / deactivate / cleanup / shutdown</td>
+<td>—</td>
+<td>五种转换</td>
+</tr>
+<tr>
+<td>lifecycle_manager</td>
+<td>—</td>
+<td>Nav2 的生命周期管理器：按序启动一组托管节点</td>
+</tr>
+<tr>
+<td>bond</td>
+<td>—</td>
+<td>心跳连接：管理器借此发现服务端崩溃</td>
+</tr>
+<tr>
+<td>FSM</td>
+<td>Finite State Machine</td>
+<td>有限状态机</td>
+</tr>
+</tbody>
+</table>
+<h2 id="12-tf2">第 12 章 · tf2</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tf2 / TF</td>
+<td>transform (library, version 2)</td>
+<td>坐标变换库</td>
+</tr>
+<tr>
+<td>frame</td>
+<td>—</td>
+<td>坐标系：原点 + 三根轴（ROS 约定 x 前、y 左、z 上）</td>
+</tr>
+<tr>
+<td>quaternion</td>
+<td>—</td>
+<td>四元数 <span class="arithmatex">\((x,y,z,w)\)</span>：表示旋转，<span class="arithmatex">\((0,0,0,1)\)</span> 为不转</td>
+</tr>
+<tr>
+<td>Euler angles / roll · pitch · yaw</td>
+<td>—</td>
+<td>欧拉角 / 横滚 · 俯仰 · 偏航</td>
+</tr>
+<tr>
+<td>gimbal lock</td>
+<td>—</td>
+<td>万向节锁：欧拉角在某些姿态下丢失一个自由度</td>
+</tr>
+<tr>
+<td><code>/tf</code> / <code>/tf_static</code></td>
+<td>—</td>
+<td>动态变换 / 静态变换话题</td>
+</tr>
+<tr>
+<td>REP</td>
+<td>ROS Enhancement Proposal</td>
+<td>ROS 改进提案：社区约定文档</td>
+</tr>
+<tr>
+<td>REP 105</td>
+<td>—</td>
+<td>移动机器人标准坐标系约定：map → odom → base_link</td>
+</tr>
+<tr>
+<td>odometry</td>
+<td>—</td>
+<td>里程计：根据自身运动累积估计位置，连续但会漂</td>
+</tr>
+<tr>
+<td>SLAM</td>
+<td>Simultaneous Localization And Mapping</td>
+<td>同时定位与建图</td>
+</tr>
+<tr>
+<td>AMCL</td>
+<td>Adaptive Monte Carlo Localization</td>
+<td>自适应蒙特卡洛定位（粒子滤波）</td>
+</tr>
+<tr>
+<td>IMU</td>
+<td>Inertial Measurement Unit</td>
+<td>惯性测量单元：加速度计 + 陀螺仪</td>
+</tr>
+<tr>
+<td>VIO</td>
+<td>Visual-Inertial Odometry</td>
+<td>视觉惯性里程计</td>
+</tr>
+<tr>
+<td>GPS</td>
+<td>Global Positioning System</td>
+<td>全球定位系统</td>
+</tr>
+<tr>
+<td>extrinsics / hand-eye calibration</td>
+<td>—</td>
+<td>外参 / 手眼标定：求相机相对机器人的安装位姿</td>
+</tr>
+<tr>
+<td>slerp</td>
+<td>spherical linear interpolation</td>
+<td>球面 / 线性 / 插值：两个旋转（四元数）之间平滑插值的方法</td>
+</tr>
+</tbody>
+</table>
+<h2 id="13-urdfxacro-rviz">第 13 章 · URDF、xacro 与 RViz</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URDF</td>
+<td>Unified Robot Description Format</td>
+<td>统一机器人描述格式（XML）</td>
+</tr>
+<tr>
+<td>link / joint</td>
+<td>—</td>
+<td>连杆 / 关节</td>
+</tr>
+<tr>
+<td>fixed / continuous / revolute / prismatic</td>
+<td>—</td>
+<td>固定 / 无限转动 / 有限位转动 / 平移关节</td>
+</tr>
+<tr>
+<td>visual / collision / inertial</td>
+<td>—</td>
+<td>显示形状 / 碰撞形状 / 质量与惯量</td>
+</tr>
+<tr>
+<td>mesh</td>
+<td>—</td>
+<td>网格模型：三角面片组成的精细外形</td>
+</tr>
+<tr>
+<td>xacro</td>
+<td>XML macro</td>
+<td>XML 宏语言，展开成 URDF</td>
+</tr>
+<tr>
+<td><code>robot_description</code></td>
+<td>—</td>
+<td>存放 URDF 全文的参数 / 话题</td>
+</tr>
+<tr>
+<td>robot_state_publisher</td>
+<td>—</td>
+<td>由 URDF + 关节角算出各连杆 tf 的节点</td>
+</tr>
+<tr>
+<td><code>/joint_states</code></td>
+<td>—</td>
+<td>各关节当前位置、速度、力矩（<code>sensor_msgs/JointState</code>）</td>
+</tr>
+<tr>
+<td>forward kinematics</td>
+<td>—</td>
+<td>正运动学：由关节角算各连杆 / 末端位姿</td>
+</tr>
+<tr>
+<td>RViz</td>
+<td>ROS Visualization</td>
+<td>ROS 三维可视化工具</td>
+</tr>
+<tr>
+<td>Fixed Frame</td>
+<td>—</td>
+<td>RViz 统一换算显示用的坐标系</td>
+</tr>
+<tr>
+<td>Marker</td>
+<td>—</td>
+<td>用代码在 RViz 里画的调试图形</td>
+</tr>
+<tr>
+<td>MJCF</td>
+<td>MuJoCo XML Format</td>
+<td>MuJoCo 仿真器的模型格式</td>
+</tr>
+<tr>
+<td>DoF</td>
+<td>Degrees of Freedom</td>
+<td>自由度</td>
+</tr>
+<tr>
+<td>proprioception</td>
+<td>—</td>
+<td>本体感知：机器人对自身关节状态的感知</td>
+</tr>
+</tbody>
+</table>
+<h2 id="14-launch">第 14 章 · launch 进阶、测试与调试</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>substitution</td>
+<td>—</td>
+<td>替换：launch 里启动时才求值的占位（如 <code>LaunchConfiguration</code>）</td>
+</tr>
+<tr>
+<td>launch argument</td>
+<td>—</td>
+<td>launch 参数：<code>DeclareLaunchArgument</code> 声明，命令行 <code>名:=值</code> 传入</td>
+</tr>
+<tr>
+<td>condition</td>
+<td>—</td>
+<td>条件：<code>IfCondition</code> / <code>UnlessCondition</code>，满足才执行动作</td>
+</tr>
+<tr>
+<td>event handler</td>
+<td>—</td>
+<td>事件处理器：如 <code>OnProcessExit</code>，触发后执行一组动作</td>
+</tr>
+<tr>
+<td><code>launch_testing</code></td>
+<td>—</td>
+<td>启动节点并在运行中 / 关闭后做断言的集成测试框架</td>
+</tr>
+<tr>
+<td>active / post-shutdown test</td>
+<td>—</td>
+<td>活动测试 / 关闭后测试</td>
+</tr>
+<tr>
+<td><code>pytest</code> / <code>unittest</code> / gtest</td>
+<td>—</td>
+<td>Python 测试框架 / Python 标准测试库 / C++ 测试框架</td>
+</tr>
+<tr>
+<td>ament_lint</td>
+<td>—</td>
+<td>代码风格等静态检查工具集</td>
+</tr>
+<tr>
+<td>CI</td>
+<td>Continuous Integration</td>
+<td>持续集成：每次提交自动构建和测试</td>
+</tr>
+<tr>
+<td>gdb</td>
+<td>GNU Debugger</td>
+<td>GNU 调试器</td>
+</tr>
+<tr>
+<td>backtrace</td>
+<td>—</td>
+<td>调用栈：崩溃时函数调用的层层记录</td>
+</tr>
+<tr>
+<td>ros2_tracing</td>
+<td>—</td>
+<td>ROS 2 低开销跟踪框架</td>
+</tr>
+<tr>
+<td>LTTng</td>
+<td>Linux Trace Toolkit next generation</td>
+<td>Linux 跟踪工具包</td>
+</tr>
+</tbody>
+</table>
+<h2 id="15-ros2_control">第 15 章 · 实时与 ros2_control 架构</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT</td>
+<td>Real-Time</td>
+<td>实时：周期性、按截止时间完成、抖动小</td>
+</tr>
+<tr>
+<td>jitter</td>
+<td>—</td>
+<td>抖动：周期时间的波动</td>
+</tr>
+<tr>
+<td>deadline</td>
+<td>—</td>
+<td>截止时间</td>
+</tr>
+<tr>
+<td>page fault</td>
+<td>—</td>
+<td>缺页：访问未调入内存的页，要等磁盘</td>
+</tr>
+<tr>
+<td><code>mlockall</code></td>
+<td>memory lock all</td>
+<td>把进程内存锁在 RAM 里，避免缺页</td>
+</tr>
+<tr>
+<td>PREEMPT_RT</td>
+<td>—</td>
+<td>Linux 完全可抢占实时补丁</td>
+</tr>
+<tr>
+<td>CM</td>
+<td>Controller Manager</td>
+<td>控制器管理器</td>
+</tr>
+<tr>
+<td>RM</td>
+<td>Resource Manager</td>
+<td>资源管理器</td>
+</tr>
+<tr>
+<td>hardware component</td>
+<td>—</td>
+<td>硬件组件：System / Sensor / Actuator</td>
+</tr>
+<tr>
+<td>state / command interface</td>
+<td>—</td>
+<td>状态接口（只读）/ 命令接口（独占）</td>
+</tr>
+<tr>
+<td><code>update_rate</code></td>
+<td>—</td>
+<td>控制回路频率参数</td>
+</tr>
+<tr>
+<td>spawner</td>
+<td>—</td>
+<td>加载、配置并激活控制器的命令行工具</td>
+</tr>
+<tr>
+<td>mock_components/GenericSystem</td>
+<td>—</td>
+<td>假硬件：把命令原样回写成状态</td>
+</tr>
+<tr>
+<td>pluginlib</td>
+<td>—</td>
+<td>ROS 的插件加载库</td>
+</tr>
+<tr>
+<td>PID</td>
+<td>Proportional-Integral-Derivative</td>
+<td>比例 / 积分 / 微分控制器</td>
+</tr>
+<tr>
+<td>EtherCAT / CAN</td>
+<td>Ethernet for Control Automation Technology / Controller Area Network</td>
+<td>工业实时以太网总线 / 控制器局域网</td>
+</tr>
+</tbody>
+</table>
+<h2 id="16">第 16 章 · 硬件组件与控制器</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SystemInterface / ActuatorInterface / SensorInterface</td>
+<td>—</td>
+<td>三类硬件组件的基类</td>
+</tr>
+<tr>
+<td><code>set_state</code> / <code>get_command</code></td>
+<td>—</td>
+<td>硬件组件里写状态接口 / 读命令接口</td>
+</tr>
+<tr>
+<td><code>PLUGINLIB_EXPORT_CLASS</code></td>
+<td>—</td>
+<td>把类注册为可动态加载的插件</td>
+</tr>
+<tr>
+<td>JTC</td>
+<td>Joint Trajectory Controller</td>
+<td>关节轨迹控制器</td>
+</tr>
+<tr>
+<td>waypoint</td>
+<td>—</td>
+<td>路点：轨迹上带时刻的目标点</td>
+</tr>
+<tr>
+<td><code>FollowJointTrajectory</code></td>
+<td>—</td>
+<td>JTC 的动作接口类型</td>
+</tr>
+<tr>
+<td>diff_drive_controller</td>
+<td>—</td>
+<td>差速底盘控制器</td>
+</tr>
+<tr>
+<td>TwistStamped</td>
+<td>—</td>
+<td>带时间戳的线速度 + 角速度消息</td>
+</tr>
+<tr>
+<td>forward_command_controller</td>
+<td>—</td>
+<td>话题收到的数原样写入命令接口</td>
+</tr>
+<tr>
+<td>admittance control</td>
+<td>—</td>
+<td>导纳控制：按受力让末端顺从外力</td>
+</tr>
+<tr>
+<td>realtime buffer</td>
+<td>—</td>
+<td>实时安全缓冲区：非实时线程写、实时线程读，不互相阻塞</td>
+</tr>
+<tr>
+<td>controller chaining</td>
+<td>—</td>
+<td>控制器级联：上一级写下一级的参考接口</td>
+</tr>
+<tr>
+<td>C0 / C2</td>
+<td>—</td>
+<td>轨迹位置连续 / 二阶导数（加速度）连续</td>
+</tr>
+</tbody>
+</table>
+<h2 id="17-nav2">第 17 章 · Nav2</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nav2</td>
+<td>Navigation 2</td>
+<td>ROS 2 移动机器人导航栈</td>
+</tr>
+<tr>
+<td>planner / controller / smoother / behavior / route server</td>
+<td>—</td>
+<td>规划 / 控制 / 平滑 / 行为 / 路线服务器</td>
+</tr>
+<tr>
+<td>costmap</td>
+<td>—</td>
+<td>代价地图：二维栅格，每格一个通行代价</td>
+</tr>
+<tr>
+<td>static / obstacle / inflation layer</td>
+<td>—</td>
+<td>静态层 / 障碍层 / 膨胀层</td>
+</tr>
+<tr>
+<td>footprint</td>
+<td>—</td>
+<td>机器人外形轮廓（多边形）</td>
+</tr>
+<tr>
+<td>costmap filter</td>
+<td>—</td>
+<td>代价地图过滤器：禁行区、限速区等</td>
+</tr>
+<tr>
+<td>BT</td>
+<td>Behavior Tree</td>
+<td>行为树</td>
+</tr>
+<tr>
+<td>tick</td>
+<td>—</td>
+<td>行为树执行一次节点</td>
+</tr>
+<tr>
+<td>HFSM</td>
+<td>Hierarchical Finite State Machine</td>
+<td>分层有限状态机</td>
+</tr>
+<tr>
+<td>MPPI</td>
+<td>Model Predictive Path Integral</td>
+<td>模型预测路径积分：采样式预测控制</td>
+</tr>
+<tr>
+<td>MPC</td>
+<td>Model Predictive Control</td>
+<td>模型预测控制</td>
+</tr>
+<tr>
+<td>DWB</td>
+<td>Dynamic Window approach, version B</td>
+<td>动态窗口法第二版控制器</td>
+</tr>
+<tr>
+<td>RPP</td>
+<td>Regulated Pure Pursuit</td>
+<td>受调节的纯追踪控制器</td>
+</tr>
+<tr>
+<td>NavigateToPose</td>
+<td>—</td>
+<td>Nav2 对外的"导航到某位姿"动作</td>
+</tr>
+<tr>
+<td>LIDAR</td>
+<td>Light Detection And Ranging</td>
+<td>激光雷达</td>
+</tr>
+<tr>
+<td>A*</td>
+<td>A-star</td>
+<td>A 星算法：Dijkstra 再加一项"到终点的估计距离"，展开的格子更少</td>
+</tr>
+</tbody>
+</table>
+<h2 id="18-moveit-2">第 18 章 · MoveIt 2</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>move_group</td>
+<td>—</td>
+<td>MoveIt 的核心集成节点</td>
+</tr>
+<tr>
+<td>SRDF</td>
+<td>Semantic Robot Description Format</td>
+<td>语义机器人描述：规划组、姿态、免查碰撞对</td>
+</tr>
+<tr>
+<td>planning group</td>
+<td>—</td>
+<td>规划组：一起规划的一组关节（如 arm）</td>
+</tr>
+<tr>
+<td>planning scene</td>
+<td>—</td>
+<td>规划场景：机器人状态 + 障碍物 + 手持物</td>
+</tr>
+<tr>
+<td>ACM</td>
+<td>Allowed Collision Matrix</td>
+<td>允许碰撞矩阵：哪些连杆对不检查碰撞</td>
+</tr>
+<tr>
+<td>IK</td>
+<td>Inverse Kinematics</td>
+<td>逆运动学</td>
+</tr>
+<tr>
+<td>KDL</td>
+<td>Kinematics and Dynamics Library</td>
+<td>运动学与动力学库（默认 IK 求解器）</td>
+</tr>
+<tr>
+<td>OMPL</td>
+<td>Open Motion Planning Library</td>
+<td>开放运动规划库（采样式规划器集合）</td>
+</tr>
+<tr>
+<td>RRT / PRM</td>
+<td>Rapidly-exploring Random Tree / Probabilistic Roadmap</td>
+<td>快速探索随机树 / 概率路图</td>
+</tr>
+<tr>
+<td>Pilz</td>
+<td>—</td>
+<td>工业运动规划器：直线 LIN、点到点 PTP、圆弧 CIRC</td>
+</tr>
+<tr>
+<td>CHOMP</td>
+<td>Covariant Hamiltonian Optimization for Motion Planning</td>
+<td>基于优化的运动规划器</td>
+</tr>
+<tr>
+<td>path / trajectory</td>
+<td>—</td>
+<td>路径（无时间）/ 轨迹（带时刻、速度、加速度）</td>
+</tr>
+<tr>
+<td>TOTG</td>
+<td>Time-Optimal Trajectory Generation</td>
+<td>时间最优轨迹生成</td>
+</tr>
+<tr>
+<td>MoveItPy</td>
+<td>—</td>
+<td>MoveIt 2 的 Python 接口</td>
+</tr>
+<tr>
+<td>MoveIt Servo</td>
+<td>—</td>
+<td>实时伺服：持续指令 → 关节命令</td>
+</tr>
+<tr>
+<td>MTC</td>
+<td>MoveIt Task Constructor</td>
+<td>任务构造器：多阶段任务规划</td>
+</tr>
+<tr>
+<td>singularity</td>
+<td>—</td>
+<td>奇异点：机械臂某方向失去运动能力的姿态</td>
+</tr>
+</tbody>
+</table>
+<h2 id="19">第 19 章 · 仿真与部署</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gazebo / gz</td>
+<td>—</td>
+<td>ROS 官方配套的物理仿真器（新版，原 Ignition）</td>
+</tr>
+<tr>
+<td>Gazebo Classic</td>
+<td>—</td>
+<td>旧版 Gazebo，已停止维护</td>
+</tr>
+<tr>
+<td>SDF</td>
+<td>Simulation Description Format</td>
+<td>Gazebo 的世界与模型格式</td>
+</tr>
+<tr>
+<td>gz_ros2_control / mujoco_ros2_control</td>
+<td>—</td>
+<td>把仿真器接成 ros2_control 硬件组件的插件</td>
+</tr>
+<tr>
+<td>ros_gz_bridge</td>
+<td>—</td>
+<td>Gazebo 话题与 ROS 话题之间的桥</td>
+</tr>
+<tr>
+<td>MuJoCo</td>
+<td>Multi-Joint dynamics with Contact</td>
+<td>多关节接触动力学仿真器</td>
+</tr>
+<tr>
+<td>Isaac Sim / Isaac Lab</td>
+<td>—</td>
+<td>NVIDIA 的 GPU 仿真器 / 学习框架</td>
+</tr>
+<tr>
+<td>sim-to-real</td>
+<td>—</td>
+<td>仿真到真机的迁移</td>
+</tr>
+<tr>
+<td>Docker / docker compose</td>
+<td>—</td>
+<td>容器 / 多容器编排</td>
+</tr>
+<tr>
+<td>multi-stage build</td>
+<td>—</td>
+<td>多阶段构建：编译与运行分开，镜像更小</td>
+</tr>
+<tr>
+<td>cross-compilation</td>
+<td>—</td>
+<td>交叉编译：在一种架构上编出另一种架构的程序</td>
+</tr>
+<tr>
+<td>OTA</td>
+<td>Over-The-Air</td>
+<td>远程升级</td>
+</tr>
+<tr>
+<td>IP fragment</td>
+<td>—</td>
+<td>IP 分片：大 UDP 包被拆成的小片</td>
+</tr>
+<tr>
+<td>SROS2</td>
+<td>Secure ROS 2</td>
+<td>ROS 2 安全工具：认证、加密、访问控制</td>
+</tr>
+<tr>
+<td>MTU</td>
+<td>Maximum Transmission Unit</td>
+<td>最大 / 传输 / 单元：一个网络包最多多大，以太网和 Wi-Fi 常见 1500 字节</td>
+</tr>
+</tbody>
+</table>
+<h2 id="20-ros-2">第 20 章 · 把学习策略部署成 ROS 2 节点</h2>
+<table>
+<thead>
+<tr>
+<th>缩写 / 术语</th>
+<th>全称</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>action chunk</td>
+<td>—</td>
+<td>动作块：模型一次输出的未来若干步动作</td>
+</tr>
+<tr>
+<td>temporal ensembling</td>
+<td>—</td>
+<td>时间集成：同一时刻多个块的动作加权平均（ACT）</td>
+</tr>
+<tr>
+<td>RTC</td>
+<td>Real-Time Chunking</td>
+<td>实时分块：边执行上一块边推理下一块，衔接不抖</td>
+</tr>
+<tr>
+<td>message_filters</td>
+<td>—</td>
+<td>按时间戳同步多个话题的工具</td>
+</tr>
+<tr>
+<td>cv_bridge</td>
+<td>—</td>
+<td>ROS 图像消息与 OpenCV / numpy 互转</td>
+</tr>
+<tr>
+<td><code>allow_trajectory_replacement</code></td>
+<td>—</td>
+<td>JTC 参数：新轨迹与执行中轨迹融合</td>
+</tr>
+<tr>
+<td><code>positions_upsampling</code></td>
+<td>—</td>
+<td>JTC 参数：为只有位置的路点补出平滑速度</td>
+</tr>
+<tr>
+<td>cartesian_trajectory_controller</td>
+<td>—</td>
+<td>接收末端位姿轨迹的控制器（2026 新增）</td>
+</tr>
+<tr>
+<td>jerk</td>
+<td>—</td>
+<td>加加速度：加速度的变化率，越小越平稳</td>
+</tr>
+<tr>
+<td>p99</td>
+<td>99th percentile</td>
+<td>第 99 百分位：100 次里最慢那一档</td>
+</tr>
+<tr>
+<td>Hz</td>
+<td>Hertz</td>
+<td>赫兹：每秒次数</td>
+</tr>
+</tbody>
+</table>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 11 章 · 时间与托管节点（lifecycle） · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="11-lifecycle">第 11 章 · 时间与托管节点（lifecycle）</h1><p><a class="btn" href="../animations/11-lifecycle.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：仿真跑得比真实时间快或慢时，节点里的"现在几点"听谁的？回放 bag 时为什么要设 <code>use_sim_time</code>？一个驱动节点怎么做到"先配置好、确认没问题再开始干活、出错能退回去"？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/10-composition-zero-copy.html">第 10 章 组合、进程内通信与零拷贝</a> · 下一章：<a href="../lessons/12-tf2.html">第 12 章 tf2 坐标变换</a><br />
+对应原文：<code>design/articles/130_ros_time.md</code>；<code>design/articles/node_lifecycle.md</code>（Primary States）；<code>ros2_documentation/source/ROS-Framework/nodes/Working-with-nodes/Managed-Nodes.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 C6、C7，动手里程碑 R-M5（lifecycle 节点 + launch 事件 + 测试）。<br />
+本章缩写：<code>/clock</code>（不是缩写，仿真时间话题）；sim time = simulation time（仿真 / 时间）；NTP = Network Time Protocol（网络 / 时间 / 协议：校准电脑时钟）；PTP = Precision Time Protocol（精确 / 时间 / 协议：比 NTP 更准的时钟同步）；FSM = Finite State Machine（有限 / 状态 / 机）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：托管节点的四个主状态和转换</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>三种时钟与仿真时间</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>托管节点：状态、转换、回调</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>用起来：命令行、生命周期管理器、Nav2 的做法</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 托管节点的状态机</h3>
+<p><img alt="托管节点状态机" src="../animations/11-lifecycle.gif" /></p>
+<p>可交互版：<a href="../animations/11-lifecycle.html">animations/11-lifecycle.html</a>（内置浏览器：<code>http://localhost:8340/11-lifecycle.html</code>）。</p>
+<p><strong>类比：开店。</strong> 店面租下来了（未配置 Unconfigured）→ 进货、摆货架、调好设备（配置 configure → 未激活 Inactive）→ 开门营业（激活 activate → Active）→ 打烊（停用 deactivate → 回到 Inactive，货还在，明天可以直接开门）→ 清场（清理 cleanup → 回到 Unconfigured）→ 关店（shutdown → Finalized）。</p>
+<h3 id="1">第 1 步 · 三种时钟与仿真时间</h3>
+<p>依据：<code>materials/design/articles/130_ros_time.md</code>（下称"时间设计"）。</p>
+<p>ROS 2 提供三种时钟，对应 C++ 标准库的两种时钟再加一种（时间设计 "Clocks" 一节）：</p>
+<table>
+<thead>
+<tr>
+<th>时钟</th>
+<th>是什么</th>
+<th>会不会跳</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SystemTime</strong> 系统时间</td>
+<td>电脑的墙上时钟</td>
+<td>会（NTP 校时、手动改）</td>
+<td>打时间戳、和外部世界对表</td>
+</tr>
+<tr>
+<td><strong>SteadyTime</strong> 稳定时间</td>
+<td>开机后单调递增的计时</td>
+<td><strong>不会</strong>倒退</td>
+<td>测"过了多久"、硬件超时</td>
+</tr>
+<tr>
+<td><strong>ROSTime</strong> ROS 时间</td>
+<td>默认等于系统时间；<strong>开了仿真时间后</strong>等于 <code>/clock</code> 话题上的时间</td>
+<td>会（仿真暂停、bag 回放可往回跳）</td>
+<td>节点里的默认时钟</td>
+</tr>
+</tbody>
+</table>
+<p><strong>仿真时间怎么工作</strong>（时间设计 "ROS Time Source"）：</p>
+<ol>
+<li>仿真器（Gazebo 等）或 <code>ros2 bag play --clock</code> 往 <code>/clock</code> 话题发布"现在是仿真里的几点几分"；</li>
+<li>节点的参数 <code>use_sim_time</code> 设为 <code>true</code>（第 2 章看到每个节点都有这个参数）；</li>
+<li>这个节点的 ROS 时间就跟着 <code>/clock</code> 走：仿真跑快，节点的时间就快；仿真暂停，时间就停。定时器也按 ROS 时间触发。</li>
+</ol>
+<p><strong>为什么需要它？</strong> 仿真可能比真实时间快（批量测试）或慢（物理很复杂）（时间设计开头）。如果节点用墙上时钟，"每 0.1 秒发一次指令"在慢 10 倍的仿真里就变成"仿真时间每 0.01 秒一次"，控制完全乱套。回放 bag 也一样：数据的时间戳是录制时的，节点要按 bag 里的时间运转。</p>
+<p><strong>最常见的坑</strong>：系统里<strong>有的节点设了 <code>use_sim_time</code>、有的没设</strong>。一半节点活在 bag 的时间里、一半活在现在，tf2 会报"变换在过去 / 未来"（第 12 章），消息同步全部失败。Lyrical 新增 <code>ros2 param get &lt;参数名&gt;</code> 一次查所有节点的同一个参数，正好用来检查这件事（<code>Release-Lyrical-Luth.rst</code> 对应一节）。</p>
+<p><strong>代码里</strong>：<code>self.get_clock().now()</code> 拿 ROS 时间；要测执行耗时、做超时，用稳定时钟（Python 里 <code>time.monotonic()</code>，或 <code>rclpy.clock.Clock(clock_type=ClockType.STEADY_TIME)</code>）。多台电脑之间的时间戳要可比，还要用 NTP / PTP 把各机时钟对齐（第 15 章会提硬件时间同步）。</p>
+<h3 id="2">第 2 步 · 托管节点：状态、转换、回调</h3>
+<p>依据：<code>materials/design/articles/node_lifecycle.md</code>（下称"生命周期设计"）、<code>ROS-Framework/nodes/Working-with-nodes/Managed-Nodes.rst</code>。</p>
+<p><strong>为什么要托管节点（managed node / lifecycle node）？</strong> 普通节点一构造就开始工作。可真实系统需要：</p>
+<ul>
+<li>驱动先连上硬件、确认参数没问题，<strong>再</strong>开始发数据；</li>
+<li>一组节点<strong>都准备好了</strong>才一起开工（导航不能在地图还没加载时就开始规划）；</li>
+<li>出错时能<strong>退回到安全状态</strong>重新配置，而不是只能杀掉重启。</li>
+</ul>
+<p><strong>四个主状态</strong>（生命周期设计 "Primary States"）：</p>
+<table>
+<thead>
+<tr>
+<th>状态</th>
+<th>意思</th>
+<th>这时节点在干什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unconfigured</strong> 未配置</td>
+<td>刚构造完，或出错后退回来</td>
+<td>什么都没有，不应保存任何状态</td>
+</tr>
+<tr>
+<td><strong>Inactive</strong> 未激活</td>
+<td>配置好了但没开工</td>
+<td>不处理话题、不响应功能性服务请求；可以安全地改配置</td>
+</tr>
+<tr>
+<td><strong>Active</strong> 激活</td>
+<td>正常工作</td>
+<td>处理数据、发布、响应请求</td>
+</tr>
+<tr>
+<td><strong>Finalized</strong> 已结束</td>
+<td>即将销毁</td>
+<td>只等被销毁</td>
+</tr>
+</tbody>
+</table>
+<p><strong>六个过渡状态</strong>：Configuring、CleaningUp、Activating、Deactivating、ShuttingDown、ErrorProcessing。它们是转换进行中的中间态，各自对应一个你要写的回调。</p>
+<p><strong>转换与回调</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>转换</th>
+<th>从 → 到</th>
+<th>你写的回调</th>
+<th>该做什么（按 Nav2 的约定）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>configure</td>
+<td>Unconfigured → Inactive</td>
+<td><code>on_configure</code></td>
+<td>读参数、创建发布者 / 订阅者 / 服务、分配内存、连硬件</td>
+</tr>
+<tr>
+<td>activate</td>
+<td>Inactive → Active</td>
+<td><code>on_activate</code></td>
+<td>激活发布者、开始处理</td>
+</tr>
+<tr>
+<td>deactivate</td>
+<td>Active → Inactive</td>
+<td><code>on_deactivate</code></td>
+<td>停止处理（硬件不断开）</td>
+</tr>
+<tr>
+<td>cleanup</td>
+<td>Inactive → Unconfigured</td>
+<td><code>on_cleanup</code></td>
+<td>释放 configure 时申请的一切</td>
+</tr>
+<tr>
+<td>shutdown</td>
+<td>任意主状态 → Finalized</td>
+<td><code>on_shutdown</code></td>
+<td>收尾退出</td>
+</tr>
+<tr>
+<td>（出错）</td>
+<td>Active 里出现无法处理的错误 → ErrorProcessing</td>
+<td><code>on_error</code></td>
+<td>处理成功回到 Unconfigured，失败到 Finalized</td>
+</tr>
+</tbody>
+</table>
+<p><strong>除了 Active 里出错，其余状态变化都要外部"监管者"下令</strong>（生命周期设计 "Primary States" 开头）。节点自己不会从 Inactive 跳到 Active。这正是它的价值：开工的时机由系统统一决定。</p>
+<p><strong>Nav2 的约定</strong>（<code>ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/ros2.md</code> "Lifecycle Nodes and Bond"）：构造函数里<strong>不要</strong>做任何 ROS 网络设置和参数读取，全部放到 <code>on_configure</code>；<code>on_activate</code> 里激活网络接口、开始处理。</p>
+<p><strong>发布者也是"托管"的</strong>：托管节点里创建的是生命周期发布者，节点不在 Active 时调用 <code>publish</code> 不会真的发出去。</p>
+<p><strong>C++ 和 Python</strong>：C++ 用 <code>rclcpp_lifecycle::LifecycleNode</code>；Python 用 <code>rclpy.lifecycle.Node</code>（<code>Managed-Nodes.rst</code> 链接的 <code>lifecycle_py</code> 示例）。</p>
+<h3 id="3">第 3 步 · 用起来</h3>
+<p><strong>命令行</strong>（<code>ros2 lifecycle</code>）：</p>
+<pre><code class="language-bash">ros2 lifecycle nodes                    # 列出所有托管节点
+ros2 lifecycle get /lc_talker           # 当前状态，如 unconfigured [1]
+ros2 lifecycle list /lc_talker          # 当前能做哪些转换
+ros2 lifecycle set /lc_talker configure
+ros2 lifecycle set /lc_talker activate  # 这之后 lc_talker 才开始发消息
+</code></pre>
+<p>（底层是每个托管节点自带的 <code>~/change_state</code>、<code>~/get_state</code> 等服务和 <code>~/transition_event</code> 话题。）</p>
+<p><strong>谁来下令？</strong> 两种方式：</p>
+<ol>
+<li><strong>launch 文件</strong>：用 <code>LifecycleNode</code> 动作启动节点，再配合事件处理器，"某节点进入 Inactive 后，自动发 activate"（第 14 章 launch 进阶）。</li>
+<li><strong>生命周期管理器</strong>：Nav2 自带 <code>lifecycle_manager</code>，按列表<strong>依次</strong>把一串节点 configure → activate；任何一个失败就停下。它还通过 <strong>bond</strong>（心跳连接）盯着每个服务端：某个服务端崩了，管理器知道后把整个系统有序地降下来，防止出现严重故障（Nav2 文档同一节）。</li>
+</ol>
+<p><strong>官方建议</strong>：能用托管节点的地方都用（Nav2 文档："It is best convention for all ROS systems to use lifecycle nodes if it is possible"）。ros2_control 的硬件组件也有同样一套生命周期（第 16 章）。</p>
+<p><strong>和本仓库的连接</strong>：VLA 策略节点也适合做成托管节点：<code>on_configure</code> 加载模型权重、预热 GPU；<code>on_activate</code> 才开始订阅图像、输出动作；出问题 <code>deactivate</code>，机器人停在安全姿态，不必重新加载几 GB 的权重。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 11-1</strong>（第 1 步）：你用 <code>ros2 bag play</code> 回放一段 10 分钟前录的数据，检测节点的输出时间戳却是"现在"。缺了哪两样设置？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 11-2</strong>（第 1 步）：测"一次推理花了多少毫秒"，用 ROS 时间还是稳定时间？为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 11-3</strong>（第 2 步）：一个相机驱动做成托管节点。下面四件事分别放进哪个回调：打开 USB 设备、读分辨率参数、开始发布图像、关闭 USB 设备？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 11-4</strong>（第 3 步）：托管节点停在 Inactive 时，别人调用它的功能性服务会怎样？为什么这样设计？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>三种钟</strong>：系统钟会跳，稳定钟不倒退，ROS 钟听 <code>/clock</code>。</li>
+<li><strong>仿真时间</strong>：全体 <code>use_sim_time</code>，一个都不能漏。</li>
+<li><strong>四主态</strong>：未配置、未激活、激活、已结束；配置、激活、停用、清理、关闭五种转换。</li>
+<li><strong>分工</strong>：构造函数什么都不做；configure 准备好，activate 才开工；转换听外部指挥。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R28–R29，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>130_ros_time.md</code></td>
+<td><code>materials/design/articles/130_ros_time.md</code></td>
+<td>三种时钟、<code>/clock</code>、时间跳变通知的设计。</td>
+</tr>
+<tr>
+<td>★ <code>node_lifecycle.md</code></td>
+<td><code>materials/design/articles/node_lifecycle.md</code></td>
+<td>完整状态机图、每个状态和转换的语义、管理接口。</td>
+</tr>
+<tr>
+<td><code>Managed-Nodes.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Managed-Nodes.rst</code></td>
+<td>托管节点示例的入口（<code>lifecycle</code> / <code>lifecycle_py</code> demo）。</td>
+</tr>
+<tr>
+<td>★ <code>ros2.md</code></td>
+<td><code>materials/ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/ros2.md</code> "Lifecycle Nodes and Bond"</td>
+<td>工程实践中的生命周期约定和 bond 心跳。</td>
+</tr>
+<tr>
+<td><code>Using-Event-Handlers.rst</code></td>
+<td><code>Developer-Tools/Launch/Using-Event-Handlers.rst</code></td>
+<td>launch 里监听状态变化、自动推进生命周期（第 14 章）。</td>
+</tr>
+<tr>
+<td><code>Release-Lyrical-Luth.rst</code></td>
+<td><code>Releases/Release-Lyrical-Luth.rst</code> "ros2 param get a parameter from all nodes"</td>
+<td>检查全系统 <code>use_sim_time</code> 是否一致。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>时间缩放</strong>：仿真速度是真实的 <span class="arithmatex">\(s\)</span> 倍时，ROS 时间里周期 <span class="arithmatex">\(T\)</span> 的定时器在真实时间里每 <span class="arithmatex">\(T/s\)</span> 触发一次。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>configure：未配置 → 未激活；activate：未激活 → 激活；deactivate、cleanup 反过来</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch11_time_lifecycle.py</code>，配套测试 <code>tests/test_ch11_15.py</code>；同名 notebook 在 <code>notebooks/ch11_time_lifecycle.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch11_time_lifecycle.py   # 一步一步打印  
+uv run pytest tests/test_ch11_15.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 仿真时间</td>
+<td>定时器按 ROS 时间触发</td>
+<td><code>timer_fire_wall_times(0.1, 0.1, 3.0)</code></td>
+<td>真实 1.0、2.0、3.0 秒各触发一次</td>
+</tr>
+<tr>
+<td>同上</td>
+<td>仿真和真实一样快</td>
+<td><code>timer_fire_wall_times(0.1, 1.0, 0.3)</code></td>
+<td>0.1、0.2、0.3 秒</td>
+</tr>
+<tr>
+<td>第 2 步 状态机</td>
+<td>configure → activate → …</td>
+<td><code>node.trigger(...)</code></td>
+<td>on_configure … on_shutdown 依次调用</td>
+</tr>
+<tr>
+<td>第 2 步 托管发布者</td>
+<td>不在 active 时不发</td>
+<td><code>node.publish(...)</code></td>
+<td>只有 #2 真的发出去</td>
+</tr>
+<tr>
+<td>第 2 步 外部下令</td>
+<td>不能跳步</td>
+<td><code>trigger('activate')</code> 于 unconfigured</td>
+<td>报错</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">k * period_sim / sim_speed           # 第 k 次触发在真实时间的哪一秒
+TRANSITIONS = {(&quot;unconfigured&quot;, &quot;configure&quot;): &quot;inactive&quot;,
+               (&quot;inactive&quot;, &quot;activate&quot;): &quot;active&quot;, ...}
+if self.state != &quot;active&quot;: return False   # 生命周期发布者：没激活不发
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>只模拟了主状态</strong>：真托管节点在两个主状态之间还有过渡状态（Configuring、Activating……），回调就在过渡状态里执行；这里把"进过渡状态 → 调回调 → 成功到新主状态"压成了一步。</li>
+<li><strong>出错那条路（ErrorProcessing）没写</strong>：讲义第 2 步的表里有，模拟里省掉了。</li>
+<li><strong>仿真速度 0.1</strong> 表示仿真里过 0.1 秒、真实要过 1 秒，所以 0.1 秒周期的定时器在真实里每秒才触发一次。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>sim_speed</code> 改成 2.0（仿真比真实快一倍），看真实 1 秒里触发几次；</li>
+<li>在 <code>TRANSITIONS</code> 里找一找：active 状态能直接 cleanup 吗？用 <code>available_transitions()</code> 验证。</li>
+</ul><nav class="pager"><a href="10-composition-zero-copy.html">← 第 10 章 · 组合、进程内通信与零拷贝</a><a href="12-tf2.html">第 12 章 · tf2：坐标变换树 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

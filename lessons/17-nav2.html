@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 17 章 · Nav2：移动机器人导航栈 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="17-nav2">第 17 章 · Nav2：移动机器人导航栈</h1><p><a class="btn" href="../animations/17-nav2-flow.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：在 RViz 里点一个目标点，机器人是怎么一路避开障碍开过去的？Nav2 由哪些服务器组成，各管什么？代价地图是什么？行为树在里面起什么作用？卡住了怎么办？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/16-hardware-controllers.html">第 16 章 硬件组件与控制器</a> · 下一章：<a href="../lessons/18-moveit2.html">第 18 章 MoveIt 2</a><br />
+对应原文：<code>ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/</code> 下的 <code>navigation_servers.md</code>、<code>environmental_representation.md</code>、<code>behavior_trees.md</code>；<code>.../nav2_behavior_trees/trees/nav_to_pose_recovery.md</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 G1–G4，动手里程碑 R-M8（TurtleBot 仿真里建图 / 定位 / 导航）。接具身导航专题（学习型导航对照经典栈）。<br />
+本章缩写：Nav2 = Navigation 2（ROS 2 导航栈）；BT = Behavior Tree（行为 / 树）；FSM = Finite State Machine（有限状态机）；HFSM = Hierarchical FSM（分层状态机）；MPPI = Model Predictive Path Integral（模型 / 预测 / 路径积分：一种采样式预测控制）；MPC = Model Predictive Control（模型预测控制）；DWB = Dynamic Window approach, version B（动态窗口法第二版）；RPP = Regulated Pure Pursuit（受调节的纯追踪控制器）；AMCL = Adaptive Monte Carlo Localization；SLAM = Simultaneous Localization And Mapping；LIDAR = Light Detection And Ranging（激光雷达）；A* = A-star（A 星算法：Dijkstra 加上到终点的估计距离）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：一个导航目标在 Nav2 里走一遍</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>五个服务器 + 插件：规划、控制、平滑、行为（恢复）、路线</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>代价地图：栅格、层、膨胀、过滤器</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>行为树导航器、生命周期、上手步骤</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 一个目标的旅程</h3>
+<p><img alt="Nav2 架构与一次导航" src="../animations/17-nav2-flow.gif" /></p>
+<p>可交互版：<a href="../animations/17-nav2-flow.html">animations/17-nav2-flow.html</a>（内置浏览器：<code>http://localhost:8340/17-nav2-flow.html</code>）。</p>
+<p><strong>类比：出租车公司。</strong> 调度员（行为树导航器）接到"去火车站"的单子，先让导航软件（规划服务器）在城市地图上算一条路线，再让司机（控制服务器）一边看路况一边沿路线开；遇到堵死的路，按预案（恢复行为）倒车、等一等、或换条路，实在不行再报告失败。</p>
+<h3 id="1">第 1 步 · 五个服务器 + 插件</h3>
+<p>依据：<code>materials/ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/navigation_servers.md</code>（下称"服务器文档"）。</p>
+<p>Nav2 的核心是若干<strong>动作服务器</strong>（第 6 章），每个服务器里装着一组<strong>算法插件</strong>，起个"别名"供调用（服务器文档开头）：</p>
+<table>
+<thead>
+<tr>
+<th>服务器</th>
+<th>做什么</th>
+<th>用的环境表示</th>
+<th>常用插件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>规划服务器</strong>（planner）</td>
+<td>算一条从当前位姿到目标的<strong>全局路径</strong></td>
+<td>全局代价地图</td>
+<td>NavFn（Dijkstra / A<em>）、Smac（混合 A</em>、状态格，考虑车辆转弯半径）、Theta*</td>
+</tr>
+<tr>
+<td><strong>控制服务器</strong>（controller，ROS 1 叫"局部规划器"）</td>
+<td>跟着路径走：每个周期算出<strong>速度指令</strong> <code>cmd_vel</code></td>
+<td>局部代价地图</td>
+<td>MPPI、RPP、DWB、Graceful、Rotation Shim</td>
+</tr>
+<tr>
+<td><strong>平滑服务器</strong>（smoother）</td>
+<td>把锯齿状路径修平滑、离障碍远一点</td>
+<td>全局代价地图</td>
+<td>简单 / 约束平滑器</td>
+</tr>
+<tr>
+<td><strong>行为服务器</strong>（behavior）</td>
+<td>恢复和其他行为：清代价地图、原地转、等待、后退</td>
+<td>订阅局部代价地图</td>
+<td>Spin、BackUp、Wait、ClearCostmap…</td>
+</tr>
+<tr>
+<td><strong>路线服务器</strong>（route）</td>
+<td>在预先给定的<strong>导航图</strong>（车道、允许区域、示教路线）上找路线，而不是在空地上自由规划</td>
+<td>导航图</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>别名的好处</strong>：行为树里写的是 <code>FollowPath</code>（"跟随路径"这类算法），配置里再说 <code>FollowPath</code> 用 MPPI；参数放在 <code>FollowPath.&lt;参数名&gt;</code> 下。换算法只改配置，行为树不动（服务器文档举的就是 DWB 叫 <code>FollowPath</code> 的例子）。</p>
+<p><strong>同一个服务器装多个插件</strong>：比如控制服务器同时装"跟路径"、"对接充电桩"、"进电梯"三个控制器，共用一份局部代价地图，省掉重复计算（服务器文档）。</p>
+<p><strong>MPPI 控制器</strong>（<code>configuration_guide/controller_plugins/mppi_controller/</code>）：每个周期以上一周期的最优控制为基础，<strong>随机采样</strong>一批扰动后的控制序列，向前模拟出一批轨迹，用一组插件式的"评价函数"（离路径多远、离障碍多近、朝向对不对……）打分，再按分数做 softmax 加权平均得到新控制；迭代几次后输出。评价函数不要求凸、不要求可导。支持差速、全向、阿克曼底盘，4 代 i5 上能跑 100 Hz 以上。</p>
+<h3 id="2">第 2 步 · 代价地图</h3>
+<p>依据：<code>.../navigation_concepts/environmental_representation.md</code>（下称"环境文档"）。</p>
+<p><strong>代价地图（costmap）</strong>：一张规则的二维栅格，每个格子一个代价：未知 / 空闲 / 被占 / 膨胀（环境文档）。规划器在里面<strong>搜索</strong>路径，控制器在里面<strong>采样</strong>检查轨迹。</p>
+<p><strong>两张图</strong>：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>全局代价地图</th>
+<th>局部代价地图</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>范围</td>
+<td>整张地图</td>
+<td>机器人周围几米的滚动窗口</td>
+</tr>
+<tr>
+<td>坐标系</td>
+<td><code>map</code></td>
+<td><code>odom</code>（第 12 章：连续不跳）</td>
+</tr>
+<tr>
+<td>给谁</td>
+<td>规划器、平滑器</td>
+<td>控制器、行为服务器</td>
+</tr>
+<tr>
+<td>更新</td>
+<td>较慢</td>
+<td>较快</td>
+</tr>
+</tbody>
+</table>
+<p><strong>层（layer）</strong>：代价地图由多层插件叠加：</p>
+<ul>
+<li><strong>静态层</strong>：读地图服务器的 <code>/map</code>（建好的地图，Transient local，第 7 章）；</li>
+<li><strong>障碍层 / 体素层</strong>：把激光雷达、深度相机的实时数据标记成障碍；</li>
+<li><strong>膨胀层</strong>：在障碍周围按距离加一圈逐渐变小的代价，让机器人别贴着墙走。机器人外形用 <code>robot_radius</code>（圆形）或 <code>footprint</code>（多边形）描述（服务器文档 "Robot Footprints"）。</li>
+</ul>
+<p><strong>代价地图过滤器</strong>（环境文档 Costmap Filters）：在一张"标注图"上画区域，让机器人在特定区域改变行为：禁行区、限速区、优先车道。</p>
+<h3 id="3">第 3 步 · 行为树导航器、生命周期、上手</h3>
+<p><strong>行为树（BT）</strong>（<code>.../navigation_concepts/behavior_trees.md</code>）：把任务组织成一棵树，叶子是"计算路径"、"跟随路径"、"原地转"这类基本动作，中间节点规定顺序、重试、回退。比有几十个状态、几百条转换的有限状态机更好扩展、更容易看懂。Nav2 用 BehaviorTree.CPP v4，树写在 XML 里；整个 Nav2 树还能作为子树嵌进更大的任务树。Nav2 文档强烈推荐先读 Colledanchise &amp; Ögren 那本行为树书的第 1–3 章（约 30 分钟）。</p>
+<p><strong>默认的"导航到位姿"树</strong>（<code>.../nav2_behavior_trees/trees/nav_to_pose_recovery.md</code>）：</p>
+<ul>
+<li>正常时：<strong>每秒重规划一次</strong>（离目标太近就不再重规划），把路径交给控制器；</li>
+<li>规划失败 → 清全局代价地图再试；控制失败 → 清局部代价地图再试；</li>
+<li>还不行 → 进入<strong>恢复子树</strong>：依次清代价地图、原地转、等待、后退，每做一个恢复就重新尝试导航；</li>
+<li>整个任务最多重试 <strong>6 次</strong>，再失败才报告失败；</li>
+<li>随时检查 <code>GoalUpdated</code>：有新目标（抢占）时立刻放弃恢复、响应新目标。</li>
+</ul>
+<p><strong>入口</strong>：BT 导航器对外提供动作 <code>NavigateToPose</code>、<code>NavigateThroughPoses</code> 等。你的程序（或 RViz 的"Nav2 Goal"按钮、Python 的 Simple Commander API）就是这个动作的客户端。</p>
+<p><strong>全员托管节点</strong>：Nav2 所有服务器都是托管节点，由 <code>lifecycle_manager</code> 按顺序 configure / activate，并用 bond 心跳监视（第 11 章）。</p>
+<p><strong>定位</strong>：Nav2 需要第 12 章的 tf 主干 <code>map → odom → base_link</code>：AMCL（已有地图时的粒子滤波定位）或 SLAM Toolbox（边建图边定位）发 <code>map → odom</code>；里程计（第 16 章 diff_drive_controller 或 robot_localization 融合）发 <code>odom → base_link</code>。</p>
+<p><strong>上手</strong>（<code>.../getting_started/quickstart/quickstart.md</code>，R-M8）：</p>
+<pre><code class="language-bash">sudo apt install ros-lyrical-navigation2 ros-lyrical-nav2-bringup
+ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False
+</code></pre>
+<p>在 RViz 里先点 <strong>2D Pose Estimate</strong> 给初始位姿（让 AMCL 知道机器人大概在哪），再点 <strong>Nav2 Goal</strong> 给目标。</p>
+<p><strong>和本仓库的连接</strong>：具身导航专题里的学习型导航（VLN、导航基础模型）通常只替换"目标从哪来"或"控制器"这一环：语言指令 → 视觉语言模型给出目标点 → Nav2 规划和避障；或者学到的策略直接输出 <code>cmd_vel</code>，代价地图做安全兜底（collision monitor）。Nav2 是理解"经典栈每一环在做什么"的最好参照。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 17-1</strong>（第 1 步）：规划服务器和控制服务器各输出什么？为什么控制器用局部代价地图（在 <code>odom</code> 坐标系）而不是全局的？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 17-2</strong>（第 2 步）：机器人总是贴着墙走，偶尔还蹭到。你会先调代价地图的哪一层、哪类参数？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 17-3</strong>（第 3 步）：默认行为树里，控制器连续失败时会依次发生什么？什么情况会让它立刻放弃恢复？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>五服务器</strong>：规划算路、控制跟路、平滑修路、行为救急、路线走图；算法都是插件，用别名调。</li>
+<li><strong>两张代价地图</strong>：全局在 map 给规划，局部在 odom 给控制；静态层、障碍层、膨胀层叠起来。</li>
+<li><strong>行为树</strong>：每秒重规划，失败先清图，再转、等、退，最多重试六次；新目标随时抢占。</li>
+<li><strong>前提</strong>：tf 主干齐全，全员托管节点由 lifecycle_manager 拉起。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R40–R41，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>navigation_concepts</code></td>
+<td><code>materials/ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/</code></td>
+<td><code>ros2.md</code>（托管节点与 bond）、<code>behavior_trees.md</code>、<code>navigation_servers.md</code>、<code>state_estimation.md</code>、<code>environmental_representation.md</code>。</td>
+</tr>
+<tr>
+<td>★ <code>quickstart.md</code></td>
+<td><code>.../getting_started/quickstart/quickstart.md</code></td>
+<td>TurtleBot 仿真上手；<code>build_and_install/</code>：安装与 Docker。</td>
+</tr>
+<tr>
+<td>★ <code>nav2_behavior_trees</code></td>
+<td><code>.../getting_started/nav2_behavior_trees/</code></td>
+<td><code>detailed_behavior_tree_walkthrough/</code>、<code>trees/</code>（各种预置树）、<code>nav2_specific_nodes/</code>。</td>
+</tr>
+<tr>
+<td><code>configuration_guide</code></td>
+<td><code>.../configuration_and_development/configuration_guide/</code></td>
+<td>各服务器与插件参数（MPPI、RPP、DWB、Smac、NavFn、Theta*、平滑器、代价地图层）。</td>
+</tr>
+<tr>
+<td><code>tutorials</code></td>
+<td><code>.../tutorials/</code></td>
+<td>建图、多机器人、代价地图过滤器、Simple Commander API、Docking 等教程；<code>.../configuration_and_development/simple_commander_api/</code>：用 Python 写导航任务。</td>
+</tr>
+<tr>
+<td>书</td>
+<td>Colledanchise &amp; Ögren, <em>Behavior Trees in Robotics and AI: An Introduction</em>（arXiv 1709.00084），第 1–3 章（Nav2 文档推荐）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>论文</td>
+<td>Williams et al., "Aggressive driving with model predictive path integral control"（ICRA 2016，MPPI 原始论文，Nav2 MPPI 文档链接的 IEEE 7487277）；Macenski et al., "The Marathon 2: A Navigation System"（IROS 2020，Nav2 系统论文）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>embodied-navigation-vln 综述。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>Dijkstra 算法</strong>：每次从"已知最便宜"的格子往外扩，第一次到终点时代价最小；A* 再加一项到终点的估计距离。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>路径代价 = 每格 1 + 格子的膨胀代价，之和最小</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch17_costmap_plan.py</code>，配套测试 <code>tests/test_ch16_20.py</code>；同名 notebook 在 <code>notebooks/ch17_costmap_plan.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch17_costmap_plan.py   # 一步一步打印  
+uv run pytest tests/test_ch16_20.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 2 步 代价地图</td>
+<td>被占 / 膨胀 / 空闲</td>
+<td><code>inflate(GRID)</code></td>
+<td>墙两侧和墙脚的格子标成 '+'</td>
+</tr>
+<tr>
+<td>第 1 步 规划器（无膨胀）</td>
+<td>Dijkstra 找总代价最小</td>
+<td><code>dijkstra(GRID, START, GOAL, {})</code></td>
+<td>14 格，贴着墙脚绕</td>
+</tr>
+<tr>
+<td>第 2 步 加膨胀层</td>
+<td>离障碍越近越贵</td>
+<td><code>dijkstra(..., extra)</code></td>
+<td>16 格，路上一个 '+' 都不经过</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">nd = d + 1 + extra.get(nb, 0.0)            # 走一格代价 1，再加膨胀代价
+if nd &lt; best.get(nb, math.inf):            # 找到更便宜的走法就更新
+    best[nb], prev[nb] = nd, cell
+    heapq.heappush(todo, (nd, nb))         # 小顶堆：每次先展开最便宜的
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>膨胀代价是编的</strong>（距离 1 加 3、距离 √2 加 1.5），只表示"越近越贵"；Nav2 的膨胀层按指数衰减（<code>first_time_robot_setup_guide/sensors/mapping_localization.md</code> L126）。</li>
+<li><strong>Dijkstra 和 A*</strong>：NavFn 插件两种都支持。A* 多加一项"离终点还有多远"的估计，展开的格子更少，路径代价一样。</li>
+<li><strong>只能上下左右走</strong>：真代价地图允许斜着走，路径会更顺。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>GOAL</code> 改成 (4, 8)，看两种情况的路径；</li>
+<li>在 <code>GRID</code> 第 4 行加一个 '#'，看规划器怎么绕。</li>
+</ul><nav class="pager"><a href="16-hardware-controllers.html">← 第 16 章 · 硬件组件与控制器</a><a href="18-moveit2.html">第 18 章 · MoveIt 2：机械臂运动规划 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

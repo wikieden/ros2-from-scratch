@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 5 章 · 用 Python 写节点：发布、订阅、服务、参数 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="5-python">第 5 章 · 用 Python 写节点：发布、订阅、服务、参数</h1><p><a class="btn" href="../animations/05-python-node.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：一个 ROS 2 节点的 Python 代码长什么样？定时器、发布者、订阅者、服务、客户端、参数分别怎么写？为什么"在回调里同步调用服务"会卡死？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/04-workspace-package.html">第 4 章 工作区与第一个包</a> · 下一章：<a href="../lessons/06-interfaces-actions.html">第 6 章 自定义接口与动作</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/</code> 下的 <code>Writing-A-Simple-Py-Publisher-And-Subscriber.rst</code>、<code>Writing-A-Simple-Py-Service-And-Client.rst</code>、<code>Using-Parameters-In-A-Class-Python.rst</code>；<code>ros2_documentation/source/ROS-Framework/interfaces/services/Working-with-services/Sync-Vs-Async.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 B2、B4，动手里程碑 R-M2。<br />
+本章缩写：<code>rclpy</code> = ROS Client Library for Python（ROS / 客户端 / 库 · Python 版）；RPC = Remote Procedure Call（远程 / 过程 / 调用：服务的本质）；future（不是缩写，"期货 / 凭条"：异步调用先拿到的一张凭条，结果之后才填进去）；async = asynchronous（异步）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 4 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：一个节点里的定时器、发布、订阅、服务和 executor</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>节点骨架：继承 <code>Node</code>、<code>rclpy.init</code>、<code>spin</code></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>发布者 + 定时器、订阅者</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>服务端与客户端：<code>call_async</code> 和 future，同步调用为什么会死锁</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>4</td>
+<td>参数：声明、读取、改动时的回调</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="spin">总图 · 一个节点就是"一堆回调 + 一个 spin"</h3>
+<p><img alt="Python 节点里的回调与 spin" src="../animations/05-python-node.gif" /></p>
+<p>可交互版：<a href="../animations/05-python-node.html">animations/05-python-node.html</a>（内置浏览器：<code>http://localhost:8340/05-python-node.html</code>）。</p>
+<p><strong>核心想法</strong>：ROS 2 节点是<strong>事件驱动</strong>的。你不写"一直循环、不停检查"的主程序，而是<strong>登记一堆回调</strong>（定时器到点了做什么、收到消息做什么、有人请求服务做什么），然后调用 <code>rclpy.spin(node)</code> 把控制权交给 executor。executor 发现哪件事发生了，就调用对应的回调（第 1 章总图 2 第 ⑨ 步）。</p>
+<p><strong>类比</strong>：餐厅前台。你不用每分钟跑去门口看有没有客人，而是装一个门铃（订阅）、一个闹钟（定时器）、一部电话（服务），然后坐在前台等（spin）。哪个响了就去处理哪个。</p>
+<h3 id="1">第 1 步 · 节点骨架</h3>
+<p>依据：<code>ROS-Framework/client-libraries/Working-with-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.rst</code>（下称"发布订阅教程"）。官方所有 Python 例子都是这个骨架：</p>
+<pre><code class="language-python">import rclpy
+from rclpy.executors import ExternalShutdownException
+from rclpy.node import Node
+
+class MyNode(Node):                      # ① 继承 Node
+    def __init__(self):
+        super().__init__('my_node')      # ② 节点名
+        # ③ 在这里创建发布者、订阅者、定时器、服务……
+
+def main(args=None):
+    try:
+        with rclpy.init(args=args):      # ④ 初始化 ROS；with 结束时自动清理
+            node = MyNode()
+            rclpy.spin(node)             # ⑤ 交给 executor，一直处理回调
+    except (KeyboardInterrupt, ExternalShutdownException):
+        pass                             # ⑥ Ctrl+C 正常退出
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>做什么</th>
+<th>忘了会怎样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① ②</td>
+<td>继承 <code>Node</code>，起节点名</td>
+<td>这个名字就是 <code>ros2 node list</code> 里看到的</td>
+</tr>
+<tr>
+<td>④</td>
+<td><code>rclpy.init</code> 连上 ROS（读 <code>--ros-args</code> 等）</td>
+<td>创建节点时报错</td>
+</tr>
+<tr>
+<td>⑤</td>
+<td><code>spin</code> 让回调有机会执行</td>
+<td><strong>回调永远不跑</strong>（第 1 章口诀"spin 才叫醒回调"）</td>
+</tr>
+<tr>
+<td>⑥</td>
+<td>捕获 Ctrl+C</td>
+<td>退出时打一屏异常</td>
+</tr>
+</tbody>
+</table>
+<p><code>with rclpy.init(...)</code> 是较新的写法（旧教程是手动 <code>rclpy.init()</code> + <code>rclpy.shutdown()</code>），效果一样，但不会忘了清理。</p>
+<h3 id="2">第 2 步 · 发布者 + 定时器、订阅者</h3>
+<p><strong>发布者</strong>（发布订阅教程第 2 步，官方 <code>MinimalPublisher</code> 的核心几行）：</p>
+<pre><code class="language-python">from std_msgs.msg import String
+
+class MinimalPublisher(Node):
+    def __init__(self):
+        super().__init__('minimal_publisher')
+        self.publisher_ = self.create_publisher(String, 'topic', 10)   # 类型、话题名、队列深度
+        self.timer = self.create_timer(0.5, self.timer_callback)       # 每 0.5 秒调一次
+        self.i = 0
+
+    def timer_callback(self):
+        msg = String()
+        msg.data = 'Hello World: %d' % self.i
+        self.publisher_.publish(msg)
+        self.get_logger().info('Publishing: &quot;%s&quot;' % msg.data)
+        self.i += 1
+</code></pre>
+<p><strong>订阅者</strong>：</p>
+<pre><code class="language-python">class MinimalSubscriber(Node):
+    def __init__(self):
+        super().__init__('minimal_subscriber')
+        self.subscription = self.create_subscription(
+            String, 'topic', self.listener_callback, 10)    # 类型、话题名、回调、队列深度
+
+    def listener_callback(self, msg):
+        self.get_logger().info('I heard: &quot;%s&quot;' % msg.data)
+</code></pre>
+<p><strong>逐个看参数：</strong></p>
+<ul>
+<li><strong>类型</strong>（<code>String</code>）：两边必须一样，否则匹配不上（第 1 章"三项匹配"之一）。<code>from std_msgs.msg import String</code> 导入的类，就是 rosidl 从 <code>.msg</code> 文件生成的。</li>
+<li><strong>话题名</strong>（<code>'topic'</code>）：不以 <code>/</code> 开头的是<strong>相对名</strong>，会自动加上节点的命名空间（第 3 章）。真实代码里通常写相对名，方便用命名空间分组。</li>
+<li><strong><code>10</code></strong>：队列深度，是最简写的 QoS。意思是"最多攒 10 条没处理的，满了丢最旧的"（第 1 章第 ⑧ 步）。第 7 章细讲 QoS。</li>
+<li><strong>定时器</strong>：<code>create_timer(周期秒, 回调)</code>。控制回路就是这么写的：<code>create_timer(0.02, self.control_step)</code> 就是 50 Hz。</li>
+</ul>
+<p><strong>为什么把对象存成 <code>self.xxx</code>？</strong> 发布者、订阅者、定时器对象被 Python 回收了，对应功能就停了。存到 <code>self</code> 上保证它们和节点同生共死。</p>
+<p><strong><code>package.xml</code> 和 <code>setup.py</code> 要改两处</strong>（发布订阅教程第 2.2–2.3 步）：<code>package.xml</code> 加 <code>&lt;exec_depend&gt;rclpy&lt;/exec_depend&gt;</code> 和 <code>&lt;exec_depend&gt;std_msgs&lt;/exec_depend&gt;</code>；<code>setup.py</code> 的 <code>entry_points</code> 登记 <code>'talker = 包名.模块名:main'</code> 和 <code>'listener = ...'</code>（第 4 章）。</p>
+<h3 id="3">第 3 步 · 服务端与客户端</h3>
+<p>依据：<code>.../Writing-A-Simple-Py-Service-And-Client.rst</code>（下称"服务教程"）、<code>ROS-Framework/interfaces/services/Working-with-services/Sync-Vs-Async.rst</code>（下称"同步异步"）。</p>
+<p><strong>服务端</strong>：</p>
+<pre><code class="language-python">from example_interfaces.srv import AddTwoInts
+
+class MinimalService(Node):
+    def __init__(self):
+        super().__init__('minimal_service')
+        self.srv = self.create_service(AddTwoInts, 'add_two_ints', self.add_two_ints_callback)
+
+    def add_two_ints_callback(self, request, response):    # 收到请求、填好回复、返回
+        response.sum = request.a + request.b
+        return response
+</code></pre>
+<p><code>AddTwoInts.srv</code> 就是 <code>int64 a / int64 b / --- / int64 sum</code>。回调拿到 <code>request</code>，把结果写进 <code>response</code> 再 <code>return</code>。</p>
+<p><strong>客户端</strong>（官方 <code>MinimalClientAsync</code>）：</p>
+<pre><code class="language-python">class MinimalClientAsync(Node):
+    def __init__(self):
+        super().__init__('minimal_client_async')
+        self.cli = self.create_client(AddTwoInts, 'add_two_ints')
+        while not self.cli.wait_for_service(timeout_sec=1.0):     # 等服务端上线
+            self.get_logger().info('service not available, waiting again...')
+        self.req = AddTwoInts.Request()
+
+    def send_request(self):
+        self.req.a = 41
+        self.req.b = 1
+        return self.cli.call_async(self.req)                      # 立刻返回一个 future
+
+def main(args=None):
+    with rclpy.init(args=args):
+        node = MinimalClientAsync()
+        future = node.send_request()
+        rclpy.spin_until_future_complete(node, future)            # 一边 spin 一边等结果
+        node.get_logger().info('sum = %d' % future.result().sum)
+</code></pre>
+<p><strong>future 是什么？</strong> <code>call_async</code> 不等回复，<strong>立刻</strong>返回一张"凭条"（future）。回复到了，ROS 把结果填进凭条。<code>spin_until_future_complete</code> 的意思是"一边处理回调，一边等这张凭条被填上"。<strong>类比</strong>：餐厅取号。点完餐拿到号码牌，你可以先去干别的，叫到号再去取餐。</p>
+<p><strong>为什么不用同步的 <code>call()</code>？</strong> 官方明确"不推荐用 <code>call()</code>，很容易死锁"（同步异步一文开头）。死锁是这样发生的：</p>
+<ol>
+<li>你在<strong>定时器回调</strong>里写 <code>result = self.cli.call(req)</code>，它会<strong>阻塞</strong>等回复；</li>
+<li>回复到了之后，要靠 executor 在 <code>spin</code> 里把它取出来，填进结果；</li>
+<li>但 executor 是单线程的，<strong>正卡在你的定时器回调里</strong>，没空去取回复；</li>
+<li>回调等回复，回复等回调结束，谁也等不到谁。</li>
+</ol>
+<p><strong>类比</strong>：前台只有一个人。他打电话订货，说"等对方回电"，然后就一直站在电话旁边不动。可回电要打到前台另一部电话上，而前台没人去接。</p>
+<p><strong>正确做法</strong>：</p>
+<ul>
+<li>在回调里用 <code>call_async</code>，再给 future 挂一个"完成后做什么"的回调：<code>future.add_done_callback(self.on_result)</code>；</li>
+<li>或者用多线程 executor + 回调组（第 9 章），让等待和接收在不同线程里；</li>
+<li>或者用 Lyrical 新增的 <code>AsyncNode</code>，在回调里直接 <code>await client.call(request)</code>（<code>Releases/Release-Lyrical-Luth.rst</code> "AsyncNode" 一节）。</li>
+</ul>
+<h3 id="4">第 4 步 · 参数</h3>
+<p>依据：<code>.../Using-Parameters-In-A-Class-Python.rst</code>（下称"参数教程"）、<code>ROS-Framework/parameters/Working-with-parameters.rst</code>。</p>
+<p><strong>声明 → 读取</strong>：</p>
+<pre><code class="language-python">class MinimalParam(Node):
+    def __init__(self):
+        super().__init__('minimal_param_node')
+        self.declare_parameter('my_parameter', 'world')           # 名字 + 默认值（默认值决定类型）
+        self.timer = self.create_timer(1, self.timer_callback)
+
+    def timer_callback(self):
+        my_param = self.get_parameter('my_parameter').get_parameter_value().string_value
+        self.get_logger().info('Hello %s!' % my_param)
+</code></pre>
+<ul>
+<li><strong>必须先 <code>declare_parameter</code></strong>，没声明的参数默认不能 get / set。好处：拼错名字会立刻报错，而不是悄悄用默认值。</li>
+<li>默认值的类型就是参数的类型。声明成字符串，之后 <code>param set</code> 一个整数会被拒绝。</li>
+<li>可以加描述和约束：<code>declare_parameter('speed', 0.5, ParameterDescriptor(description='最高速度 m/s'))</code>，还能设取值范围、只读（参数教程 2.1.1 节）。</li>
+</ul>
+<p><strong>运行中改了参数，节点怎么知道？</strong> 三种回调（<code>Working-with-parameters.rst</code> 对应三节）：</p>
+<table>
+<thead>
+<tr>
+<th>回调</th>
+<th>什么时候调用</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>add_pre_set_parameters_callback</code></td>
+<td>改动生效<strong>前</strong></td>
+<td>可以顺手改动 / 增加要改的参数</td>
+</tr>
+<tr>
+<td><code>add_on_set_parameters_callback</code></td>
+<td>改动生效<strong>前</strong></td>
+<td><strong>校验</strong>：返回 <code>SetParametersResult(successful=False)</code> 就拒绝这次修改</td>
+</tr>
+<tr>
+<td><code>add_post_set_parameters_callback</code></td>
+<td>改动<strong>成功后</strong></td>
+<td>更新自己的成员变量、重新配置</td>
+</tr>
+</tbody>
+</table>
+<p>官方特别提醒：校验回调里<strong>不要有副作用</strong>（不要顺手改成员变量），因为后面的回调可能还会拒绝这次修改，那样你的成员变量就和真实参数对不上了。要在改成功后做事，用 post-set 回调。</p>
+<p><strong>另一种常见写法</strong>：不用回调，每次用参数时都 <code>get_parameter</code>（像上面的定时器那样）。简单，适合不常改、读取不频繁的参数。</p>
+<p><strong>本章和 R-M2 的关系</strong>：R-M2 要你自己写一个包，里面有一对发布订阅、一对服务客户端、一个可配置参数。照本章骨架写，<strong>不要直接复制官方代码</strong>，改成你自己的消息内容（比如发布"当前时间"、服务"把两个浮点数相乘"）。</p>
+<h2 id="_2">练习与作答记录</h2>
+<p><strong>练习 5-1</strong>（第 2 步）：写出一个 Python 节点的 <code>__init__</code>：每 20 毫秒发布一次 <code>geometry_msgs/msg/Twist</code> 到相对话题 <code>cmd_vel</code>，线速度固定 0.2。只写关键几行。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 5-2</strong>（第 2 步）：<code>self.create_subscription(...)</code> 的返回值没有存到 <code>self.sub</code>，只写成 <code>self.create_subscription(...)</code>（不赋值）。可能出什么问题？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 5-3</strong>（第 3 步）：用自己的话解释：为什么在单线程 executor 的定时器回调里调用 <code>client.call(req)</code> 会卡死？给出一种改法。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 5-4</strong>（第 4 步）：你想让参数 <code>max_speed</code> 只接受 0 到 1 之间的值，超出就拒绝修改。用哪种回调？返回什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_3">口诀</h2>
+<ul>
+<li><strong>骨架</strong>：继承 Node 起个名，init、spin 加 Ctrl+C。</li>
+<li><strong>四件套</strong>：<code>create_publisher / create_subscription / create_timer / create_service</code>，对象都挂在 <code>self</code> 上。</li>
+<li><strong>服务</strong>：服务端填 response 返回；客户端 <code>call_async</code> 拿凭条，回调里别用同步 <code>call()</code>。</li>
+<li><strong>参数</strong>：先声明再用；校验在 on-set（无副作用），收尾在 post-set。</li>
+</ul>
+<h2 id="_4">本章复习卡片编号</h2>
+<p>R15–R17，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_5">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_6">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>Writing-A-Simple-Py-Publisher-And-Subscriber.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.rst</code></td>
+<td>发布订阅完整步骤（含 <code>package.xml</code>、<code>setup.py</code> 修改）。</td>
+</tr>
+<tr>
+<td>★ <code>Writing-A-Simple-Py-Service-And-Client.rst</code></td>
+<td><code>.../Writing-A-Simple-Py-Service-And-Client.rst</code></td>
+<td>服务端与异步客户端。</td>
+</tr>
+<tr>
+<td>★ <code>Sync-Vs-Async.rst</code></td>
+<td><code>ROS-Framework/interfaces/services/Working-with-services/Sync-Vs-Async.rst</code></td>
+<td>同步调用为什么会死锁、什么情况下能安全使用。</td>
+</tr>
+<tr>
+<td><code>Using-Parameters-In-A-Class-Python.rst</code></td>
+<td><code>.../Using-Parameters-In-A-Class-Python.rst</code></td>
+<td>类里声明和读取参数、<code>ParameterDescriptor</code>。</td>
+</tr>
+<tr>
+<td><code>Working-with-parameters.rst</code></td>
+<td><code>ROS-Framework/parameters/Working-with-parameters.rst</code></td>
+<td>三种参数回调；<code>.../Monitoring-For-Parameter-Changes-Python.rst</code>：用 <code>ParameterEventHandler</code> 监听别的节点的参数。</td>
+</tr>
+<tr>
+<td><code>Writing-An-Async-Node-With-Asyncio-Python.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Writing-An-Async-Node-With-Asyncio-Python.rst</code></td>
+<td>Lyrical 的 <code>AsyncNode</code>，<code>await</code> 写法。</td>
+</tr>
+<tr>
+<td>C++ 对照</td>
+<td><code>.../Writing-A-Simple-Cpp-Publisher-And-Subscriber.rst</code>、<code>.../Writing-A-Simple-Cpp-Service-And-Client.rst</code>、<code>.../Using-Parameters-In-A-Class-CPP.rst</code>（结构完全对应：<code>rclcpp::Node</code>、<code>create_publisher&lt;T&gt;</code>、<code>rclcpp::spin</code>）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>055_ros_parameter_design.md</code></td>
+<td><code>design/articles/055_ros_parameter_design.md</code></td>
+<td>参数系统为什么设计成"属于节点、先声明后使用"。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">数学原理</h3>
+<ul>
+<li>本章没有用到数学。</li>
+</ul>
+<h3 id="_8">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create_publisher(类型, 话题, 深度)；create_timer(周期秒, 回调)；周期 0.02 s = 50 Hz</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch05_python_node.py</code>，配套测试 <code>tests/test_ch01_05.py</code>；同名 notebook 在 <code>notebooks/ch05_python_node.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch05_python_node.py   # 一步一步打印  
+uv run pytest tests/test_ch01_05.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 骨架</td>
+<td>不 spin 回调不跑</td>
+<td>建好定时器后看 <code>counter</code></td>
+<td>0 条</td>
+</tr>
+<tr>
+<td>第 2 步 定时器 + 发布订阅</td>
+<td>每 0.5 秒发一条</td>
+<td><code>ex.spin_for(2.0)</code></td>
+<td>收到 <code>Hello World: 0</code>…<code>3</code> 共 4 条</td>
+</tr>
+<tr>
+<td>第 3 步 future</td>
+<td>call_async 立刻返回凭条</td>
+<td><code>fut.done</code></td>
+<td>先 False，spin 后 True，sum = 42</td>
+</tr>
+<tr>
+<td>第 3 步 死锁</td>
+<td>单线程回调里同步 call</td>
+<td><code>node.call(...)</code> 在定时器里</td>
+<td><code>DeadlockError</code></td>
+</tr>
+<tr>
+<td>第 4 步 参数</td>
+<td>先声明；默认值定类型</td>
+<td><code>set_parameter('my_parameter', 42)</code></td>
+<td>False（被拒绝）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">fut = Future()                                         # 凭条
+self.ex.schedule(self.ex.now + 0.001, lambda: fut.set_result(handler(request, {})))
+return fut                                             # call_async：不等，立刻返回
+if self.ex.in_callback:                                # call：唯一的线程正卡在回调里
+    raise DeadlockError(&quot;...&quot;)
+if type(value) is not type(self._params[name]):        # 参数类型由默认值决定
+    return False
+</code></pre>
+<p><strong>代码里才看得到的 4 件事</strong>：</p>
+<ol>
+<li><strong>这是个迷你 rclpy</strong>：方法名和真 API 一样，但时间是假的（<code>MiniExecutor</code> 按待办表推进，不 sleep），所以 2 秒瞬间跑完。</li>
+<li><strong>发布不等于回调</strong>：<code>publish</code> 只是往 executor 的待办表里加一件事，真正调订阅回调要等 spin，和第 1 章"spin 才叫醒回调"一致。</li>
+<li><strong>死锁在真 rclpy 里不会报错，而是一直卡住</strong>。模拟里为了能演示，检测到"在回调里同步等"就抛异常。</li>
+<li><strong>参数校验回调（on_set）这里没写</strong>，留给练习 5-4。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把定时器周期改成 0.2 秒，<code>spin_for(1.0)</code>，数一数收到几条；</li>
+<li>把 <code>call_async</code> 的请求改成别的两个数，看 <code>sum</code>。</li>
+</ul><nav class="pager"><a href="04-workspace-package.html">← 第 4 章 · 工作区、colcon 和第一个包</a><a href="06-interfaces-actions.html">第 6 章 · 自定义接口与动作 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

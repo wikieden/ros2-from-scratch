@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 6 章 · 自定义接口与动作 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="6">第 6 章 · 自定义接口与动作</h1><p><a class="btn" href="../animations/06-action-internals.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：自己的消息格式怎么定义？<code>.msg</code> 里能写哪些类型？自定义接口为什么要单独放一个 CMake 包？动作服务端 / 客户端怎么写？动作底层到底是什么？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/05-python-nodes.html">第 5 章 用 Python 写节点</a> · 下一章：<a href="../lessons/07-qos.html">第 7 章 QoS</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/interfaces/About-Interfaces.rst</code>；<code>ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/Custom-ROS2-Interfaces.rst</code>；<code>design/articles/actions.md</code>（Under the hood、Goal States）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 B3、B5，动手里程碑 R-M2 的后半。<br />
+本章缩写：msg / srv = message / service（消息 / 服务的定义文件）；IDL = Interface Definition Language（接口 / 定义 / 语言）；ID = identifier（标识号）；UUID = Universally Unique Identifier（通用 / 唯一 / 标识：动作目标的 ID 格式）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：动作 = 3 个服务 + 2 个话题 + 一台状态机</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>写接口文件：字段类型、数组、默认值、常量</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>接口包：<code>rosidl_generate_interfaces</code>、<code>package.xml</code> 三行</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>动作：服务端、客户端、目标状态机</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 动作在底层是什么</h3>
+<p><img alt="动作的内部：三个服务 + 两个话题" src="../animations/06-action-internals.gif" /></p>
+<p>可交互版：<a href="../animations/06-action-internals.html">animations/06-action-internals.html</a>（内置浏览器：<code>http://localhost:8340/06-action-internals.html</code>）。</p>
+<p>第 1 章说动作是"长任务、有反馈、能取消"。它不是一种新的底层通信，而是<strong>用 3 个服务 + 2 个话题拼出来的</strong>（<code>design/articles/actions.md</code> "Under the hood"一节）：</p>
+<table>
+<thead>
+<tr>
+<th>部件</th>
+<th>类型</th>
+<th>名字（动作名为 <code>/fibonacci</code>）</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>发目标</td>
+<td>服务</td>
+<td><code>/fibonacci/_action/send_goal</code></td>
+<td>客户端发目标，服务端回"接受 / 拒绝"</td>
+</tr>
+<tr>
+<td>取消</td>
+<td>服务</td>
+<td><code>/fibonacci/_action/cancel_goal</code></td>
+<td>客户端请求取消</td>
+</tr>
+<tr>
+<td>取结果</td>
+<td>服务</td>
+<td><code>/fibonacci/_action/get_result</code></td>
+<td>客户端提前请求，服务端<strong>做完才回复</strong></td>
+</tr>
+<tr>
+<td>反馈</td>
+<td>话题</td>
+<td><code>/fibonacci/_action/feedback</code></td>
+<td>服务端边做边发进度</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>话题</td>
+<td><code>/fibonacci/_action/status</code></td>
+<td>所有在办目标的状态列表</td>
+</tr>
+</tbody>
+</table>
+<p>名字前缀 <code>_action/</code> 开头带下划线，表示"隐藏"：<code>ros2 topic list</code> 默认不显示它们，加 <code>--include-hidden-topics</code> 才看得到。</p>
+<h3 id="1">第 1 步 · 写接口文件</h3>
+<p>依据：<code>ROS-Framework/interfaces/About-Interfaces.rst</code>（下称"接口文档"）。</p>
+<p>三种接口文件（第 1、2 章已见过）：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>结构</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.msg</code></td>
+<td>字段列表</td>
+<td><code>int64 num</code></td>
+</tr>
+<tr>
+<td><code>.srv</code></td>
+<td>请求 <code>---</code> 回复</td>
+<td><code>int64 a</code> / <code>int64 b</code> / <code>---</code> / <code>int64 sum</code></td>
+</tr>
+<tr>
+<td><code>.action</code></td>
+<td>目标 <code>---</code> 结果 <code>---</code> 反馈</td>
+<td><code>int32 order</code> / <code>---</code> / <code>int32[] sequence</code> / <code>---</code> / <code>int32[] sequence</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>每行是"类型 名字"</strong>，可以用的类型（接口文档 Field types 一节）：</p>
+<ul>
+<li><strong>内置类型</strong>：<code>bool</code>、<code>byte</code>、<code>char</code>、<code>float32</code>、<code>float64</code>、<code>int8</code> … <code>int64</code>、<code>uint8</code> … <code>uint64</code>、<code>string</code>、<code>wstring</code>。</li>
+<li><strong>别的消息</strong>：<code>geometry_msgs/Point center</code>，就是把一个消息嵌进另一个。</li>
+</ul>
+<p><strong>数组和有界类型</strong>（接口文档"Every built-in-type can be used to define arrays"一节的例子）：</p>
+<pre><code>int32[] unbounded_integer_array      # 不限长度
+int32[5] five_integers_array         # 正好 5 个
+int32[&lt;=5] up_to_five_integers_array # 最多 5 个
+string&lt;=10 up_to_ten_characters      # 字符串最多 10 个字符
+</code></pre>
+<p>有界类型（<code>&lt;=N</code>）的好处是<strong>最大尺寸已知</strong>，实时系统可以提前分配好内存，不用运行中临时申请（第 15 章实时会再提到）。</p>
+<p><strong>默认值和常量</strong>（接口文档 Field default value / Constants 两节）：</p>
+<pre><code>uint8 x 42                 # 字段默认值：第三项
+int16 y -2000
+string full_name &quot;John Doe&quot;
+int32 X=123                # 常量：名字必须全大写，用 = 号，程序里不能改
+string FOO=&quot;foo&quot;
+</code></pre>
+<p>常量常用来当"枚举"：比如 <code>uint8 MODE_IDLE=0</code>、<code>uint8 MODE_RUN=1</code>，再加一个字段 <code>uint8 mode</code>。</p>
+<p><strong>命名习惯</strong>：文件名（也就是类型名）用大驼峰 <code>MyMessage.msg</code>；字段名用小写加下划线 <code>target_pose</code>。</p>
+<p><strong>标准消息优先</strong>：位姿、速度、图像、关节状态、点云这些，ROS 已经有标准消息（<code>geometry_msgs</code>、<code>sensor_msgs</code> 等）。<strong>能用标准的就别自定义</strong>：标准消息 RViz 能直接显示，别人的节点能直接接，bag 工具能直接读。</p>
+<h3 id="2">第 2 步 · 接口包</h3>
+<p>依据：<code>ROS-Framework/client-libraries/Working-with-Client-Libraries/Custom-ROS2-Interfaces.rst</code>（下称"自定义接口教程"）。</p>
+<p><strong>接口放在单独的包里，而且必须是 <code>ament_cmake</code> 包</strong>（自定义接口教程第 1 步："它是、也只能是 ament_cmake 包"）。这不影响 Python 节点使用它：生成的代码 Python 和 C++ 都能用。单独一个包的好处：别的包只需依赖消息定义，不用连带依赖你的实现代码。</p>
+<pre><code class="language-bash">ros2 pkg create --build-type ament_cmake --license Apache-2.0 tutorial_interfaces
+mkdir tutorial_interfaces/msg tutorial_interfaces/srv
+</code></pre>
+<p>例子（自定义接口教程第 2 步）：</p>
+<pre><code># msg/Num.msg
+int64 num
+
+# msg/Sphere.msg
+geometry_msgs/Point center
+float64 radius
+
+# srv/AddThreeInts.srv
+int64 a
+int64 b
+int64 c
+---
+int64 sum
+</code></pre>
+<p><strong><code>CMakeLists.txt</code> 加这几行</strong>：</p>
+<pre><code class="language-cmake">find_package(geometry_msgs REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  &quot;msg/Num.msg&quot;
+  &quot;msg/Sphere.msg&quot;
+  &quot;srv/AddThreeInts.srv&quot;
+  DEPENDENCIES geometry_msgs     # Sphere 用到了 geometry_msgs
+)
+</code></pre>
+<p><strong><code>package.xml</code> 加三行</strong>（自定义接口教程第 142–153 行）：</p>
+<pre><code class="language-xml">&lt;buildtool_depend&gt;rosidl_default_generators&lt;/buildtool_depend&gt;  &lt;!-- 编译时：生成代码的工具 --&gt;
+&lt;exec_depend&gt;rosidl_default_runtime&lt;/exec_depend&gt;               &lt;!-- 运行时：用生成代码要的库 --&gt;
+&lt;member_of_group&gt;rosidl_interface_packages&lt;/member_of_group&gt;    &lt;!-- 声明&quot;我是接口包&quot; --&gt;
+</code></pre>
+<p>编译后检查：<code>ros2 interface show tutorial_interfaces/msg/Num</code>。使用方在自己的 <code>package.xml</code> 里 <code>&lt;depend&gt;tutorial_interfaces&lt;/depend&gt;</code>，Python 里 <code>from tutorial_interfaces.msg import Num</code>。</p>
+<p><strong>背后发生了什么</strong>：<code>rosidl_generate_interfaces</code> 就是第 1 章总图 1 左边那一列：把 <code>.msg</code> 转成 IDL，再生成 Python 类、C++ 结构体和各中间件的序列化代码。</p>
+<h3 id="3">第 3 步 · 动作：服务端、客户端、状态机</h3>
+<p>依据：<code>ROS-Framework/interfaces/actions/Working-with-actions/Creating-an-Action.rst</code>、<code>.../Writing-an-Action-Server-Client/Py.rst</code> 及其 <code>scripts/</code>（下称"动作教程"）、<code>design/articles/actions.md</code>（下称"动作设计"）。</p>
+<p><strong>定义</strong>（<code>action/Fibonacci.action</code>，放在接口包里，<code>rosidl_generate_interfaces</code> 里加 <code>"action/Fibonacci.action"</code>）：</p>
+<pre><code>int32 order        # 目标：要算到第几项
+---
+int32[] sequence   # 结果：整个数列
+---
+int32[] sequence   # 反馈：算到目前为止的数列
+</code></pre>
+<p><strong>服务端</strong>（动作教程 <code>scripts/server_3.py</code> 的核心）：</p>
+<pre><code class="language-python">from rclpy.action import ActionServer
+from custom_action_interfaces.action import Fibonacci
+
+class FibonacciActionServer(Node):
+    def __init__(self):
+        super().__init__('fibonacci_action_server')
+        self._action_server = ActionServer(self, Fibonacci, 'fibonacci', self.execute_callback)
+
+    def execute_callback(self, goal_handle):
+        feedback_msg = Fibonacci.Feedback()
+        feedback_msg.sequence = [0, 1]
+        for i in range(1, goal_handle.request.order):
+            feedback_msg.sequence.append(feedback_msg.sequence[i] + feedback_msg.sequence[i-1])
+            goal_handle.publish_feedback(feedback_msg)     # 发反馈
+            time.sleep(1)
+        goal_handle.succeed()                              # 标记成功
+        result = Fibonacci.Result()
+        result.sequence = feedback_msg.sequence
+        return result
+</code></pre>
+<p><code>goal_handle</code> 是"这一个目标的把手"：读请求（<code>.request</code>）、发反馈（<code>.publish_feedback</code>）、宣布结局（<code>.succeed()</code> / <code>.abort()</code> / <code>.canceled()</code>）。</p>
+<p><strong>客户端</strong>（<code>scripts/client_2.py</code> 的核心，<strong>全程异步，一路挂回调</strong>）：</p>
+<pre><code class="language-python">from rclpy.action import ActionClient
+
+class FibonacciActionClient(Node):
+    def __init__(self):
+        super().__init__('fibonacci_action_client')
+        self._action_client = ActionClient(self, Fibonacci, 'fibonacci')
+
+    def send_goal(self, order):
+        goal_msg = Fibonacci.Goal()
+        goal_msg.order = order
+        self._action_client.wait_for_server()
+        self._send_goal_future = self._action_client.send_goal_async(
+            goal_msg, feedback_callback=self.feedback_callback)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
+
+    def goal_response_callback(self, future):        # ① 服务端接受了吗？
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            return
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future):           # ③ 结果到了
+        self.get_logger().info('Result: {0}'.format(future.result().result.sequence))
+
+    def feedback_callback(self, feedback_msg):       # ② 每条反馈
+        self.get_logger().info('Received feedback: {0}'.format(feedback_msg.feedback.sequence))
+</code></pre>
+<p>两个 future 对应总图里的两个服务：<code>send_goal_async</code> → <code>send_goal</code> 服务；<code>get_result_async</code> → <code>get_result</code> 服务。反馈走 <code>feedback</code> 话题，直接调 <code>feedback_callback</code>。</p>
+<p><strong>目标状态机</strong>（动作设计 Goal States 一节）。服务端给每个<strong>接受了的</strong>目标维护一个状态：</p>
+<pre><code>           send_goal 被接受
+                 │
+             ACCEPTED ──execute──▶ EXECUTING ──succeed──▶ SUCCEEDED
+                 │                     │
+                 │                     ├──abort──────────▶ ABORTED
+                 │                     │
+                 └──cancel_goal──▶ CANCELING ──canceled──▶ CANCELED
+                                   （EXECUTING 时也可进入）
+</code></pre>
+<ul>
+<li>三个中间状态：ACCEPTED（已接受，等待执行）、EXECUTING（执行中）、CANCELING（已同意取消，正在收尾，比如让机械臂安全停下）。</li>
+<li>三个终态：SUCCEEDED、ABORTED（服务端自己放弃）、CANCELED（应客户端要求取消）。第 2 章 turtlesim 的三种结局就是这三个终态。</li>
+<li>被拒绝的目标不进状态机。</li>
+</ul>
+<p><strong>动作服务端还有两个可选回调</strong>：<code>goal_callback</code>（决定接受还是拒绝新目标）和 <code>cancel_callback</code>（决定是否同意取消）。默认是全部接受、全部同意。第 2 章说"新目标来了怎么处理由服务端决定"，就是在 <code>goal_callback</code> 里决定的。</p>
+<p><strong>注意一个隐患</strong>：上面服务端的 <code>execute_callback</code> 用了 <code>time.sleep(1)</code>，它会占住 executor。单线程时，执行期间这个节点的其他回调（包括取消请求）都处理不了。真实代码要用多线程 executor 加回调组（第 9 章）。</p>
+<p><strong>和本仓库的连接</strong>：VLA 系统里"执行一个子任务（比如'把毛巾叠好'）"天然就是一个动作：目标是指令，反馈是当前进度，结果是成功 / 失败，上层规划器能随时取消。Nav2 的 <code>NavigateToPose</code>、MoveIt 2 的 <code>MoveGroup</code> 也都是动作（第 17、18 章）。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 6-1</strong>（第 1 步）：为一个"电池状态"自定义消息写 <code>.msg</code>：电压（浮点）、电量百分比（0–100 的整数）、是否在充电，再加三个表示健康状态的常量 GOOD / WARN / BAD 和一个状态字段。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 6-2</strong>（第 2 步）：你把 <code>.msg</code> 文件放进了一个 <code>ament_python</code> 包里，编译后 <code>ros2 interface show</code> 找不到它。为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 6-3</strong>（第 3 步）：动作客户端调用 <code>cancel_goal_async()</code> 后，服务端的目标会依次经过哪些状态？最终是哪个终态？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 6-4</strong>（第 3 步）：如果用"一个服务 + 一个反馈话题"自己拼一个"能看进度的长任务"，相比正式的动作，少了哪些能力？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>写接口</strong>：一行"类型 名字"；<code>[]</code> 不限长、<code>[N]</code> 定长、<code>[&lt;=N]</code> 有上限；默认值放第三项，常量全大写用等号。</li>
+<li><strong>接口包</strong>：只能 ament_cmake；CMake 里 <code>rosidl_generate_interfaces</code>，<code>package.xml</code> 三行（生成器、运行时、组成员）。</li>
+<li><strong>动作</strong>：三服务（发目标、取消、取结果）两话题（反馈、状态）；三中间态三终态。</li>
+<li><strong>标准优先</strong>：能用 <code>geometry_msgs</code> / <code>sensor_msgs</code> 就别自定义。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R18–R19，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Interfaces.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/interfaces/About-Interfaces.rst</code></td>
+<td>全部内置类型、与 C++ / Python / DDS 类型的对照表、数组、默认值、常量。</td>
+</tr>
+<tr>
+<td>★ <code>Custom-ROS2-Interfaces.rst</code></td>
+<td><code>.../Working-with-Client-Libraries/Custom-ROS2-Interfaces.rst</code></td>
+<td>接口包完整步骤；<code>Single-Package-Define-And-Use-Interface.rst</code>：接口和代码放同一个包的写法（不推荐但可行）。</td>
+</tr>
+<tr>
+<td>★ <code>Creating-an-Action.rst</code></td>
+<td><code>ROS-Framework/interfaces/actions/Working-with-actions/Creating-an-Action.rst</code>、<code>Writing-an-Action-Server-Client/Py.rst</code>（<code>scripts/server_0–3.py</code>、<code>client_0–2.py</code> 是逐步演进的版本）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>actions.md</code></td>
+<td><code>materials/design/articles/actions.md</code></td>
+<td>动作的完整设计（状态机图、三服务两话题的请求 / 回复字段、命名规则）。</td>
+</tr>
+<tr>
+<td><code>110_interface_definition.md</code></td>
+<td><code>design/articles/110_interface_definition.md</code>、<code>111_mapping_dds_types.md</code>、<code>112_generated_interfaces_cpp.md</code>、<code>114_generated_interfaces_python.md</code></td>
+<td>接口定义语言和生成代码的设计。</td>
+</tr>
+<tr>
+<td>常用标准消息包</td>
+<td><code>std_msgs</code>、<code>geometry_msgs</code>（位姿、速度、变换）、<code>sensor_msgs</code>（图像、点云、IMU、关节状态）、<code>nav_msgs</code>（地图、路径、里程计）、<code>trajectory_msgs</code>（关节轨迹）。用 <code>ros2 interface list</code> 查看本机全部接口。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>有限状态机</strong>：状态有限，(当前状态, 事件) 决定下一个状态；动作目标状态机就是一张这样的表。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动作 = 3 个服务（send_goal、cancel_goal、get_result）+ 2 个话题（feedback、status）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch06_interfaces_actions.py</code>，配套测试 <code>tests/test_ch06_10.py</code>；同名 notebook 在 <code>notebooks/ch06_interfaces_actions.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch06_interfaces_actions.py   # 一步一步打印  
+uv run pytest tests/test_ch06_10.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 数组</td>
+<td><code>[]</code> / <code>[5]</code> / <code>[&lt;=5]</code></td>
+<td><code>parse_field(...)</code></td>
+<td>不限长度 / 正好 5 个 / 最多 5 个</td>
+</tr>
+<tr>
+<td>第 1 步 默认值与常量</td>
+<td>第三项是默认值；<code>=</code> 是常量</td>
+<td><code>parse_field('int32 X=123')</code></td>
+<td>常量 123</td>
+</tr>
+<tr>
+<td>总图 动作底层</td>
+<td>3 个服务 + 2 个话题</td>
+<td><code>action_parts('/fibonacci')</code></td>
+<td><code>/fibonacci/_action/send_goal</code> 等 5 个</td>
+</tr>
+<tr>
+<td>第 3 步 Fibonacci</td>
+<td>order = 5，每项发反馈</td>
+<td><code>fibonacci_execute(5)</code></td>
+<td>反馈 [0,1,1] 起；结果 [0,1,1,2,3,5]</td>
+</tr>
+<tr>
+<td>第 3 步 状态机</td>
+<td>ACCEPTED → EXECUTING → 终态</td>
+<td><code>run_goal([...])</code></td>
+<td>SUCCEEDED / ABORTED</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">sequence = [0, 1]
+for i in range(1, order):                           # 官方 server 的循环
+    sequence.append(sequence[i] + sequence[i - 1])
+    feedbacks.append(list(sequence))                # publish_feedback
+TRANSITIONS = {(&quot;ACCEPTED&quot;, &quot;execute&quot;): &quot;EXECUTING&quot;,
+               (&quot;EXECUTING&quot;, &quot;succeed&quot;): &quot;SUCCEEDED&quot;, ...}
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>反馈要拷一份</strong>：<code>feedbacks.append(list(sequence))</code>。直接 append <code>sequence</code> 的话，后面的修改会改到之前存的每一条——Python 列表是引用。</li>
+<li><strong>状态机里取消那条路（CANCELING → CANCELED）写进了字典，但 <code>main()</code> 没走</strong>，留给练习 6-3。</li>
+<li><strong>解析器只认讲义里那几种写法</strong>，真 rosidl 还支持 <code>wstring</code>、嵌套包名的完整写法等。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>order</code> 改成 8，看结果数列和反馈条数；</li>
+<li>给 <code>parse_field</code> 喂一行 <code>float64[3] position</code>，看它怎么拆。</li>
+</ul><nav class="pager"><a href="05-python-nodes.html">← 第 5 章 · 用 Python 写节点：发布、订阅、服务、参数</a><a href="07-qos.html">第 7 章 · QoS：通信质量设置 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

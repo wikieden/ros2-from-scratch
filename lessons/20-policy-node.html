@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 20 章 · 收尾：把学习策略部署成 ROS 2 节点 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="20-ros-2">第 20 章 · 收尾：把学习策略部署成 ROS 2 节点</h1><p><a class="btn" href="../animations/20-policy-node.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：一个 VLA / 模仿学习策略，怎么包成 ROS 2 节点接到真机上？图像和关节状态怎么对齐时间？几百毫秒一次的推理，怎么变成 50 Hz 以上平滑的关节命令？怎么保证出问题时机器人安全停下？延迟怎么量？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/19-sim-deploy.html">第 19 章 仿真与部署</a> · 下一章：—（专题完）<br />
+对应原文：前 19 章各自的原文（本章是组合应用）；<code>ecosystem/control.ros.org/doc/resources/gsoc2026_physical_ai.rst</code>（轨迹融合、位置上采样）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 I3，动手里程碑 R-M10。本章是前 19 章的综合应用，连接 VLA 专题第 3 章（动作分块）和第 13 章（RTC，规划中）。<br />
+本章缩写：VLA = Vision-Language-Action（视觉 / 语言 / 动作模型）；RTC = Real-Time Chunking（实时 / 分块：边执行上一段边推理下一段，衔接不抖）；ACT = Action Chunking with Transformers；GPU = Graphics Processing Unit；Hz = Hertz（赫兹，每秒次数）；p99 = 99th percentile（第 99 百分位：100 次里最慢的那一档）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：一个策略节点的完整数据流</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>输入：订阅、时间同步、坐标对齐</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>推理与输出：快慢分离、动作块插值、接控制器</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>安全、生命周期与测量</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 策略节点的数据流</h3>
+<p><img alt="VLA 策略节点数据流" src="../animations/20-policy-node.gif" /></p>
+<p>可交互版：<a href="../animations/20-policy-node.html">animations/20-policy-node.html</a>（内置浏览器：<code>http://localhost:8340/20-policy-node.html</code>）。</p>
+<pre><code>相机驱动 ──/camera/image_raw（Best effort）─┐
+                                          ├─▶ 同步 ─▶ 推理（慢，GPU，~5–10 Hz）─▶ 动作块
+ros2_control ──/joint_states──────────────┘                                      │
+                                                                                 ▼
+JTC ◀── /…/joint_trajectory（短轨迹）◀── 执行（快，50 Hz：插值 + 衔接 + 限幅）◀── 缓冲区
+</code></pre>
+<p><strong>这一章没有新的 ROS 概念</strong>，全是前面各章的组合。下面每一步都标了出处。</p>
+<h3 id="1">第 1 步 · 输入：订阅、同步、坐标</h3>
+<p><strong>订阅</strong>（第 5、7 章）：</p>
+<pre><code class="language-python">from rclpy.qos import qos_profile_sensor_data
+self.create_subscription(Image, 'camera/image_raw', self.on_image, qos_profile_sensor_data,
+                         callback_group=self.io_group)
+self.create_subscription(JointState, 'joint_states', self.on_joint_states, 10,
+                         callback_group=self.io_group)
+</code></pre>
+<p>相机用 Sensor data 预设（Best effort），否则和驱动的 QoS 不匹配（第 7 章最常见的坑）。话题名写相对名，方便用命名空间（第 3、14 章）。</p>
+<p><strong>时间同步</strong>：模型需要"同一时刻"的图像和关节状态。两个话题频率不同、到达时间有先后，常用 <code>message_filters</code> 的近似时间同步器，按消息头里的时间戳配对（tf2 教程里的消息过滤器用法，第 12 章附录）。多个相机同理。<strong>时间戳必须是采集时刻</strong>，而不是收到时刻；多台电脑时还要 NTP / PTP 对时（第 11 章）。</p>
+<p><strong>坐标</strong>（第 12、13 章）：如果模型输出的是"末端位姿 / 末端增量"，要用 tf 把它放到控制器认的坐标系（通常 <code>base_link</code>）；相机外参（<code>base_link → camera_link</code>）来自手眼标定，写成静态变换。训练数据和部署时的坐标约定必须一致：这是 sim-to-real 最常见的错误来源之一。</p>
+<p><strong>图像转换</strong>：<code>sensor_msgs/Image</code> 转 numpy / torch 用 <code>cv_bridge</code>；注意颜色顺序（RGB / BGR）、分辨率、归一化和训练时一致。</p>
+<h3 id="2">第 2 步 · 推理与输出：快慢分离</h3>
+<p><strong>问题</strong>：大模型一次推理要 100–300 ms（VLA 第 3 章："每秒重看 10 次，意味着每次推理必须在 0.1 秒内算完"），但关节命令要 50 Hz 以上才平滑。</p>
+<p><strong>做法：两个回调组 / 两个线程</strong>（第 9 章）：</p>
+<table>
+<thead>
+<tr>
+<th>部分</th>
+<th>频率</th>
+<th>做什么</th>
+<th>放哪</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>推理</strong>（慢）</td>
+<td>5–10 Hz</td>
+<td>取最新同步好的观测 → 模型 → 一个动作块（比如未来 50 步，每步 20 ms）</td>
+<td>单独的回调组 / 线程，或单独进程（GPU）</td>
+</tr>
+<tr>
+<td><strong>执行</strong>（快）</td>
+<td>50 Hz 定时器</td>
+<td>从缓冲区取当前时刻该执行的那一步，插值、限幅，发出</td>
+<td>另一个互斥回调组</td>
+</tr>
+</tbody>
+</table>
+<p>两者之间用一个加锁很短的缓冲区交换"最新动作块 + 它对应的起始时刻"。Python 里推理放 GPU 上，GIL 影响不大；对延迟要求更高时把推理放进单独进程或 C++ 组件，用进程内通信或 <code>rosidl::Buffer</code> 传张量（第 10 章）。</p>
+<p><strong>动作块衔接</strong>（VLA 第 3 章、study-plan 的 RTC）：新动作块算出来时，旧动作块还有一截没执行完。直接切换会在衔接处跳一下（新旧计划不一致）。做法有：</p>
+<ul>
+<li><strong>时间集成</strong>（temporal ensembling，ACT 的做法）：同一时刻多个块给出的动作加权平均；</li>
+<li><strong>RTC</strong>：推理时就把"马上要执行、来不及改"的那几步固定成上一块的值，让新块从那里平滑接上（VLA 专题第 13 章规划讲解，V-M7 实现）。</li>
+</ul>
+<p><strong>ros2_controllers 已经在帮你做衔接</strong>（<code>materials/ecosystem/control.ros.org/doc/resources/gsoc2026_physical_ai.rst</code>，2026 年 GSoC 项目）。这份文档开头就点明了问题：学习型策略（VLA、扩散策略、ACT）以 20–50 Hz 出关节目标、每 50–500 ms 重规划一次，而硬件要 500 Hz–2 kHz 的连续命令；直接转发稀疏路点，每个路点处都会出现速度跳变和加速度尖峰。项目给 JTC 加了三样东西：</p>
+<ul>
+<li><strong>轨迹融合</strong>（参数 <code>allow_trajectory_replacement</code>，默认开）：新轨迹到达时，不再丢弃正在执行的那条，而是拼成一条：旧轨迹上"机器人实际所在位置"到交接时刻的前缀 + 在交接点从旧样条上解析采样出的一个<strong>桥接点</strong>（带真实的速度和加速度）+ 新路点 + 新消息没覆盖到的关节继续沿旧轨迹走完的后缀。</li>
+<li><strong>只有位置的动作块也能平滑</strong>（参数 <code>positions_upsampling</code>）：在非实时的订阅回调里为每个关节解一个三对角方程组，求出全局三次样条在各节点的速度，写回消息，于是实时回路按三次埃尔米特插值得到二阶导数连续（C2）的轨迹；消息没带时间时按策略频率补上 <code>time_from_start</code>。连续的多个块之间，把每块的起始速度钳到上一个命令速度，消除接缝处的"停一下"；每块末尾仍以静止结束，策略停发时机器人会停住。文档里 5 Hz 的抓放策略，加加速度（jerk）峰值约降到四分之一。</li>
+<li>新的 <strong><code>cartesian_trajectory_controller</code></strong>：直接接收末端位姿的动作块。</li>
+</ul>
+<p>也就是说，R-M10 里"动作块转短轨迹发给 JTC"这条路，ros2_controllers 主线（2026 年下半年）已经有现成的平滑衔接（是否已进入你装的 Lyrical 二进制包，启动控制器后用 <code>ros2 param list</code> 看有没有这两个参数）；你自己的执行回调可以更简单（取块、限幅、按策略频率发出），把重点放在测量和安全上。</p>
+<p><strong>发给谁</strong>（第 16 章）：</p>
+<table>
+<thead>
+<tr>
+<th>输出形式</th>
+<th>接哪个控制器</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关节位置目标，每 20 ms 一个</td>
+<td><code>forward_command_controller</code>（位置）</td>
+<td>最直接；控制器原样写进命令接口，平滑性全靠你</td>
+</tr>
+<tr>
+<td>一小段关节轨迹 / 整个动作块</td>
+<td>JTC 的 <code>joint_trajectory</code> 话题</td>
+<td>JTC 在 1 kHz 里插值；开启融合与位置上采样后块间平滑衔接；<strong>R-M10 用这种</strong></td>
+</tr>
+<tr>
+<td>末端位姿动作块</td>
+<td><code>cartesian_trajectory_controller</code></td>
+<td>GSoC 2026 新增</td>
+</tr>
+<tr>
+<td>末端速度（Twist）</td>
+<td>MoveIt Servo（第 18 章）</td>
+<td>Servo 做逆解、碰撞和奇异点减速，安全性最好</td>
+</tr>
+<tr>
+<td>底盘速度</td>
+<td><code>diff_drive_controller</code> 的 <code>cmd_vel</code>（第 16、17 章）</td>
+<td>可再经 Nav2 的碰撞监视器兜底</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">第 3 步 · 安全、生命周期与测量</h3>
+<p><strong>安全</strong>（多章组合）：</p>
+<ol>
+<li><strong>限幅</strong>：每步关节变化量、速度不超过限值（URDF / <code>joint_limits.yaml</code>，第 13、18 章）；ros2_control 也有关节限位功能（<code>joint_limiting.rst</code>，第 16 章附录）。</li>
+<li><strong>超时停车</strong>：执行回调发现最新动作块"太旧"（比如超过 0.5 s 没有新推理结果），就发"保持当前位置"，不要无限外推旧计划；控制器侧可再设 QoS Deadline（第 7 章）。</li>
+<li><strong>输入失效</strong>：图像或关节状态停止更新时停止输出；QoS 事件 / 时间戳检查（第 7、11 章）。</li>
+<li><strong>关键节点退出就整体停机</strong>：launch 事件（第 14 章）。</li>
+<li><strong>急停是硬件回路</strong>，不依赖这个节点（第 19 章清单）。</li>
+</ol>
+<p><strong>做成托管节点</strong>（第 11 章）：</p>
+<table>
+<thead>
+<tr>
+<th>转换</th>
+<th>策略节点里做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_configure</code></td>
+<td>读参数（模型路径、控制频率、动作块长度）、加载权重、GPU 预热一次</td>
+</tr>
+<tr>
+<td><code>on_activate</code></td>
+<td>创建 / 激活订阅和发布，开始推理和执行</td>
+</tr>
+<tr>
+<td><code>on_deactivate</code></td>
+<td>停止输出，机器人保持当前位置；权重留在显存里，随时可再激活</td>
+</tr>
+<tr>
+<td><code>on_cleanup</code></td>
+<td>释放模型</td>
+</tr>
+</tbody>
+</table>
+<p><strong>测量</strong>（R-M10 的核心产出）：</p>
+<ul>
+<li><strong>端到端延迟</strong>：图像采集时间戳 → 对应动作被发出的时刻。用 ros2_tracing 或在消息里带上来源时间戳自己算（第 14 章）。看平均值，更要看 <strong>p99</strong> 和抖动。</li>
+<li><strong>推理耗时分布</strong>、<strong>执行回调的周期抖动</strong>（第 9 章：慢回调会不会挤占快回调）。</li>
+<li><strong>录 bag</strong>：同时录图像、关节状态、动作输出（第 3 章），回到桌前可重放、可做离线评估，也能直接当新的训练数据。</li>
+</ul>
+<p><strong>R-M10 的完整做法</strong>（study-plan）：</p>
+<ol>
+<li>用第 13 章的 2 连杆臂 + 第 16 章 mock 硬件 + JTC；</li>
+<li>写策略节点（托管节点），先用<strong>随机策略</strong>或<strong>回放策略</strong>（从 bag 里读动作）代替真模型；</li>
+<li>推理回调人为 <code>sleep</code> 100 / 300 ms 模拟大模型；</li>
+<li>比较"直接切换"和"有衔接"两种执行方式的关节轨迹抖动；</li>
+<li>用 tracing 量端到端延迟和 p99。</li>
+</ol>
+<p>做完这一步，VLA 专题里学的模型就有了通往真机的完整路径：<strong>模型（VLA 专题）→ 策略节点（本章）→ ros2_control（第 15–16 章）→ 硬件（机器人软硬件架构专题）</strong>。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 20-1</strong>（第 1 步）：策略节点订阅相机图像用了默认 QoS，结果收不到图。为什么？怎么改？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 20-2</strong>（第 2 步）：推理 300 ms 一次，执行 50 Hz。一个动作块至少要覆盖多长时间，才不会在两次推理之间"断粮"？为什么实际要留余量？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 20-3</strong>（第 2 步）：为什么 R-M10 选择把动作块转成短轨迹发给 JTC，而不是逐点发给 <code>forward_command_controller</code>？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 20-4</strong>（第 3 步）：网络抖动导致 1 秒没有新的推理结果。执行回调应该怎么做？为什么不能继续沿用旧动作块往后外推？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>输入</strong>：图像 Best effort，时间戳是采集时刻，近似时间同步；坐标对齐 base_link。</li>
+<li><strong>快慢分离</strong>：推理慢、执行快，分组分线程，中间一个短锁缓冲区。</li>
+<li><strong>衔接</strong>：块与块之间要平滑（时间集成 / RTC），不要硬切。</li>
+<li><strong>输出</strong>：短轨迹给 JTC，末端速度给 Servo，底盘速度给 diff_drive。</li>
+<li><strong>安全</strong>：限幅、过期就停、输入断了就停、关键节点退出全停、急停在硬件。</li>
+<li><strong>托管</strong>：configure 加载模型，activate 才动，deactivate 保持不动。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R46–R47，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>本专题前 19 章（本章每一步都标了出处）；特别是第 7 章（QoS）、第 9 章（executor 与回调组）、第 10 章（零拷贝与 GPU）、第 11 章（托管节点）、第 14 章（tracing）、第 16 章（JTC）、第 18 章（Servo）。</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/Tf2/Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter.rst</code></td>
+<td>消息过滤器。</td>
+</tr>
+<tr>
+<td><code>userdoc.rst</code></td>
+<td><code>materials/ecosystem/ros2_controllers/joint_trajectory_controller/doc/userdoc.rst</code></td>
+<td>话题入口的轨迹替换语义（新轨迹替换旧轨迹的方式）。</td>
+</tr>
+<tr>
+<td>★ <code>gsoc2026_physical_ai.rst</code></td>
+<td><code>materials/ecosystem/control.ros.org/doc/resources/gsoc2026_physical_ai.rst</code></td>
+<td>JTC 轨迹融合、位置上采样、跨块连续性、笛卡尔轨迹控制器（第 2 步依据）。</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>VLA 第 3 章 动作分块（推理频率约束、时间集成、异步推理）；VLA study-plan V-M7（RTC 实现）；robot-system-architecture 第 8 章（自主栈分层）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>论文（VLA 专题已收录或计划收录）</td>
+<td>ACT（Zhao et al., RSS 2023，时间集成）；Real-Time Chunking（Black et al., 2025，RTC）；SmolVLA（异步推理）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>百分位</strong>：从小到大排，第 99 百分位是"100 次里最慢那档"；平均值会被大量快的样本掩盖。</li>
+<li><strong>近似时间同步</strong>：给每条消息找时间戳最近的另一条，差值小于容差才配对。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前步号 <span class="arithmatex">\(=\lfloor(t_{\text{now}}-t_{\text{start}})/0.02\rfloor\)</span></td>
+</tr>
+<tr>
+<td>限幅：<span class="arithmatex">\(q_{\text{发}}=q_{\text{上}}+\text{clip}(q_{\text{目标}}-q_{\text{上}},\pm\Delta)\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch20_policy_node.py</code>，配套测试 <code>tests/test_ch16_20.py</code>；同名 notebook 在 <code>notebooks/ch20_policy_node.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch20_policy_node.py   # 一步一步打印  
+uv run pytest tests/test_ch16_20.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 近似时间同步</td>
+<td>按时间戳配对，差太多不配</td>
+<td><code>approx_sync(IMAGES, JOINTS, 0.005)</code></td>
+<td>前三张配上，0.100 那张没配上</td>
+</tr>
+<tr>
+<td>第 2 步 动作块缓冲区</td>
+<td>按当前时刻取第几步</td>
+<td><code>buf.step_at(now)</code></td>
+<td>1.000→0；1.019→0；1.020→1；1.050→2</td>
+</tr>
+<tr>
+<td>第 2 步 时间集成</td>
+<td>同一时刻多个块取平均</td>
+<td><code>temporal_ensemble([0.16, 0.20])</code></td>
+<td>0.18</td>
+</tr>
+<tr>
+<td>第 3 步 限幅</td>
+<td>每步变化不超过限值</td>
+<td><code>limit_step(0.16, 0.40, 0.05)</code></td>
+<td>0.21</td>
+</tr>
+<tr>
+<td>第 3 步 测量</td>
+<td>看平均，更要看 p99</td>
+<td><code>percentile(latency_ms, 99)</code></td>
+<td>平均 51.3、p50 44、p99 120 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">tj = min(joints, key=lambda t: abs(t - ti))               # 最近的关节状态
+math.floor((now - self.start) / STEP_S + 1e-9)            # 块开始后第几个 20 ms
+prev + max(-max_delta, min(max_delta, target - prev))     # 限幅
+s[math.ceil(q / 100 * len(s)) - 1]                        # 第 q 百分位（最近秩法）
+</code></pre>
+<p><strong>代码里才看得到的 4 件事</strong>：</p>
+<ol>
+<li><strong><code>+ 1e-9</code></strong>：<code>(1.02 - 1.00) / 0.02</code> 在浮点里算出来是 0.99999…，不加一个极小的数会被 floor 成 0。时间戳换算成步数时到处都有这个坑。</li>
+<li><strong>时间集成用了等权平均</strong>：ACT 用指数权重 <span class="arithmatex">\(w_i=e^{-m\,i}\)</span>（i 是块的新旧次序），这里简化成等权。</li>
+<li><strong>平均值会骗人</strong>：100 个样本里 10 个是 120 ms，平均只有 51 ms，p99 却是 120 ms。机器人卡顿看的是 p99 和抖动。</li>
+<li><strong>所有时间戳、动作块、延迟样本都是编的</strong>。超时停车那条规则这里没有演示，留给练习 20-4。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把同步的容差 <code>slop</code> 改成 0.01，看 0.100 那张图能不能配上；</li>
+<li>把限幅的 <code>max_delta</code> 改成 0.1，看实际发出多少。</li>
+</ul><nav class="pager"><a href="19-sim-deploy.html">← 第 19 章 · 仿真与部署</a><span></span></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

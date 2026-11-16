@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 1 章 · ROS 2 是什么 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="1-ros-2">第 1 章 · ROS 2 是什么</h1><p><a class="btn" href="../animations/01-architecture.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：ROS 明明叫"操作系统"，它到底是什么？一个机器人程序在 ROS 2 里被拆成什么样？为什么要从 ROS 1 推倒重做一个 ROS 2？<br />
+讲解日期：2026-11-04 – 11-05 · 上一章：— · 下一章：<a href="../lessons/02-turtlesim-cli.html">第 2 章 用命令行看懂 turtlesim</a><br />
+对应原文：<code>ros2_documentation/source/About-ROS.rst</code> §Framework；<code>ros2_documentation/source/ROS-Framework/About-Nodes.rst</code> L36–L50；<code>ros2_documentation/source/ROS-Framework/client-libraries/About-Internal-Interfaces/About-Internal-Interfaces.rst</code> L35–L56；<code>ros2_documentation/source/ROS-Framework/interfaces/Topics-Services-Actions.rst</code>；<code>design/articles/010_why_ros2.md</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 A1–A2。<br />
+本章缩写：ROS = Robot Operating System（机器人 / 操作 / 系统，名字叫操作系统，其实是一套库和工具）；DDS = Data Distribution Service（数据 / 分发 / 服务：工业标准的发布订阅中间件）；RMW = ROS MiddleWare（ROS 中间件接口）；rcl = ROS Client Library（ROS 客户端库的 C 核心）；rclpy / rclcpp = rcl + Python / C++；QoS = Quality of Service（服务 / 质量：通信可靠性等设置）；API = Application Programming Interface（应用 / 编程 / 接口）；UDP = User Datagram Protocol（用户 / 数据报 / 协议：一种网络传输协议）；IDL = Interface Definition Language（接口 / 定义 / 语言）；rosidl = ROS IDL；VLA = Vision-Language-Action（视觉 / 语言 / 动作模型）；IK = Inverse Kinematics（逆 / 运动学：由手的位置反算关节角）；LTS = Long-Term Support（长期支持版）；JSON = JavaScript Object Notation（JavaScript / 对象 / 表示法：代码对照里代替 CDR 演示序列化）；CDR = Common Data Representation（通用 / 数据 / 表示：DDS 的序列化格式）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看两张总图，再分 3 步讲：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总体架构图 + 核心流程图</td>
+<td>✅ 2026-11-05</td>
+</tr>
+<tr>
+<td>1</td>
+<td>节点（node）与"管道"</td>
+<td>✅ 练习跳过</td>
+</tr>
+<tr>
+<td>2</td>
+<td>节点之间的四种说话方式（预览）</td>
+<td>✅ 练习 1-3 可选</td>
+</tr>
+<tr>
+<td>3</td>
+<td>为什么有 ROS 2</td>
+<td>✅ 2026-11-05，练习 1-4 可选</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 先看全局</h3>
+<h4 id="1">图 1：总体架构（一摞软件层）</h4>
+<p><img alt="ROS 2 总体架构" src="../animations/01-architecture.gif" /></p>
+<p>可交互版：<a href="../animations/01-architecture.html">animations/01-architecture.html</a>，可单步逐层点亮。</p>
+<blockquote>
+<p>怎么打开交互版：直接双击 html 用 Chrome / Safari 打开即可。在 Claude 内置浏览器里要走本地服务器（直接开文件只显示静态快照，没有样式和动画）：启动 <code>.claude/launch.json</code> 里的 <code>ros2-animations</code> 预览，或在仓库根目录运行 <code>python3 -m http.server 8340 --directory ros2/notes/animations</code>，然后打开 <code>http://localhost:8340/01-architecture.html</code>。</p>
+</blockquote>
+<p>从上往下：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>是什么</th>
+<th>你要不要碰</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>能力包</td>
+<td>Nav2、MoveIt 2、ros2_control、tf2：别人写好的一组节点</td>
+<td>拿来用、配参数</td>
+</tr>
+<tr>
+<td>你的节点</td>
+<td>每个只干一件事；命令行、rviz2、rosbag2 这些工具也都是节点</td>
+<td><strong>你写</strong></td>
+</tr>
+<tr>
+<td>客户端库 rclpy / rclcpp</td>
+<td><code>create_publisher</code>、<code>create_subscription</code>、<code>spin</code> 所在的 API</td>
+<td><strong>你调用</strong></td>
+</tr>
+<tr>
+<td>rcl（C）</td>
+<td>各语言共用的核心逻辑：节点、参数、时间、计算图</td>
+<td>不碰</td>
+</tr>
+<tr>
+<td>rmw 接口</td>
+<td>中间件的"插座"：只规定发现、发布订阅、请求应答、序列化</td>
+<td>不碰</td>
+</tr>
+<tr>
+<td>rmw 实现</td>
+<td>"插头"：Fast DDS（默认）、Cyclone DDS、Connext DDS、Zenoh</td>
+<td>设 <code>RMW_IMPLEMENTATION</code> 环境变量就能换</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>同进程 / 共享内存 / UDP 网络</td>
+<td>不碰</td>
+</tr>
+<tr>
+<td>左侧：接口定义</td>
+<td><code>.msg</code> / <code>.srv</code> / <code>.action</code> 经 rosidl 生成各层要用的类型代码</td>
+<td>自定义消息时写</td>
+</tr>
+</tbody>
+</table>
+<p>依据：<code>ROS-Framework/client-libraries/About-Internal-Interfaces/About-Internal-Interfaces.rst</code> 第 35–56 行（rcl / rmw 的分工，"把用户代码和中间件完全隔离"）；默认中间件见 <code>Get-Started/Installation/RMW-Implementations.rst</code> 第 36 行。</p>
+<p><strong>一句话</strong>：你只写节点、调客户端库；rcl 往下全是 ROS 2 内部，中间件可以整块换掉而代码不改。</p>
+<h4 id="2">图 2：核心流程（一条消息走一趟）</h4>
+<p><img alt="一条消息从发出到被处理" src="../animations/01-message-flow.gif" /></p>
+<p>可交互版：<a href="../animations/01-message-flow.html">animations/01-message-flow.html</a>。</p>
+<p>用官方 talker / listener 例子：talker 每 0.5 秒往 <code>/chatter</code> 发一句话，listener 收到就打印。</p>
+<pre><code>建立连接（只做一次）
+  ① 启动：各自创建 publisher / subscription（只在本进程登记）
+  ② 发现：中间件在同一 ROS_DOMAIN_ID 里自动广播&quot;我是谁、发收什么&quot;，没有中心服务器
+  ③ 匹配：话题名相同 + 类型相同 + QoS 兼容，三项都满足才连上
+每条消息（循环）
+  ④ 发布：定时器回调里 pub.publish(msg)
+  ⑤ 往下：rclpy → rcl → rmw
+  ⑥ 序列化：中间件把对象变成字节
+  ⑦ 传输：UDP / 共享内存
+  ⑧ 排队：接收端放进订阅队列（深度 10，满了挤掉最旧的）
+  ⑨ 等待集：executor 在 spin() 里发现队列有数据
+  ⑩ 往上 + 反序列化：字节还原成对象
+  ⑪ 回调：调用你的 callback(msg)
+</code></pre>
+<p><strong>三个看点：</strong></p>
+<ol>
+<li>连接是"自动发现 + 三项匹配"建立的（<code>nodes/About-Discovery.rst</code> 第 26–34 行）。QoS 不兼容就连不上，只打一条警告，新手常踩。</li>
+<li>消息在发送端往下走（对象 → 字节），在接收端往上走（字节 → 对象）。所以 Python 发、C++ 收没问题。</li>
+<li>回调不是消息一到就跑：要等 executor 在 <code>spin()</code> 里通过等待集（wait set）发现有数据才调用（<code>client-libraries/About-Executors/About-Executors.rst</code> 第 60–71 行）。<strong>忘了 <code>spin()</code>，回调永远不会执行。</strong></li>
+</ol>
+<p>你的代码只出现在 ① 和 ⑪，中间九步都是 ROS 2 替你做的。</p>
+<h3 id="1_1">第 1 步 · 节点与"管道"</h3>
+<p><strong>ROS 不是操作系统。</strong> 它不像 Windows、Ubuntu 那样管硬盘和内存，而是装在 Ubuntu 上面的一套工具和库。官方原话说它是机器人各部分之间通信的 "plumbing"（管道）（<code>materials/ros2_documentation/source/About-ROS.rst</code> §Framework）。</p>
+<p><strong>白话类比：餐厅后厨。</strong></p>
+<ul>
+<li>每个厨师只干一件事：一个切菜，一个炒菜，一个摆盘。</li>
+<li>切菜的切好了，就放到传菜口。他不用知道是谁来拿。</li>
+<li>炒菜的只盯着传菜口，有菜就拿。他也不用知道是谁切的。</li>
+</ul>
+<p>换到 ROS 里：</p>
+<table>
+<thead>
+<tr>
+<th>后厨</th>
+<th>ROS 2</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一个厨师</td>
+<td><strong>节点（node）</strong></td>
+<td>一个干一件事的程序</td>
+</tr>
+<tr>
+<td>一个传菜口，写着名字"切好的菜"</td>
+<td><strong>话题（topic）</strong>，有名字，如 <code>/image</code></td>
+<td>数据放在这里</td>
+</tr>
+<tr>
+<td>往传菜口放菜</td>
+<td><strong>发布（publish）</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>盯着传菜口拿菜</td>
+<td><strong>订阅（subscribe）</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>机器人例子</strong>：一台看到红球就追的小车。</p>
+<pre><code>[camera_driver] --/image--&gt; [ball_detector] --/ball_position--&gt; [chaser] --/cmd_vel--&gt; [motor_driver]
+   读相机               在图里找红球                  算该往哪开             驱动轮子
+</code></pre>
+<p>方括号是节点，箭头上是话题名。官方的要求是"每个节点只做一件逻辑上的事"（<code>ROS-Framework/About-Nodes.rst</code> 第 41 行）。</p>
+<p><strong>这样拆有什么好处：</strong></p>
+<ol>
+<li><strong>可替换</strong>：换一个牌子的相机，只需换掉 <code>camera_driver</code>。只要它照样往 <code>/image</code> 发图，后面的节点一行都不用改。</li>
+<li><strong>能分开跑</strong>：节点可以在同一个进程、不同进程，甚至不同电脑上，彼此照样通信（<code>About-Nodes.rst</code> 第 40 行）。比如 <code>ball_detector</code> 放到带 GPU 的电脑上，<code>motor_driver</code> 留在小车上。</li>
+<li><strong>可复用</strong>：别人写好的 <code>camera_driver</code>、导航节点，拿来就能接上。</li>
+</ol>
+<p><strong>和本仓库的连接</strong>：学的 VLA 策略部署到机器人上时，就是<strong>一个节点</strong>：订阅 <code>/image</code> 和 <code>/joint_states</code>，发布动作。</p>
+<h3 id="2_1">第 2 步 · 节点之间的四种说话方式</h3>
+<p>接着用后厨类比。厨师之间不只有"传菜口"一种沟通方式：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>后厨类比</th>
+<th>特点</th>
+<th>机器人例子</th>
+<th>定义文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>话题 topic</strong></td>
+<td>传菜口：做好就放，谁要谁拿</td>
+<td>单向、持续不断；多对多；<strong>发的一方决定什么时候发</strong></td>
+<td>相机 30 Hz 发 <code>/image</code>；关节状态 <code>/joint_states</code></td>
+<td><code>.msg</code></td>
+</tr>
+<tr>
+<td><strong>服务 service</strong></td>
+<td>打内线电话问一句："今天还有牛排吗？"对方马上答</td>
+<td>一问一答；问的一方<strong>等着</strong>答案；必须很快结束</td>
+<td>问逆运动学（IK）的解；问"电量多少"</td>
+<td><code>.srv</code>（请求 <code>---</code> 回复）</td>
+</tr>
+<tr>
+<td><strong>动作 action</strong></td>
+<td>点外卖：下单 → 不断收到"骑手到哪了" → 送达；中途能取消</td>
+<td>耗时长；中间有<strong>进度反馈</strong>；能<strong>取消 / 抢占</strong></td>
+<td>"导航到厨房"（几十秒）；"机械臂去抓杯子"</td>
+<td><code>.action</code>（目标 <code>---</code> 结果 <code>---</code> 反馈）</td>
+</tr>
+<tr>
+<td><strong>参数 parameter</strong></td>
+<td>每个厨师灶台上的旋钮：火候、咸淡</td>
+<td>不是消息，是节点自己的<strong>配置</strong>；不改代码就能调；运行中也能改</td>
+<td><code>ball_detector</code> 要找的颜色；最高车速；每个节点都有的 <code>use_sim_time</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>怎么选（官方的经验规则，<code>ROS-Framework/interfaces/Topics-Services-Actions.rst</code>）：</strong></p>
+<ul>
+<li>数据<strong>源源不断</strong> → 话题。</li>
+<li>问一句、<strong>马上</strong>要答案 → 服务。官方特别强调：服务<strong>不能</strong>用来做耗时长的事，因为对方一直在等，出了意外也没法中途叫停。</li>
+<li>要花一段时间、想看<strong>进度</strong>、可能<strong>中途取消</strong> → 动作。官方说动作最重要的性质就是能被干净地抢占（preempt）。</li>
+<li>是节点的<strong>设置</strong>，不是要传的数据 → 参数。</li>
+</ul>
+<p><strong>几个容易忽略的细节：</strong></p>
+<ol>
+<li>话题是<strong>匿名</strong>的：订阅者一般不知道也不关心是谁发的（<code>About-Topics.rst</code> §Anonymous）。这正是第 1 步"可替换"的来源。</li>
+<li>话题是<strong>强类型</strong>的：消息里每个字段的类型和单位都定死。比如 IMU 消息里的角速度单位规定是 rad/s（<code>About-Topics.rst</code> §Strongly-typed）。</li>
+<li>一个服务名、一个动作名<strong>只能有一个</strong>服务端（server），但可以有很多客户端（client）。话题则随便多少个发布者和订阅者（<code>About-Services.rst</code>、<code>About-Actions.rst</code>）。</li>
+<li>参数属于某个节点，节点关掉参数就没了（<code>About-Parameters.rst</code> §Parameters in ROS）。</li>
+</ol>
+<p><strong>回头看练习 1-2</strong>：想从追红球改成追蓝球，最省事的做法是给 <code>ball_detector</code> 一个参数 <code>target_color</code>，运行时用 <code>ros2 param set</code> 改成 blue，<strong>一行代码都不用改</strong>；<code>motor_driver</code> 完全不用动。</p>
+<p><strong>和本仓库的连接</strong>：VLA 策略节点订阅图像和关节状态用<strong>话题</strong>；上层"去叠毛巾"这种几十秒的任务适合做成<strong>动作</strong>；控制频率、模型路径做成<strong>参数</strong>。</p>
+<h3 id="3-ros-2">第 3 步 · 为什么有 ROS 2</h3>
+<p><strong>白话类比：小饭馆开成连锁店。</strong></p>
+<p>一家小饭馆的后厨，规矩是围着"一个厨房、一个领班、几个熟手"定的：谁来上班先去领班那登记，要找谁做菜也先问领班。店小的时候这很好用。可一旦要开连锁、接外卖、半夜也营业、还要过卫生检查，这套规矩就处处不够用。ROS 1 就是那家小饭馆。</p>
+<p><strong>ROS 1 是围着一台机器人定的规矩。</strong> ROS 从 2007 年开始，最初是给 Willow Garage 的 PR2 机器人做的开发环境。设计时默认了六个前提（<code>materials/design/articles/010_why_ros2.md</code> §How we got here）：</p>
+<ol>
+<li>只有<strong>一台</strong>机器人；</li>
+<li>机器人上带着<strong>工作站级</strong>的电脑；</li>
+<li><strong>不要求实时</strong>；</li>
+<li><strong>网络很好</strong>（有线或近距离高速无线）；</li>
+<li>用在<strong>学术研究</strong>；</li>
+<li><strong>完全自由</strong>：不规定程序该怎么组织。</li>
+</ol>
+<p>ROS 1 里还有一个"领班"：<strong>master</strong>（<code>roscore</code> 进程）。所有节点先到 master 登记，再通过它找到彼此（同文 §New use cases 称之为 "single-master structure"）。</p>
+<p><strong>后来的需求，六个前提全被打破了。</strong> 同一篇文章列出了 ROS 1 没想到的用法，每一条 ROS 2 都有对应的答案：</p>
+<table>
+<thead>
+<tr>
+<th>新需求</th>
+<th>ROS 1 的难处</th>
+<th>ROS 2 的答案</th>
+<th>本专题哪里讲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>多台机器人一起干活</td>
+<td>只有一个 master，多机只能"凑合着改"</td>
+<td><strong>没有 master</strong>：分布式自动发现（总图 2 第 ② 步）；用 <code>ROS_DOMAIN_ID</code> 分组</td>
+<td>阶段 C3</td>
+</tr>
+<tr>
+<td>小型嵌入式板子、单片机</td>
+<td>只能隔着驱动程序接进来</td>
+<td>想让它们也成为正式成员</td>
+<td>不展开</td>
+</tr>
+<tr>
+<td>实时控制</td>
+<td>只能另想办法</td>
+<td>设计上支持实时：executor、ros2_control</td>
+<td>阶段 C4、F</td>
+</tr>
+<tr>
+<td>网络不好（差的 Wi-Fi，甚至天地链路）</td>
+<td>没有调节手段</td>
+<td><strong>QoS</strong>：可靠 / 尽力而为、队列深度、截止时间</td>
+<td>阶段 C1</td>
+</tr>
+<tr>
+<td>做成产品</td>
+<td>实验室原型很难直接变成产品</td>
+<td>托管节点（lifecycle）、安全机制、部署工具</td>
+<td>阶段 C7、I</td>
+</tr>
+<tr>
+<td>需要规定好的写法</td>
+<td>什么都不规定</td>
+<td>提供明确的模式：生命周期管理、静态配置</td>
+<td>阶段 C7、E</td>
+</tr>
+</tbody>
+</table>
+<p><strong>还有一个原因：现成的技术成熟了。</strong> 2007 年时，ROS 的发现、消息定义、序列化、传输全是自己从零写的。到 2014 年前后，市面上已经有了现成的方案（文中列了 ZeroMQ、Protocol Buffers、DDS 等）。ROS 2 最后选了 <strong>DDS</strong>（Data Distribution Service，一个工业标准的发布 / 订阅中间件），好处是：</p>
+<ul>
+<li>自己要维护的代码少得多；</li>
+<li>DDS 有成文的标准规范，别人可以审查、可以另做实现。ROS 1 只有 wiki 上的说明和一份参考实现（<code>020_ros_with_dds.md</code> §An End-to-End Middleware）；</li>
+<li>DDS 自带<strong>分布式发现</strong>，任意两个程序不需要 master 就能通信（同文 §What is DDS）；</li>
+<li>已经有工业产品在用，回答"能不能上生产"时有底气。</li>
+</ul>
+<p>代价是：ROS 得在 DDS 的设计框架里干活，不合适的地方要绕过去（同文同节）。这也是为什么要有总图 1 里的 <strong>rmw 插座</strong>：把 DDS 隔离在下面，以后还能换。现在可选的 Zenoh（<code>rmw_zenoh_cpp</code>）就是一个不基于 DDS 的插头。</p>
+<p><strong>为什么不在 ROS 1 上直接改？</strong> 改动太伤筋动骨，会把大家正在用的 ROS 1 弄坏。所以 ROS 2 是<strong>另起一套</strong>，接口（API）不兼容；需要共存时用桥接（bridge）在两边转发消息（<code>010_why_ros2.md</code> §Why not just enhance ROS 1）。</p>
+<p><strong>现状</strong>：ROS 1 已停止开发、不再发布新版本，ROS 2 每年 5 月发一个新版本（<code>About-ROS.rst</code> §ROS distributions）。新项目直接学 ROS 2。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 1-1</strong>：一台扫地机器人有：激光雷达（测周围障碍物距离）、两个轮子电机、前方碰撞开关。它要能边走边建地图、避开障碍。请把它拆成 3–5 个节点，写出每个节点<strong>发布</strong>什么话题、<strong>订阅</strong>什么话题（话题名自己起）。</p>
+<ul>
+<li>作答：跳过（2026-11-04，直接进入第 2 步）</li>
+</ul>
+<p><strong>练习 1-2</strong>：追红球小车里，如果想把"追红球"改成"追蓝球"，最少需要改哪个节点？<code>motor_driver</code> 需要改吗？</p>
+<ul>
+<li>作答：跳过（2026-11-04）。参考思路见第 2 步末尾"回头看练习 1-2"。</li>
+</ul>
+<p><strong>练习 1-3</strong>（第 2 步）：下面四件事各该用话题、服务、动作还是参数？\
+(a) 激光雷达每秒发 10 帧扫描；(b) 让机械臂去抓杯子，大约要 8 秒；(c) 问相机节点"你现在的分辨率是多少"；(d) 把小车最高速度从 0.5 改成 0.3 m/s。</p>
+<ul>
+<li>作答：（可选，待作答）</li>
+</ul>
+<p><strong>练习 1-4</strong>（第 3 步）：你的机器人在仓库里 Wi-Fi 很差的角落，相机图像经常丢帧、延迟很大。按第 3 步的表，ROS 2 用哪个机制来应对？换成 ROS 1 为什么难办？</p>
+<ul>
+<li>作答：（可选，待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>架构</strong>：节点写在上，rclpy 来调；rcl 往下是内部，中间件能换插头。</li>
+<li><strong>流程</strong>：先发现、再匹配；往下变字节，往上变对象；队列里等着，spin 才叫醒回调。</li>
+<li><strong>四种说话</strong>：流水用话题，问答用服务，长活用动作，设置用参数。</li>
+<li><strong>为什么 ROS 2</strong>：小饭馆开连锁：去掉领班（master），借用 DDS，加上 QoS。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R01–R05，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-ROS.rst</code></td>
+<td><code>materials/ros2_documentation/source/About-ROS.rst</code></td>
+<td>ROS 生态四块（Framework / Tools / Capabilities / Community）。</td>
+</tr>
+<tr>
+<td>★ <code>About-Nodes.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/About-Nodes.rst</code> 第 36–50 行</td>
+<td>节点的定义。</td>
+</tr>
+<tr>
+<td>★ <code>Topics-Services-Actions.rst</code></td>
+<td><code>ROS-Framework/interfaces/Topics-Services-Actions.rst</code></td>
+<td>三种接口怎么选（第 2 步的规则来源）。</td>
+</tr>
+<tr>
+<td><code>About-Topics.rst</code></td>
+<td><code>ROS-Framework/interfaces/About-Topics.rst</code></td>
+<td>发布 / 订阅、匿名、强类型。</td>
+</tr>
+<tr>
+<td><code>About-Services.rst</code></td>
+<td><code>ROS-Framework/interfaces/About-Services.rst</code>、<code>About-Actions.rst</code></td>
+<td><code>.srv</code> / <code>.action</code> 文件结构，一个名字只能一个 server。</td>
+</tr>
+<tr>
+<td><code>About-Parameters.rst</code></td>
+<td><code>ROS-Framework/About-Parameters.rst</code></td>
+<td>参数的类型、生命周期、设置方式。</td>
+</tr>
+<tr>
+<td>★ <code>010_why_ros2.md</code></td>
+<td><code>materials/design/articles/010_why_ros2.md</code></td>
+<td>为什么做 ROS 2（第 3 步主要依据：六个前提、六个新需求、为什么不改 ROS 1）。</td>
+</tr>
+<tr>
+<td><code>020_ros_with_dds.md</code></td>
+<td><code>materials/design/articles/020_ros_with_dds.md</code> §Why Consider DDS、§What is DDS</td>
+<td>为什么选 DDS。注意文首说明它写于正式决定用 DDS 之前。</td>
+</tr>
+<tr>
+<td>论文</td>
+<td>Macenski et al., "Robot Operating System 2: Design, architecture, and uses in the wild", <em>Science Robotics</em> 7(66), 2022（<code>010_why_ros2.md</code> 第 32–50 行给出引用）。本地没有 PDF，想深入可下载。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>About-Internal-Interfaces.rst</code></td>
+<td><code>ROS-Framework/client-libraries/About-Internal-Interfaces/About-Internal-Interfaces.rst</code></td>
+<td>rcl / rmw 分层和 rosidl 类型代码生成（图 1 的依据）。</td>
+</tr>
+<tr>
+<td><code>About-Discovery.rst</code></td>
+<td><code>ROS-Framework/nodes/About-Discovery.rst</code></td>
+<td>发现机制三条规则（图 2 ②③）。</td>
+</tr>
+<tr>
+<td><code>About-Executors.rst</code></td>
+<td><code>ROS-Framework/client-libraries/About-Executors/About-Executors.rst</code> 第 39–76 行</td>
+<td><code>spin()</code> 与 wait set（图 2 ⑨）。study-plan 阶段 C4 会细讲。</td>
+</tr>
+<tr>
+<td><code>Working-with-multiple-RMW-implementations.rst</code></td>
+<td><code>Get-Started/Installation/RMW-Implementations/Working-with-multiple-RMW-implementations.rst</code> 第 46 行</td>
+<td>用 <code>RMW_IMPLEMENTATION</code> 换中间件。</td>
+</tr>
+<tr>
+<td><code>060_ros_middleware_interface.md</code></td>
+<td><code>design/articles/060_ros_middleware_interface.md</code></td>
+<td>rmw 接口的设计动机。</td>
+</tr>
+<tr>
+<td>注意</td>
+<td><code>ROS-Framework/How-ROS-Works.rst</code> 截至 2026-11-04 正文还是 "Coming Soon"，不用读。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li>本章没有用到数学。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>连上 = 话题名相同 + 类型相同 + QoS 兼容</td>
+</tr>
+<tr>
+<td>回调执行 = 消息进队列 + executor 在 spin() 里取出</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>本书所有代码都是<strong>纯 Python 模拟</strong>：ROS 2 在 macOS 上只能源码编译，本机没有装 rclpy，所以把讲义里的规则和数字写成几十行 Python 跑一遍（每个模块开头写了为什么、模拟了什么）。真 API 留到 Linux 环境里做里程碑。代码在仓库本地 <code>ros2/solutions/chapter-code/ch01_message_flow.py</code>，配套测试 <code>tests/test_ch01_05.py</code>；同名 notebook 在 <code>notebooks/ch01_message_flow.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch01_message_flow.py   # 一步一步打印  
+uv run pytest tests/test_ch01_05.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总图 2 ③ 匹配</td>
+<td>话题名 + 类型都对上</td>
+<td><code>g.publish('/chatter', ...)</code></td>
+<td>送到 1 个；拼错成 <code>/chater</code> 送到 0 个</td>
+</tr>
+<tr>
+<td>总图 2 ⑥ 序列化</td>
+<td>往下变字节</td>
+<td><code>json.dumps(msg).encode()</code></td>
+<td>队列里是 <code>bytes</code></td>
+</tr>
+<tr>
+<td>总图 2 ⑨–⑪</td>
+<td>spin 才叫醒回调</td>
+<td><code>spin_once(g)</code></td>
+<td>spin 前 0 条，spin 后 1 条</td>
+</tr>
+<tr>
+<td>总图 2 ⑧ 排队</td>
+<td>深度 10，满了挤掉最旧的</td>
+<td><code>deque(maxlen=10)</code></td>
+<td>连发 12 条，收到 3…12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">sub.queue: deque[bytes] = deque(maxlen=10)   # 订阅队列：满了自动丢最旧的
+data = json.dumps(msg).encode()                 # 往下：对象 → 字节（真 ROS 2 用 CDR）
+if sub.topic == topic and sub.msg_type == msg_type:
+    sub.queue.append(data)                      # 只有名字和类型都对上才放进去
+msg = json.loads(sub.queue.popleft())           # spin 时往上：字节 → 对象
+sub.callback(msg)                               # 最后才调你的回调
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>本机没有 rclpy</strong>：ROS 2 在 macOS 上不是 Tier 1 平台，只能源码编译。本书的代码层全部用纯 Python 模拟规则，数字和讲义一致；真 API 留到装好 Linux 环境后做里程碑（R-M0 起）。</li>
+<li><strong>序列化格式</strong>：模拟用 JSON，真 ROS 2 默认是 CDR（Common Data Representation：通用 / 数据 / 表示，二进制），第 3 章 bag 里看到的 <code>cdr</code> 就是它。</li>
+<li><strong><code>deque(maxlen=10)</code></strong> 就是 Keep last 10：Python 的双端队列设了长度上限后，再 append 会自动把最左边（最旧）的挤掉。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>QUEUE_DEPTH</code> 改成 3，再连发 12 条，看回调收到哪几条；</li>
+<li>再加一个订阅同一话题的 <code>Subscription</code>，看 <code>publish</code> 的返回值怎么变（话题是多对多的）。</li>
+</ul><nav class="pager"><span></span><a href="02-turtlesim-cli.html">第 2 章 · 用命令行看懂 turtlesim →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

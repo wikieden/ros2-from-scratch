@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 2 章 · 用命令行看懂 turtlesim · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="2-turtlesim">第 2 章 · 用命令行看懂 turtlesim</h1><p><a class="btn" href="../animations/02-turtlesim-graph.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：一个真实的 ROS 系统跑起来是什么样？怎么用 <code>ros2</code> 命令行看清楚里面有哪些节点、它们之间怎么通信，还能自己插一脚？<br />
+讲解日期：2026-11-05 · 上一章：<a href="../lessons/01-what-is-ros2.html">第 1 章 ROS 2 是什么</a> · 下一章：<a href="../lessons/03-launch-log-bag.html">第 3 章 日志、launch 和 bag</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/</code> 下的 Understanding-ROS2-Nodes / -Topics / -Services / -Parameters / -Actions 五篇教程（都是 <code>.../Understanding-ROS2-&lt;X&gt;/Understanding-ROS2-&lt;X&gt;.rst</code>）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 A3–A5，动手里程碑 R-M1（本机装好环境后照着敲一遍）。<br />
+本章缩写：CLI = Command-Line Interface（命令 / 行 / 界面：在终端里敲命令的用法）；Twist（不是缩写，"扭转"：线速度 + 角速度的消息类型）；YAML = YAML Ain't Markup Language（一种写配置的文本格式，名字是递归玩笑）；rqt = ROS Qt（Qt 是一个图形界面库：ROS 的图形工具集）；stdout = standard output（标准 / 输出：终端打印的内容）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 4 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：turtlesim 计算图 + 命令演示</td>
+<td>✅ 2026-11-05</td>
+</tr>
+<tr>
+<td>1</td>
+<td>节点：source 环境、<code>ros2 run</code>、<code>node list / info</code>、改名</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>话题：<code>topic list / echo / info / pub / hz</code>、<code>interface show</code></td>
+<td>✅ 2026-11-13</td>
+</tr>
+<tr>
+<td>3</td>
+<td>服务和参数：<code>service call</code>、<code>param get / set / dump</code></td>
+<td>✅ 2026-11-13</td>
+</tr>
+<tr>
+<td>4</td>
+<td>动作：<code>action send_goal</code>、反馈、取消与放弃</td>
+<td>✅ 2026-11-13</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="turtlesim">总图 · turtlesim 里的四种通信</h3>
+<p><img alt="turtlesim 计算图与命令演示" src="../animations/02-turtlesim-graph.gif" /></p>
+<p>可交互版：<a href="../animations/02-turtlesim-graph.html">animations/02-turtlesim-graph.html</a>，可单步。在 Claude 内置浏览器里看要走本地服务器：启动 <code>ros2-animations</code> 预览后打开 <code>http://localhost:8340/02-turtlesim-graph.html</code>（原因见第 1 章总图）。</p>
+<p>turtlesim 是官方的 2D 小乌龟模拟器，不用任何硬件就能把第 1 章的四种通信方式全用一遍：</p>
+<pre><code>              [/teleop_turtle]  键盘遥控节点
+                   │  话题 /turtle1/cmd_vel（Twist：线速度 + 角速度）
+                   ▼
+              [/turtlesim]  模拟器节点
+                   │  发布话题 /turtle1/pose（乌龟位置和朝向）
+                   │  提供服务 /spawn /clear /reset /kill /turtle1/set_pen …
+                   │  提供动作 /turtle1/rotate_absolute（转到指定朝向）
+                   │  参数 background_r / g / b（背景色）
+                   ▲
+              [ros2 命令行]  每次运行都是一个临时节点，能听、能发、能调用
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>turtlesim 里的例子</th>
+<th>用哪个命令看 / 用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>话题</td>
+<td><code>/turtle1/cmd_vel</code>、<code>/turtle1/pose</code></td>
+<td><code>ros2 topic echo</code>、<code>ros2 topic pub</code></td>
+</tr>
+<tr>
+<td>服务</td>
+<td><code>/spawn</code>（再生一只乌龟）</td>
+<td><code>ros2 service call</code></td>
+</tr>
+<tr>
+<td>参数</td>
+<td><code>background_r</code>（背景红色分量）</td>
+<td><code>ros2 param get / set</code></td>
+</tr>
+<tr>
+<td>动作</td>
+<td><code>/turtle1/rotate_absolute</code></td>
+<td><code>ros2 action send_goal</code></td>
+</tr>
+</tbody>
+</table>
+<p>命令套路都一样：<code>ros2 &lt;对象&gt; &lt;动作&gt;</code>，对象是 <code>node / topic / service / param / action / interface</code>，动作是 <code>list / info / echo / call / get / set / send_goal</code> 等。</p>
+<h3 id="1">第 1 步 · 节点：跑起来，看名字，看连接</h3>
+<p><strong>1. 先 source。</strong> 每打开一个新终端，都要先运行：</p>
+<pre><code class="language-bash">source /opt/ros/lyrical/setup.bash
+</code></pre>
+<p><strong>白话</strong>：ROS 装在 <code>/opt/ros/lyrical/</code> 里，但终端默认不知道它在那。<code>source</code> 这句话就是"告诉这个终端 ROS 在哪"：把 <code>ros2</code> 命令和所有 ROS 包的位置加进环境变量。不 source，就会报 <code>ros2: command not found</code>。嫌麻烦可以把这句写进 <code>~/.bashrc</code>，每次开终端自动执行（<code>Get-Started/Configuring-ROS2-Environment.rst</code> 第 1–2 步）。</p>
+<p><strong>2. <code>ros2 run &lt;包名&gt; &lt;可执行文件名&gt;</code> 启动一个节点。</strong></p>
+<pre><code class="language-bash">ros2 run turtlesim turtlesim_node
+</code></pre>
+<ul>
+<li><strong>包（package）</strong>：ROS 软件的打包单位，一个包里可以有多个可执行文件。<code>turtlesim</code> 包里有 <code>turtlesim_node</code>、<code>turtle_teleop_key</code>、<code>draw_square</code>、<code>mimic</code> 四个（<code>ros2 pkg executables turtlesim</code> 可查）。</li>
+<li><strong>可执行文件名 ≠ 节点名</strong>。<code>turtlesim_node</code> 跑起来，计算图里的节点叫 <code>/turtlesim</code>；<code>turtle_teleop_key</code> 跑起来叫 <code>/teleop_turtle</code>（<code>Understanding-ROS2-Nodes.rst</code> 第 1 步）。</li>
+<li><strong>类比</strong>：包 = 一个工具箱，可执行文件 = 箱子里的一件工具，节点名 = 工具开始干活后在工地上挂的工牌。</li>
+</ul>
+<p><strong>3. <code>ros2 node list</code>：现在有哪些节点在跑。</strong> 开着 turtlesim 和遥控，会看到：</p>
+<pre><code>/turtlesim
+/teleop_turtle
+</code></pre>
+<p><strong>4. <code>ros2 node info &lt;节点名&gt;</code>：这个节点和外界有哪些连接。</strong> 输出分六栏（<code>Understanding-ROS2-Nodes.rst</code> 第 3 步）：</p>
+<table>
+<thead>
+<tr>
+<th>栏</th>
+<th><code>/turtlesim</code> 里有什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscribers（订阅的话题）</td>
+<td><code>/turtle1/cmd_vel</code></td>
+</tr>
+<tr>
+<td>Publishers（发布的话题）</td>
+<td><code>/turtle1/pose</code>、<code>/turtle1/color_sensor</code>、<code>/rosout</code>（日志）、<code>/parameter_events</code></td>
+</tr>
+<tr>
+<td>Service Servers（提供的服务）</td>
+<td><code>/spawn</code>、<code>/clear</code>、<code>/kill</code>、<code>/reset</code>、<code>/turtle1/set_pen</code>、<code>/turtle1/teleport_*</code>，以及一组 <code>/turtlesim/get_parameters</code> 之类</td>
+</tr>
+<tr>
+<td>Service Clients</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Action Servers（提供的动作）</td>
+<td><code>/turtle1/rotate_absolute</code></td>
+</tr>
+<tr>
+<td>Action Clients</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+<p>每一项后面都写着类型，比如 <code>/turtle1/cmd_vel: geometry_msgs/msg/Twist</code>。</p>
+<p>两个值得注意的地方：</p>
+<ul>
+<li>每个节点都自带 <code>/rosout</code>（日志）、<code>/parameter_events</code> 和一组 <code>…/get_parameters</code>、<code>…/set_parameters</code> 服务。<strong>参数在底层就是用服务读写的</strong>，第 3 步会用到。</li>
+<li>消息类型的名字有三段：<code>包名/种类/类型名</code>，种类是 <code>msg</code>、<code>srv</code>、<code>action</code> 之一。比如 <code>turtlesim_msgs/srv/Spawn</code>（Kilted 之前的版本是 <code>turtlesim/srv/Spawn</code>）。</li>
+</ul>
+<p><strong>5. 改名（remap）。</strong> 同一个可执行文件可以启动多次，用 <code>--ros-args --remap __node:=新名字</code> 给它起不同的节点名：</p>
+<pre><code class="language-bash">ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
+</code></pre>
+<p>这会再开一个模拟器窗口，节点叫 <code>/my_turtle</code>，<code>node list</code> 里就有三个节点。remap 不光能改节点名，也能改话题名和服务名（同文 2.1 节）。</p>
+<p><strong>和本仓库的连接</strong>：机器人上出问题时，第一件事往往就是 <code>ros2 node list</code> 看该在的节点在不在，再 <code>ros2 node info</code> 看连接对不对。比如 VLA 策略节点没动作，先查它是不是真的订阅到了 <code>/image</code>。</p>
+<h3 id="2">第 2 步 · 话题：看、听、自己发</h3>
+<p>依据：<code>ROS-Framework/interfaces/topics/Understanding-ROS2-Topics/Understanding-ROS2-Topics.rst</code>（下称"话题教程"）。</p>
+<p><strong>1. 画出计算图：<code>ros2 run rqt_graph rqt_graph</code>。</strong> 会弹出一张图：椭圆是节点，方框是话题，箭头是数据流向。开着 turtlesim 和遥控时，能看到 <code>/teleop_turtle → /turtle1/cmd_vel → /turtlesim</code>。系统大了以后，这是看"谁连着谁"最快的办法（话题教程第 2 步）。</p>
+<p><strong>2. 列话题：<code>ros2 topic list -t</code>。</strong> <code>-t</code> 会把类型一起列出：</p>
+<pre><code>/parameter_events [rcl_interfaces/msg/ParameterEvent]
+/rosout [rcl_interfaces/msg/Log]
+/turtle1/cmd_vel [geometry_msgs/msg/Twist]
+/turtle1/color_sensor [turtlesim_msgs/msg/Color]
+/turtle1/pose [turtlesim_msgs/msg/Pose]
+</code></pre>
+<p><strong>3. 听：<code>ros2 topic echo /turtle1/cmd_vel</code>。</strong> 刚运行时什么都不打印，因为还没人发。切到遥控终端按方向键，这边就会打出每一条 Twist：</p>
+<pre><code>linear:
+  x: 2.0
+  y: 0.0
+  z: 0.0
+angular:
+  x: 0.0
+  y: 0.0
+  z: 0.0
+---
+</code></pre>
+<p>按 ↑ 发的就是"线速度 x 方向 2.0"。<strong><code>echo</code> 本身就是一个新的订阅者</strong>，它加入计算图时不打扰原有的连接（第 1 章总图里"录数据 = 多开一个订阅者"同理）。</p>
+<p><strong>4. 看连接数：<code>ros2 topic info /turtle1/cmd_vel</code>。</strong></p>
+<pre><code>Type: geometry_msgs/msg/Twist
+Publisher count: 1
+Subscription count: 2
+</code></pre>
+<p>为什么订阅者是 2？一个是 <code>/turtlesim</code>，另一个就是你刚开着的 <code>topic echo</code>。加 <code>--verbose</code> 还能看到每个发布者、订阅者的节点名和 QoS 设置（第 7 章讲 QoS）。</p>
+<p><strong>5. 看消息格式：<code>ros2 interface show geometry_msgs/msg/Twist</code>。</strong> 输出说明 Twist 由两个三维向量组成：</p>
+<pre><code>Vector3  linear     # 线速度：x 前后、y 左右、z 上下
+Vector3  angular    # 角速度：绕 x、y、z 轴转多快
+</code></pre>
+<p>小乌龟是平面上的，只用得到 <code>linear.x</code>（往前）和 <code>angular.z</code>（原地左转右转）。<strong>同一个 Twist（或带时间戳的版本 TwistStamped）也是真实轮式机器人底盘的标准速度指令</strong>，Nav2 最后输出给底盘的就是这类消息（第 17 章）。</p>
+<p><strong>6. 自己发：<code>ros2 topic pub</code>。</strong> 消息内容用 YAML 写在引号里（话题教程第 7 步）：</p>
+<pre><code class="language-bash"># 只发一次
+ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist &quot;{linear: {x: 2.0}, angular: {z: 1.8}}&quot;
+# 每秒发一次，乌龟一直绕圈
+ros2 topic pub --rate 1 /turtle1/cmd_vel geometry_msgs/msg/Twist &quot;{linear: {x: 2.0}, angular: {z: 1.8}}&quot;
+</code></pre>
+<p>只写要改的字段，其余默认是 0。乌龟会边走边转，画出一段弧。用 <code>--rate 1</code> 时它会一直转圈，因为每秒都有新指令。</p>
+<p><strong>为什么按一下方向键只走一小段？</strong> turtlesim 收到速度指令后只执行一小会儿就停，<strong>没有新指令就停车</strong>。官方的解释是：真实机器人如果和操作员断线，不该一直按最后一条指令跑下去（<code>Introducing-Turtlesim.rst</code> 第 3 步的说明）。这个"指令超时就停"的思路在真机底盘上叫看门狗（watchdog），第 15–16 章 ros2_control 还会遇到。</p>
+<p><strong>7. 看频率和带宽：<code>ros2 topic hz</code> / <code>ros2 topic bw</code>。</strong></p>
+<pre><code>$ ros2 topic hz /turtle1/pose
+average rate: 59.354          ← turtlesim 大约每秒发 60 次位姿
+$ ros2 topic bw /turtle1/pose
+1.51 KB/s from 62 messages    ← 每条约 0.02 KB
+</code></pre>
+<p>注意：这两个数字是 <strong><code>hz</code> / <code>bw</code> 自己作为订阅者收到的</strong>，受电脑负载和 QoS 影响，不一定等于发布端的真实频率（话题教程第 8–9 步的提示）。调机器人时，<code>topic hz /camera/image_raw</code> 是查"相机是不是掉帧了"的第一招。</p>
+<h3 id="3">第 3 步 · 服务和参数</h3>
+<p>依据：<code>.../Understanding-ROS2-Services.rst</code>（下称"服务教程"）、<code>.../Understanding-ROS2-Parameters.rst</code>（下称"参数教程"）。</p>
+<p><strong>服务：先看有什么、长什么样，再调用。</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+<th>turtlesim 的例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ros2 service list -t</code></td>
+<td>列出所有服务和类型</td>
+<td><code>/spawn [turtlesim_msgs/srv/Spawn]</code>、<code>/clear [std_srvs/srv/Empty]</code></td>
+</tr>
+<tr>
+<td><code>ros2 service type /spawn</code></td>
+<td>只看一个服务的类型</td>
+<td><code>turtlesim_msgs/srv/Spawn</code></td>
+</tr>
+<tr>
+<td><code>ros2 service find std_srvs/srv/Empty</code></td>
+<td>反查：哪些服务是这个类型</td>
+<td><code>/clear</code>、<code>/reset</code></td>
+</tr>
+<tr>
+<td><code>ros2 interface show turtlesim_msgs/srv/Spawn</code></td>
+<td>看请求和回复的格式</td>
+<td>见下</td>
+</tr>
+<tr>
+<td><code>ros2 service call &lt;名字&gt; &lt;类型&gt; "&lt;YAML&gt;"</code></td>
+<td>调用</td>
+<td>见下</td>
+</tr>
+</tbody>
+</table>
+<p><code>Spawn</code> 的格式（服务教程第 6 步）：</p>
+<pre><code>float32 x
+float32 y
+float32 theta
+string name   # 可选；留空会自动起名并在回复里返回
+---
+string name
+</code></pre>
+<p><code>---</code> 上面是<strong>请求</strong>，下面是<strong>回复</strong>。<code>Empty</code> 类型上下都是空的：只是"喊一声"，不带数据。调用：</p>
+<pre><code class="language-bash">ros2 service call /spawn turtlesim_msgs/srv/Spawn &quot;{x: 2, y: 2, theta: 0.2, name: ''}&quot;
+</code></pre>
+<p>窗口左下角多出一只乌龟，终端打印回复 <code>Spawn_Response(name='turtle2')</code>。新乌龟会带着自己的一套话题 <code>/turtle2/cmd_vel</code>、<code>/turtle2/pose</code>。<code>ros2 service call /clear std_srvs/srv/Empty</code> 则清掉画过的轨迹。</p>
+<p>想看服务调用的实时往来，可以用 <code>ros2 service echo</code>，但它要求节点打开"服务内省"（introspection）功能，turtlesim 没开（服务教程第 8 步）。</p>
+<p><strong>参数：读、改、存、载。</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ros2 param list</code></td>
+<td>列出每个节点的参数</td>
+</tr>
+<tr>
+<td><code>ros2 param get /turtlesim background_g</code></td>
+<td>读一个参数：<code>Integer value is: 86</code></td>
+</tr>
+<tr>
+<td><code>ros2 param set /turtlesim background_r 150</code></td>
+<td>运行中改：窗口背景立刻变色，<code>Set parameter successful</code></td>
+</tr>
+<tr>
+<td><code>ros2 param dump /turtlesim &gt; turtlesim.yaml</code></td>
+<td>把当前全部参数存成 YAML 文件</td>
+</tr>
+<tr>
+<td><code>ros2 param load /turtlesim turtlesim.yaml</code></td>
+<td>把文件里的参数灌回正在运行的节点</td>
+</tr>
+<tr>
+<td><code>ros2 run turtlesim turtlesim_node --ros-args --params-file turtlesim.yaml</code></td>
+<td>启动时就用文件里的参数</td>
+</tr>
+</tbody>
+</table>
+<p><code>dump</code> 出来的文件长这样（参数教程第 5 步）：</p>
+<pre><code class="language-yaml">/turtlesim:
+  ros__parameters:
+    background_b: 255
+    background_g: 86
+    background_r: 150
+    use_sim_time: false
+</code></pre>
+<p><strong>这就是真实项目里配置机器人的方式</strong>：Nav2、ros2_control 的几百个参数全写在这种 YAML 里，启动时用 <code>--params-file</code> 或 launch 文件加载（第 3 章）。</p>
+<p><strong>服务和参数的关系</strong>：第 1 步说过，每个节点都自带 <code>…/get_parameters</code>、<code>…/set_parameters</code> 等服务。<code>ros2 param set</code> 背后就是调用了 <code>/turtlesim/set_parameters</code> 这个服务。</p>
+<h3 id="4">第 4 步 · 动作：目标 → 反馈 → 结果</h3>
+<p>依据：<code>.../Understanding-ROS2-Actions.rst</code>（下称"动作教程"）。</p>
+<p><strong>用键盘发动作。</strong> 遥控终端里除了方向键，还提示 <code>Use G|B|V|C|D|E|R|T keys to rotate to absolute orientations. 'F' to cancel a rotation.</code>。这 8 个字母在键盘上正好围着 F 一圈，每个字母对应一个朝向。按一下，就是给 <code>/turtlesim</code> 里的动作服务器 <code>/turtle1/rotate_absolute</code> 发了一个<strong>目标</strong>：转到那个朝向（动作教程第 2 步）。</p>
+<p>三种结局：</p>
+<table>
+<thead>
+<tr>
+<th>情况</th>
+<th>谁发起</th>
+<th>turtlesim 终端打印</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>转完了</td>
+<td>—</td>
+<td><code>Rotation goal completed successfully</code></td>
+</tr>
+<tr>
+<td>转到一半按 F</td>
+<td><strong>客户端</strong>取消（cancel）</td>
+<td><code>Rotation goal canceled</code></td>
+</tr>
+<tr>
+<td>转到一半又按了另一个字母</td>
+<td><strong>服务端</strong>放弃旧目标（abort）</td>
+<td><code>Rotation goal received before a previous goal finished. Aborting previous goal</code></td>
+</tr>
+</tbody>
+</table>
+<p>第三种值得注意：新目标来了、旧目标还没完时怎么办，<strong>ROS 不统一规定</strong>，由每个动作服务端自己决定。turtlesim 选择"接受新的、放弃旧的"，别的服务端也可以拒绝新目标，或两个都保留（动作教程第 2 步末尾）。</p>
+<p><strong>用命令行看和发。</strong></p>
+<pre><code class="language-bash">ros2 action list -t
+# /turtle1/rotate_absolute [turtlesim_msgs/action/RotateAbsolute]
+ros2 action info /turtle1/rotate_absolute
+# Action clients: 1  /teleop_turtle
+# Action servers: 1  /turtlesim
+ros2 interface show turtlesim_msgs/action/RotateAbsolute
+</code></pre>
+<p>动作的格式有<strong>两条</strong> <code>---</code>，分成三段（第 1 章第 2 步讲过）：</p>
+<pre><code>float32 theta       # 目标：想要的朝向（弧度，绝对值）
+---
+float32 delta       # 结果：实际转过的角度
+---
+float32 remaining   # 反馈：还剩多少没转
+</code></pre>
+<p>发一个目标并打印反馈：</p>
+<pre><code class="language-bash">ros2 action send_goal /turtle1/rotate_absolute turtlesim_msgs/action/RotateAbsolute &quot;{theta: -1.57}&quot; --feedback
+</code></pre>
+<p>输出依次是：<code>Goal accepted with ID: …</code>（服务端接受）→ 一串 <code>Feedback: remaining: -3.12…</code>、<code>-3.11…</code>（边转边报）→ <code>Result: delta: 3.12…</code> → <code>Goal finished with status: SUCCEEDED</code>（动作教程第 7 步）。</p>
+<p><code>theta</code> 的单位是<strong>弧度</strong>：1.57 ≈ π/2 = 90°，-1.57 就是朝下。而且是<strong>绝对</strong>朝向（转到哪个方向），不是"再转多少"。</p>
+<p><strong>每个目标有一个 ID</strong>：同一个服务端可以同时管多个目标，靠 ID 区分。这也是动作比服务"重"的地方：要维护目标状态、发反馈、处理取消。所以短任务用服务，长任务才用动作。</p>
+<h2 id="_2">练习与作答记录</h2>
+<p><strong>练习 2-1</strong>（第 1 步）：同时开着 <code>/turtlesim</code> 和 <code>/my_turtle</code> 两个模拟器，再开一个 <code>turtle_teleop_key</code>。按方向键时，两个窗口里的乌龟会不会一起动？为什么？（提示：看 <code>node info /my_turtle</code> 里它订阅的话题名。）</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 2-2</strong>（第 2 步）：<code>ros2 topic info /turtle1/cmd_vel</code> 显示 <code>Subscription count: 2</code>，可你只开了 turtlesim 一个模拟器。第二个订阅者是谁？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 2-3</strong>（第 2 步）：写出让乌龟<strong>原地</strong>逆时针转圈（不前进）的 <code>ros2 topic pub</code> 命令，每秒发一次。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 2-4</strong>（第 3 步）：你想让 turtlesim 每次启动背景都是黑色（RGB 全 0）。不改代码，写出需要的文件内容和启动命令。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 2-5</strong>（第 4 步）：乌龟正在执行"转到朝下"的动作，你在命令行又发了一个"转到朝上"的目标。旧目标的结局是 canceled 还是 aborted？为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_3">口诀</h2>
+<ul>
+<li><strong>套路</strong>：<code>ros2 &lt;对象&gt; &lt;动作&gt;</code>；对象是 node / topic / service / param / action / interface。</li>
+<li><strong>先看后用</strong>：<code>list -t</code> 看有什么，<code>interface show</code> 看长什么样，再 <code>pub</code> / <code>call</code> / <code>set</code> / <code>send_goal</code>。</li>
+<li><strong>话题三查</strong>：<code>echo</code> 看内容，<code>info</code> 看谁连着，<code>hz</code> 看频率够不够。</li>
+<li><strong>参数三件套</strong>：<code>get / set</code> 现场改，<code>dump</code> 存 YAML，<code>--params-file</code> 启动时载入。</li>
+<li><strong>动作三结局</strong>：成功、客户端取消（cancel）、服务端放弃（abort）。</li>
+</ul>
+<h2 id="_4">本章复习卡片编号</h2>
+<p>R06–R09，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_5">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_6">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>Introducing-Turtlesim.rst</code></td>
+<td><code>materials/ros2_documentation/source/Get-Started/Introducing-Turtlesim/Introducing-Turtlesim.rst</code></td>
+<td>安装与第一次运行。</td>
+</tr>
+<tr>
+<td>★ <code>Understanding-ROS2-Nodes.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.rst</code></td>
+<td><code>ros2 run</code>、<code>node list</code>、<code>node info</code>、remap（第 1 步依据）。</td>
+</tr>
+<tr>
+<td><code>Configuring-ROS2-Environment.rst</code></td>
+<td><code>Get-Started/Configuring-ROS2-Environment.rst</code></td>
+<td>source 与环境变量。</td>
+</tr>
+<tr>
+<td><code>Understanding-ROS2-Topics</code></td>
+<td><code>ROS-Framework/interfaces/topics/Understanding-ROS2-Topics/</code>、<code>services/.../Understanding-ROS2-Services/</code>、<code>parameters/.../Understanding-ROS2-Parameters/</code>、<code>actions/.../Understanding-ROS2-Actions/</code></td>
+<td>第 2–4 步依据，也是总图动画里命令和输出的出处。</td>
+</tr>
+<tr>
+<td><code>160_ros_command_line_arguments.md</code></td>
+<td><code>design/articles/160_ros_command_line_arguments.md</code></td>
+<td><code>--ros-args</code> 与 remap 规则的设计。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">数学原理</h3>
+<ul>
+<li><strong>弧度</strong>：转一整圈是 <span class="arithmatex">\(2\pi\)</span> 弧度 = 360°，所以 <span class="arithmatex">\(\pi/2\approx 1.57\)</span> 是 90°。</li>
+<li><strong>匀速圆周</strong>：线速度 <span class="arithmatex">\(v\)</span>、角速度 <span class="arithmatex">\(\omega\)</span> 都不变时轨迹是圆，半径 <span class="arithmatex">\(r=v/\omega\)</span>（代码对照里算的弧）。</li>
+</ul>
+<h3 id="_8">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>类型名 = 包名 / 种类（msg、srv、action）/ 类型名</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\pi/2\approx 1.57\)</span> rad = 90°</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch02_turtlesim.py</code>，配套测试 <code>tests/test_ch01_05.py</code>；同名 notebook 在 <code>notebooks/ch02_turtlesim.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch02_turtlesim.py   # 一步一步打印  
+uv run pytest tests/test_ch01_05.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 类型名</td>
+<td>包名 / 种类 / 类型名</td>
+<td><code>split_type_name(...)</code></td>
+<td><code>turtlesim_msgs</code> / <code>srv</code> / <code>Spawn</code></td>
+</tr>
+<tr>
+<td>第 2 步 topic pub</td>
+<td>只写要改的字段，其余是 0</td>
+<td><code>fill_defaults(...)</code></td>
+<td><code>linear.y = 0.0</code> 等</td>
+</tr>
+<tr>
+<td>第 2 步 画弧</td>
+<td>linear.x = 2.0、angular.z = 1.8</td>
+<td><code>drive(..., seconds=1.0)</code></td>
+<td>x ≈ 1.08，y ≈ 1.36，朝向 1.8 rad</td>
+</tr>
+<tr>
+<td>第 4 步 弧度</td>
+<td>1.57 ≈ π/2 = 90°</td>
+<td><code>math.degrees(-1.57)</code></td>
+<td>−90.0°</td>
+</tr>
+<tr>
+<td>第 4 步 动作</td>
+<td>反馈 remaining 变小，结果 delta</td>
+<td><code>rotate_absolute(1.55, -1.57)</code></td>
+<td>反馈 −3.12 起；delta 3.12</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">x += v * math.cos(th) * dt        # 往朝向的方向前进
+y += v * math.sin(th) * dt
+th += w * dt                       # 同时转 angular.z × dt
+r = 2.0 / 1.8                      # 匀速画圆：半径 = 线速度 / 角速度
+x, y = r * math.sin(1.8), r * (1 - math.cos(1.8))   # 走 1 秒的解析解
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>弧的数字</strong>：讲义只说"边走边转、画出一段弧"。代码按 1 ms 一小步积分，和解析解差不到 0.002；turtlesim 自己的积分步长不同，屏幕上的位置会略有差别。</li>
+<li><strong>动作的起始朝向 1.55 是编的</strong>，只为让第一条反馈接近讲义输出里的 −3.12；真 turtlesim 每次只转一小点，反馈会多很多条。</li>
+<li><strong><code>fill_defaults</code> 是递归的</strong>：Twist 里套着两个 Vector3，所以要一层层往下补 0，这和 <code>ros2 topic pub</code> 的 YAML 行为一致。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>angular.z</code> 改成 0.9，看同样 1 秒弧的半径和终点怎么变；</li>
+<li>把 <code>drive</code> 的 <code>seconds</code> 改成 2π/1.8 ≈ 3.49 秒，看乌龟是不是正好回到起点。</li>
+</ul><nav class="pager"><a href="01-what-is-ros2.html">← 第 1 章 · ROS 2 是什么</a><a href="03-launch-log-bag.html">第 3 章 · 日志、launch 和 bag：一次启动、看清日志、录下来重放 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

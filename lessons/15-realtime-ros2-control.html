@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 15 章 · 实时与 ros2_control 架构 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="15-ros2_control">第 15 章 · 实时与 ros2_control 架构</h1><p><a class="btn" href="../animations/15-ros2-control-loop.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：为什么机械臂的关节控制不能直接写成"订阅 → 回调里算 → 发布"的普通节点？"实时"到底要求什么？ros2_control 由哪几块组成，1 kHz 的控制回路在里面怎么跑？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/14-launch-test-debug.html">第 14 章 launch 进阶、测试与调试</a> · 下一章：<a href="../lessons/16-hardware-controllers.html">第 16 章 硬件组件与控制器</a><br />
+对应原文：<code>ros2_documentation/source/Capabilities/Motion-planning/Real-Time-Programming.rst</code>；<code>design/articles/120_realtime_background.md</code>；<code>ecosystem/control.ros.org/doc/getting_started/getting_started.rst</code>（Architecture 一节）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 F1、F2，动手里程碑 R-M7 前半。接机器人软硬件架构专题第 1、6 章（分层闭环、底层控制）。<br />
+本章缩写：RT = Real-Time（实时）；PREEMPT_RT（Linux 的"完全可抢占"实时补丁）；CM = Controller Manager（控制器 / 管理器）；RM = Resource Manager（资源 / 管理器）；DOF = Degrees Of Freedom（自由度）；PID = Proportional-Integral-Derivative（比例 / 积分 / 微分控制器）；UML = Unified Modeling Language（统一 / 建模 / 语言）；KUKA-RSI = KUKA Robot Sensor Interface（KUKA 工业机器人的外部控制接口）；EtherCAT = Ethernet for Control Automation Technology（以太网 / 控制自动化技术：工业实时总线）；CAN = Controller Area Network（控制器 / 局域 / 网络）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：控制器管理器的 read → update → write 回路</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>实时是什么：截止时间、抖动、哪些操作不能出现在回路里</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>ros2_control 架构：控制器管理器、资源管理器、控制器、硬件组件</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>接口与配置：命令接口 / 状态接口、URDF 里的 <code>&lt;ros2_control&gt;</code> 标签、YAML、spawner</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 一个周期里发生什么</h3>
+<p><img alt="ros2_control 控制回路" src="../animations/15-ros2-control-loop.gif" /></p>
+<p>可交互版：<a href="../animations/15-ros2-control-loop.html">animations/15-ros2-control-loop.html</a>（内置浏览器：<code>http://localhost:8340/15-ros2-control-loop.html</code>）。</p>
+<p><strong>类比：工厂流水线的节拍。</strong> 传送带每 1 毫秒走一格：先<strong>读</strong>（每个工位报告当前状态）→ 再<strong>算</strong>（班长根据目标和现状算出每个工位下一步怎么做）→ 再<strong>写</strong>（把指令发到每个工位）。不管班长今天想得多复杂，<strong>节拍不能乱</strong>：晚了 1 毫秒，零件就掉地上。</p>
+<h3 id="1">第 1 步 · 实时是什么</h3>
+<p>依据：<code>Capabilities/Motion-planning/Real-Time-Programming.rst</code>（下称"实时教程"）、<code>materials/design/articles/120_realtime_background.md</code>（下称"实时背景"）。</p>
+<p><strong>实时 ≠ 快</strong>，而是<strong>准时</strong>：回路必须<strong>周期性地</strong>更新，并在<strong>截止时间</strong>之前完成；能容忍的偏差（<strong>抖动</strong>，jitter）很小（实时教程 Background 一节）。</p>
+<table>
+<thead>
+<tr>
+<th>回路</th>
+<th>频率</th>
+<th>晚了会怎样</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>电机电流环（驱动板）</td>
+<td>10–40 kHz</td>
+<td>电机失控</td>
+</tr>
+<tr>
+<td>关节位置 / 力矩环</td>
+<td>0.5–1 kHz</td>
+<td>机械臂抖动、撞击；倒立摆倒下（实时教程的例子）</td>
+</tr>
+<tr>
+<td>学习策略（VLA、RL）</td>
+<td>10–50 Hz</td>
+<td>动作卡顿，但下层仍能稳住</td>
+</tr>
+</tbody>
+</table>
+<p>（分层频率见机器人软硬件架构专题总览第 1 节。）</p>
+<p><strong>哪些操作是实时回路里的大忌</strong>（实时教程、实时背景 "Memory management" 等节）：</p>
+<ol>
+<li><strong>动态分配 / 释放内存</strong>（<code>new</code>、<code>malloc</code>、Python 里随手建列表）：耗时不确定；</li>
+<li><strong>缺页</strong>（page fault）：用到还没调进内存的页，CPU 停下来等磁盘；对策是启动时 <code>mlockall</code> 锁住内存、预先分配好；</li>
+<li><strong>会无限期阻塞的同步原语</strong>：等一把可能被别人长时间占着的锁；</li>
+<li>打印日志、文件读写、网络收发这类 I/O。</li>
+</ol>
+<p><strong>操作系统也要配合</strong>：普通 Linux 调度器不保证准时。常见方案是打 <strong>PREEMPT_RT</strong> 补丁（让内核几乎处处可被高优先级任务抢占），或用 Xenomai 这类双内核（实时背景 "Real-time operating systems" 一节；<code>Developer-Tools/Build/Building-Realtime-rt_preempt-kernel-for-ROS-2/</code>）。实时线程还要设高优先级（<code>SCHED_FIFO</code>）、绑定 CPU 核。</p>
+<p><strong>这对 ROS 2 意味着什么？</strong> 第 9 章说过：普通 executor 调度复杂、有优先级反转、开销不小，<strong>不适合硬实时</strong>。Python 更不行（垃圾回收、GIL）。所以：<strong>关节级的快回路放进专门设计的框架里（ros2_control），用 C++ 写，严格遵守上面几条；话题、服务这些"慢世界"的东西留在外面。</strong> 这正是 ros2_control 的定位。</p>
+<h3 id="2-ros2_control">第 2 步 · ros2_control 架构</h3>
+<p>依据：<code>materials/ecosystem/control.ros.org/doc/getting_started/getting_started.rst</code>（下称"入门文档"）Architecture 一节。</p>
+<table>
+<thead>
+<tr>
+<th>部件</th>
+<th>职责</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>控制器管理器</strong> CM（Controller Manager）</td>
+<td>装载、激活、停用、卸载控制器；把控制器<strong>要的</strong>接口和硬件<strong>给的</strong>接口配对，冲突就报错；用 <code>update()</code> 驱动整个控制回路；对外提供服务（命令行就是调这些服务）</td>
+<td>车间主任</td>
+</tr>
+<tr>
+<td><strong>资源管理器</strong> RM（Resource Manager）</td>
+<td>用插件机制（pluginlib）加载<strong>硬件组件</strong>，管理它们的生命周期和接口；回路里负责 <code>read()</code> 和 <code>write()</code></td>
+<td>仓库管理员：管着所有设备</td>
+</tr>
+<tr>
+<td><strong>控制器</strong>（Controller）</td>
+<td>继承 <code>ControllerInterface</code> 的插件；每个周期 <code>update()</code>：读最新状态、算出命令、写进命令接口。基于托管节点的生命周期（第 11 章）</td>
+<td>各工段的班长</td>
+</tr>
+<tr>
+<td><strong>硬件组件</strong>（Hardware Component）</td>
+<td>真正和电机驱动、传感器通信（EtherCAT、CAN、串口……）；同样是插件</td>
+<td>一台台设备</td>
+</tr>
+</tbody>
+</table>
+<p><strong>一个周期</strong>（入门文档 Controller Manager 一节）：</p>
+<pre><code>read()   ── RM 让每个硬件组件读取最新状态（关节位置、速度、力）写进状态接口
+update() ── CM 依次调用每个激活控制器的 update()：读状态接口，算命令，写命令接口
+write()  ── RM 让每个硬件组件把命令接口里的值发给硬件
+</code></pre>
+<p>频率由控制器管理器参数 <code>update_rate</code> 决定（比如 1000 Hz）。默认的 <code>ros2_control_node</code> 把这个回路跑在单独的线程里，能用实时调度时会用。</p>
+<p><strong>关键设计：控制器和硬件之间不走话题，走"接口"。</strong> 接口就是一块共享的内存变量（double），读写只是一次赋值，没有序列化、没有消息传递、没有内存分配。快回路就这样避开了第 1 步列的所有雷。话题只出现在边上：控制器订阅上层发来的目标（比如一条轨迹），用<strong>实时安全的缓冲区</strong>交给回路线程；<code>joint_state_broadcaster</code> 把状态接口的值发布成 <code>/joint_states</code>（第 13 章）。</p>
+<h3 id="3">第 3 步 · 接口与配置</h3>
+<p><strong>两种接口</strong>（入门文档 Hardware Components 一节、<code>ros2_control/hardware_interface/doc/hardware_interface_types_userdoc.rst</code>）：</p>
+<ul>
+<li><strong>状态接口</strong>（state interface）：硬件报上来的，只读。如 <code>joint1/position</code>、<code>joint1/velocity</code>、<code>joint1/effort</code>、力传感器的 <code>force</code>。</li>
+<li><strong>命令接口</strong>（command interface）：发给硬件的，<strong>同一时刻只能有一个控制器占用</strong>。如 <code>joint1/position</code>（位置控制）、<code>joint1/velocity</code>、<code>joint1/effort</code>（力矩控制）。</li>
+</ul>
+<p>控制器声明自己要哪些接口；CM 在激活时配对，两个控制器抢同一个命令接口会被拒绝。</p>
+<p><strong>三种硬件组件</strong>（入门文档）：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>能力</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>System</strong>（系统）</td>
+<td>读 + 写，多自由度，可有复杂传动</td>
+<td>整台工业臂（一个通信通道，如 KUKA-RSI）、人形机器人的手</td>
+</tr>
+<tr>
+<td><strong>Sensor</strong>（传感器）</td>
+<td>只读</td>
+<td>关节编码器、六维力传感器</td>
+</tr>
+<tr>
+<td><strong>Actuator</strong>（执行器）</td>
+<td>读 + 写，单自由度</td>
+<td>一个电机、一个阀；各电机独立 CAN 通信时也可每个关节一个</td>
+</tr>
+</tbody>
+</table>
+<p><strong>写进 URDF</strong>：硬件配置放在 URDF（通常是 xacro）的 <code>&lt;ros2_control&gt;</code> 标签里（入门文档 "Hardware Description in URDF" 的 RRBot 例子）：</p>
+<pre><code class="language-xml">&lt;ros2_control name=&quot;RRBotSystemPositionOnly&quot; type=&quot;system&quot;&gt;
+  &lt;hardware&gt;
+    &lt;plugin&gt;ros2_control_demo_hardware/RRBotSystemPositionOnlyHardware&lt;/plugin&gt;
+  &lt;/hardware&gt;
+  &lt;joint name=&quot;joint1&quot;&gt;
+    &lt;command_interface name=&quot;position&quot;&gt;
+      &lt;param name=&quot;min&quot;&gt;-1&lt;/param&gt;
+      &lt;param name=&quot;max&quot;&gt;1&lt;/param&gt;
+    &lt;/command_interface&gt;
+    &lt;state_interface name=&quot;position&quot;/&gt;
+  &lt;/joint&gt;
+  &lt;!-- joint2 同理 --&gt;
+&lt;/ros2_control&gt;
+</code></pre>
+<p><strong>控制器写进 YAML</strong>，启动用 <strong>spawner</strong>（<code>ros2_control/controller_manager/doc/userdoc.rst</code>）：</p>
+<pre><code class="language-yaml">controller_manager:
+  ros__parameters:
+    update_rate: 1000                       # 回路频率 Hz
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    position_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+</code></pre>
+<pre><code class="language-bash">ros2 run controller_manager spawner joint_state_broadcaster
+ros2 run controller_manager spawner position_trajectory_controller --param-file config.yaml
+ros2 control list_controllers              # 看控制器及其状态
+ros2 control list_hardware_interfaces      # 看所有接口，哪些命令接口被谁占着
+</code></pre>
+<p><strong>启动三步</strong>（入门文档 "Running the Framework for Your Robot"）：① 写控制器 YAML；② 在 URDF 里加 <code>&lt;ros2_control&gt;</code> 标签；③ launch 文件启动 <code>ros2_control_node</code>（带 <code>robot_description</code> 和 YAML）+ 各个 spawner。</p>
+<p><strong>换硬件不改控制器</strong>：仿真时把 <code>&lt;plugin&gt;</code> 换成仿真器的插件或 <code>mock_components/GenericSystem</code>（假硬件，命令原样回写成状态），控制器、YAML、上层代码一行不改。R-M7 就从 mock 硬件开始。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 15-1</strong>（第 1 步）：下面哪些操作不该出现在 1 kHz 控制回路里：(a) <code>std::vector::push_back</code>；(b) 读一个预先分配好的数组；(c) <code>RCLCPP_INFO</code> 打日志；(d) 等一把可能被 GUI 线程占着的互斥锁？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 15-2</strong>（第 2 步）：用自己的话说清楚一个控制周期里 <code>read()</code>、<code>update()</code>、<code>write()</code> 各由谁执行、做什么。</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 15-3</strong>（第 3 步）：你同时 spawn 了一个位置轨迹控制器和一个速度控制器，二者都要 <code>joint1/position</code> 命令接口。会发生什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 15-4</strong>（第 3 步）：为什么控制器和硬件之间用"接口"（共享变量）而不用话题？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>实时 = 准时</strong>：周期 + 截止时间 + 小抖动；不分配内存、不缺页、不阻塞、不做 I/O。</li>
+<li><strong>四件套</strong>：CM 管控制器和节拍，RM 管硬件，控制器算，硬件组件读写。</li>
+<li><strong>一拍三步</strong>：read 读状态 → update 算命令 → write 写硬件。</li>
+<li><strong>接口</strong>：状态接口只读，命令接口独占；走共享内存，不走话题。</li>
+<li><strong>配置</strong>：硬件进 URDF 的 <code>&lt;ros2_control&gt;</code>，控制器进 YAML，spawner 拉起来；换 mock 不改控制器。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R36–R37，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>Real-Time-Programming.rst</code></td>
+<td><code>materials/ros2_documentation/source/Capabilities/Motion-planning/Real-Time-Programming.rst</code></td>
+<td>倒立摆实时 demo、缺页统计、<code>mlockall</code>。</td>
+</tr>
+<tr>
+<td>★ <code>120_realtime_background.md</code></td>
+<td><code>materials/design/articles/120_realtime_background.md</code></td>
+<td>实时系统要求、内存管理、实时操作系统、编程模式；<code>121_realtime_proposal.md</code>：ROS 2 的实时方案提议。</td>
+</tr>
+<tr>
+<td><code>Building-Realtime-rt_preempt-kernel-for-ROS-2</code></td>
+<td><code>Developer-Tools/Build/Building-Realtime-rt_preempt-kernel-for-ROS-2/</code></td>
+<td>编译 PREEMPT_RT 内核。</td>
+</tr>
+<tr>
+<td>★ <code>getting_started.rst</code></td>
+<td><code>materials/ecosystem/control.ros.org/doc/getting_started/getting_started.rst</code></td>
+<td>架构四件套、硬件组件类型、URDF 标签、启动三步。</td>
+</tr>
+<tr>
+<td><code>userdoc.rst</code></td>
+<td><code>materials/ecosystem/ros2_control/controller_manager/doc/userdoc.rst</code></td>
+<td>控制器管理器参数、spawner / unspawner / hardware_spawner；<code>controller_chaining.rst</code>（级联控制）、<code>async_updates.rst</code>、<code>clocks.rst</code>。</td>
+</tr>
+<tr>
+<td><code>doc</code></td>
+<td><code>materials/ecosystem/ros2_control/hardware_interface/doc/</code></td>
+<td>接口类型、关节限位、mock 组件（第 16 章精读）。</td>
+</tr>
+<tr>
+<td><code>resources</code></td>
+<td><code>materials/ecosystem/control.ros.org/doc/resources/</code></td>
+<td>ROSCon 2023–2026 工作坊资料索引（<code>roscon2026_workshop.rst</code>、<code>gsoc2026_physical_ai.rst</code> 与学习型策略接入相关）。</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>robot-system-architecture 第 1 章（分层闭环）、第 5 章（总线与计算）、第 6 章（底层控制）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>抖动（jitter）</strong>：实际周期和标称周期之差；看最大值，不只看平均。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>一个周期 = read()（硬件 → 状态接口）→ update()（控制器）→ write()（命令接口 → 硬件）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch15_control_loop.py</code>，配套测试 <code>tests/test_ch11_15.py</code>；同名 notebook 在 <code>notebooks/ch15_control_loop.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch15_control_loop.py   # 一步一步打印  
+uv run pytest tests/test_ch11_15.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 2 步 一个周期</td>
+<td>read → update → write</td>
+<td><code>control_loop(hw, ctrl, 8)</code></td>
+<td>0.0, 0.01, …, 0.05, 0.05, 0.05</td>
+</tr>
+<tr>
+<td>第 3 步 命令接口</td>
+<td>控制器声明要独占的接口</td>
+<td><code>ctrl.command_interfaces()</code></td>
+<td>['joint1/position']</td>
+</tr>
+<tr>
+<td>第 2 步 接口 = 共享变量</td>
+<td>读写只是赋值</td>
+<td><code>hw.state</code> / <code>hw.command</code></td>
+<td>两个字典</td>
+</tr>
+<tr>
+<td>第 1 步 实时 = 准时</td>
+<td>量抖动</td>
+<td><code>measure_python_jitter()</code></td>
+<td>每次不同；本机约平均 1.5 ms、抖动 0.5 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">hw.read()                                   # RM：硬件 → 状态接口
+controller.update(hw.state, hw.command)     # CM：控制器读状态、写命令
+hw.write()                                  # RM：命令接口 → 硬件
+self.state.update(self._hw)                 # mock：上一拍的命令原样变成这一拍的状态
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>控制器是编的</strong>：每拍朝目标走最多 0.01，只为看清三步的分工；真位置控制器通常直接转发目标或跑 PID。</li>
+<li><strong>mock 硬件有一拍延迟</strong>：write 把命令写进"硬件"，下一次 read 才读回来，所以第 0 拍读到的是 0.0。</li>
+<li><strong>Python 循环的抖动</strong>：<code>time.sleep(0.001)</code> 在普通 macOS / Linux 上实际要 1.1–1.5 ms，还时不时更久。这就是关节级快回路要放进 C++、实时内核的原因。结果每台电脑都不一样，测试只检查能跑通。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把 <code>max_step</code> 改成 0.02，看几拍到达目标；</li>
+<li>把 <code>measure_python_jitter</code> 的周期改成 0.01（100 Hz），看相对抖动是不是小了。</li>
+</ul><nav class="pager"><a href="14-launch-test-debug.html">← 第 14 章 · launch 进阶、测试与调试</a><a href="16-hardware-controllers.html">第 16 章 · 硬件组件与控制器 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

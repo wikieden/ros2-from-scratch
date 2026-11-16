@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 8 章 · 中间件、发现与网络 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="8">第 8 章 · 中间件、发现与网络</h1><p><a class="btn" href="../animations/08-discovery.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：同一个 Wi-Fi 下两组人都在跑 ROS 2，怎么不互相串台？机器人和笔记本为什么有时能互相看见、有时不能？DDS 和 Zenoh 有什么不同，怎么换？<code>ros2 node list</code> 为什么有时会显示已经关掉的节点？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/07-qos.html">第 7 章 QoS</a> · 下一章：<a href="../lessons/09-executors.html">第 9 章 Executor 与回调组</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/nodes/About-Domain-ID.rst</code> L40、L46–L50、L65–L66、L88–L110；<code>ros2_documentation/source/Developer-Tools/Launch/Improved-Dynamic-Discovery.rst</code>；<code>ros2_documentation/source/Get-Started/Installation/RMW-Implementations/Non-DDS-Implementations/Working-with-Zenoh.rst</code>；<code>ecosystem/rmw_zenoh/docs/design.md</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 C2、C3，动手里程碑 R-M3 后半（Fast DDS 与 Zenoh 对比）。<br />
+本章缩写：DDS = Data Distribution Service（数据 / 分发 / 服务）；RMW = ROS MiddleWare（ROS 中间件）；RTPS = Real-Time Publish-Subscribe（实时 / 发布 / 订阅：DDS 的线上协议）；ID = identifier（编号）；IP = Internet Protocol（网际 / 协议：网络地址）；VPN = Virtual Private Network（虚拟 / 专用 / 网络）；SHM = Shared Memory（共享内存）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：DDS 组播自动发现 vs Zenoh 路由器</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Domain ID 与发现范围：怎么分组、怎么限定</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>换中间件：Fast DDS（默认）、Cyclone DDS、Zenoh</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>网络排错清单与 ros2 daemon</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 两种"找到彼此"的方式</h3>
+<p><img alt="DDS 组播发现与 Zenoh 路由器" src="../animations/08-discovery.gif" /></p>
+<p>可交互版：<a href="../animations/08-discovery.html">animations/08-discovery.html</a>（内置浏览器：<code>http://localhost:8340/08-discovery.html</code>）。</p>
+<p>第 1 章说过，节点靠"发现"自动找到彼此，没有 ROS 1 那样的 master。具体怎么"发现"，取决于用哪个中间件：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>DDS（Fast DDS 默认、Cyclone DDS 等）</th>
+<th>Zenoh（<code>rmw_zenoh_cpp</code>）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>怎么发现</td>
+<td>每个节点往局域网<strong>组播</strong>"我是谁、发收什么"，人人都听</td>
+<td>每个节点连本机的 <strong>Zenoh 路由器</strong>，路由器把各节点的地址转告给别的节点（gossip，"传话"）</td>
+</tr>
+<tr>
+<td>要不要额外进程</td>
+<td>不要</td>
+<td>要先启动路由器 <code>ros2 run rmw_zenoh_cpp rmw_zenohd</code></td>
+</tr>
+<tr>
+<td>数据走哪</td>
+<td>节点之间直连</td>
+<td>同机节点之间直连；跨机经路由器</td>
+</tr>
+<tr>
+<td>优点</td>
+<td>零配置，开箱即用</td>
+<td>不依赖组播：Wi-Fi、容器、跨网段更省心；发现流量小</td>
+</tr>
+<tr>
+<td>缺点</td>
+<td>节点多时发现流量大；很多 Wi-Fi / 容器 / 云网络不支持组播</td>
+<td>多一个要维护的进程</td>
+</tr>
+</tbody>
+</table>
+<p><strong>类比</strong>：DDS 是在大厅里大声喊"我是张三，我卖苹果"，人人都听得见；Zenoh 是每层楼有个前台（路由器），新来的人到前台登记，前台把名片转给需要的人。</p>
+<h3 id="1-domain-id">第 1 步 · Domain ID 与发现范围</h3>
+<p>依据：<code>ROS-Framework/nodes/About-Domain-ID.rst</code>（下称"域文档"）、<code>Developer-Tools/Launch/Improved-Dynamic-Discovery.rst</code>（下称"发现范围"）。</p>
+<p><strong>Domain ID：同一张网上的"频道号"。</strong> 同一个域里的节点能互相发现和通信，不同域的节点互相看不见。<strong>默认所有节点都在域 0</strong>。实验室里几组人共用一个 Wi-Fi，每组设一个不同的号，就不会串台（域文档 Overview）：</p>
+<pre><code class="language-bash">export ROS_DOMAIN_ID=7       # 同一组的所有终端、所有电脑都设成一样
+</code></pre>
+<p><strong>取值范围</strong>：DDS 用域号算出 UDP 端口号，端口最大 65535，所以域号理论上限是 232。为了避开操作系统的临时端口，<strong>Linux 上安全的范围是 0–101</strong>（以及 215–232），macOS 是 0–166；不想细算就选 0–101（域文档 "Choosing a domain ID" 两节）。</p>
+<p><strong>发现范围</strong>：默认会尝试发现<strong>同一子网</strong>里所有电脑上的节点。可以用两个环境变量限定（发现范围一文）：</p>
+<table>
+<thead>
+<tr>
+<th>变量</th>
+<th>取值</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ROS_AUTOMATIC_DISCOVERY_RANGE</code></td>
+<td><code>SUBNET</code>（默认）</td>
+<td>能组播到的都发现</td>
+</tr>
+<tr>
+<td></td>
+<td><code>LOCALHOST</code></td>
+<td><strong>只发现本机</strong>的节点</td>
+</tr>
+<tr>
+<td></td>
+<td><code>OFF</code></td>
+<td>谁都不发现，本机也不</td>
+</tr>
+<tr>
+<td></td>
+<td><code>SYSTEM_DEFAULT</code></td>
+<td>不改中间件自己的设置</td>
+</tr>
+<tr>
+<td><code>ROS_STATIC_PEERS</code></td>
+<td>用 <code>;</code> 分隔的地址列表</td>
+<td>额外去这些指定的电脑上找节点</td>
+</tr>
+</tbody>
+</table>
+<p><strong>典型用法</strong>：在笔记本上做仿真，不想被同网络的真机器人干扰，设 <code>ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST</code>。要连某一台机器人，再加 <code>ROS_STATIC_PEERS=192.168.1.20</code>。</p>
+<p>注意：这两个变量 <strong>Zenoh 不支持</strong>（发现范围一文的提示），Zenoh 用自己的配置文件控制连接。</p>
+<p><strong>Fast DDS 的发现服务器</strong>：节点很多、或网络不支持组播时，还可以让 Fast DDS 改成"集中发现"：启动一个发现服务器，节点都向它登记（<code>Developer-Tools/Launch/Discovery-Server/Discovery-Server.rst</code>）。思路和 Zenoh 路由器类似。</p>
+<h3 id="2">第 2 步 · 换中间件</h3>
+<p>依据：<code>Get-Started/Installation/RMW-Implementations.rst</code> 及其子页、<code>ecosystem/rmw_zenoh/README.md</code> 与 <code>docs/design.md</code>。</p>
+<p><strong>第 1 章总图 1 的 rmw "插座"在这里派上用场</strong>：换中间件不改代码，只设一个环境变量（<code>Working-with-multiple-RMW-implementations.rst</code> 第 46 行）：</p>
+<pre><code class="language-bash">export RMW_IMPLEMENTATION=rmw_fastrtps_cpp      # Fast DDS（默认）
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp    # Cyclone DDS
+export RMW_IMPLEMENTATION=rmw_connextdds        # RTI Connext DDS（商业）
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp         # Zenoh
+</code></pre>
+<p><strong>要点</strong>：</p>
+<ul>
+<li><strong>同一个系统里所有节点最好用同一个中间件。</strong> 不同 DDS 厂商之间理论上能通过 RTPS 协议互通，但细节（比如服务）常有问题；DDS 和 Zenoh 之间<strong>完全不通</strong>。</li>
+<li>换之前用 <code>apt install ros-lyrical-rmw-&lt;名字&gt;</code> 装好对应包。</li>
+</ul>
+<p><strong>用 Zenoh 的步骤</strong>（<code>Working-with-Zenoh.rst</code>）：</p>
+<pre><code class="language-bash">sudo apt install ros-lyrical-rmw-zenoh-cpp
+# 终端 1：启动路由器
+ros2 run rmw_zenoh_cpp rmw_zenohd
+# 终端 2、3：
+export RMW_IMPLEMENTATION=rmw_zenoh_cpp
+ros2 run demo_nodes_cpp talker
+ros2 run demo_nodes_cpp listener
+</code></pre>
+<p><strong>不启动路由器，节点就互相发现不了</strong>：默认配置里关掉了组播发现，发现信息全靠路由器转告（<code>Working-with-Zenoh.rst</code> 的提示）。按 <code>rmw_zenoh</code> 的设计文档：</p>
+<ul>
+<li>路由器监听本机 TCP 7447 端口；各节点的 Zenoh 会话通过本机回环连到它；</li>
+<li>路由器只负责<strong>发现</strong>和<strong>跨机转发</strong>；<strong>同一台电脑上的节点之间直接通信，不经过路由器</strong>；</li>
+<li>故意不用 UDP 组播，就是为了避开"网络 / 系统 / 容器配置不对导致组播失效"的老问题（design.md "Default Configuration" 一节）。</li>
+<li>环境变量 <code>ZENOH_ROUTER_CHECK_ATTEMPTS</code> 控制启动时等不等路由器（README "Checking for a Zenoh router"）。</li>
+</ul>
+<p><strong>怎么选</strong>：单机或有线局域网，默认 Fast DDS 就够；Wi-Fi、多网段、容器、和云端通信，Zenoh 往往更省心。R-M3 后半就是两个都跑一遍，用 <code>ros2 topic hz / bw</code> 对比。</p>
+<h3 id="3-ros2-daemon">第 3 步 · 网络排错清单与 ros2 daemon</h3>
+<p><strong>"看不见对方的节点"按这个顺序查：</strong></p>
+<ol>
+<li>两边 <code>echo $ROS_DOMAIN_ID</code> 一样吗？</li>
+<li>两边 <code>echo $RMW_IMPLEMENTATION</code> 一样吗？</li>
+<li><code>ROS_AUTOMATIC_DISCOVERY_RANGE</code> 是不是被设成了 <code>LOCALHOST</code>？</li>
+<li>两台电脑能 <code>ping</code> 通吗？防火墙放行 UDP 了吗？</li>
+<li>网络支持组播吗？（很多 Wi-Fi 路由器、VPN、Docker 默认网络不支持）不支持就用 <code>ROS_STATIC_PEERS</code>、发现服务器或 Zenoh。</li>
+<li>用 Zenoh 时：路由器起了吗？跨机时两边路由器的配置文件里互相写了连接地址吗（<code>ZENOH_ROUTER_CONFIG_URI</code> 指定配置文件）？</li>
+<li>能看见节点但收不到数据：回到第 7 章，<code>topic info -v</code> 查 QoS。</li>
+</ol>
+<p><code>ros2 doctor --report</code> 会打印网络、中间件、环境变量等信息，Lyrical 起还包括动作、服务（<code>Release-Lyrical-Luth.rst</code> 对应一节）。官方原话说可以把这个报告贴进 issue 或给 AI 助手帮你排错。</p>
+<p><strong>ros2 daemon：命令行工具背后的缓存。</strong> <code>ros2 node list</code>、<code>ros2 topic list</code> 第一次运行时会在后台启动一个守护进程（daemon），它一直挂在网络上收集"谁在线"，之后的命令直接问它，所以很快。副作用是：</p>
+<ul>
+<li>有时会显示<strong>已经关掉的节点</strong>（缓存还没更新）；</li>
+<li><strong>切换了 <code>ROS_DOMAIN_ID</code> 或中间件后</strong>，旧的 daemon 还在用旧设置。</li>
+</ul>
+<p>这时运行 <code>ros2 daemon stop</code>，下次命令会自动起一个新的（<code>rmw_zenoh</code> README 的测试一节也先 <code>ros2 daemon stop</code>）。</p>
+<p><strong>和本仓库的连接</strong>：机器人 + 远程 GPU 服务器跑 VLA 推理时，跨网络传图像，选 Zenoh 或至少用 <code>ROS_STATIC_PEERS</code> 指定对端，比依赖组播稳得多。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 8-1</strong>（第 1 步）：实验室里你和同学都在跑 turtlesim，你的乌龟被同学的遥控指令控制了。最简单的修法是什么？两人各要做什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 8-2</strong>（第 2 步）：你把 <code>RMW_IMPLEMENTATION</code> 设成 <code>rmw_zenoh_cpp</code>，启动了 talker 和 listener，但 listener 什么也没收到。最可能漏了什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 8-3</strong>（第 3 步）：你改了 <code>ROS_DOMAIN_ID</code> 后，<code>ros2 node list</code> 还是显示改之前那个域里的节点。为什么？怎么办？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>分组</strong>：同号同频道，默认是 0；安全取 0 到 101。</li>
+<li><strong>范围</strong>：LOCALHOST 只看本机，STATIC_PEERS 点名找人。</li>
+<li><strong>中间件</strong>：一个环境变量换插头，全系统用同一个；Zenoh 先起路由器。</li>
+<li><strong>排错</strong>：域号、中间件、范围、ping、组播、QoS；缓存不对 daemon stop。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R22–R23，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Domain-ID.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/nodes/About-Domain-ID.rst</code></td>
+<td>域号与端口的推导、各系统安全范围。</td>
+</tr>
+<tr>
+<td>★ <code>About-Discovery.rst</code></td>
+<td><code>ROS-Framework/nodes/About-Discovery.rst</code></td>
+<td>发现的三条规则（第 1 章已读）。</td>
+</tr>
+<tr>
+<td>★ <code>Improved-Dynamic-Discovery.rst</code></td>
+<td><code>Developer-Tools/Launch/Improved-Dynamic-Discovery.rst</code></td>
+<td><code>ROS_AUTOMATIC_DISCOVERY_RANGE</code>、<code>ROS_STATIC_PEERS</code> 组合效果表。</td>
+</tr>
+<tr>
+<td><code>Discovery-Server.rst</code></td>
+<td><code>Developer-Tools/Launch/Discovery-Server/Discovery-Server.rst</code></td>
+<td>Fast DDS 集中式发现服务器；<code>Developer-Tools/Build/DDS-tuning.rst</code>：大消息、Wi-Fi 下的 DDS 调优。</td>
+</tr>
+<tr>
+<td>★ <code>RMW-Implementations</code></td>
+<td><code>Get-Started/Installation/RMW-Implementations/</code> 下各页，特别是 <code>Non-DDS-Implementations/Working-with-Zenoh.rst</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>design.md</code></td>
+<td><code>materials/ecosystem/rmw_zenoh/docs/design.md</code></td>
+<td>Zenoh 会话、路由器、gossip、话题到 Zenoh 键表达式的映射。</td>
+</tr>
+<tr>
+<td><code>020_ros_with_dds.md</code></td>
+<td><code>materials/design/articles/020_ros_with_dds.md</code>、<code>060_ros_middleware_interface.md</code>、<code>170_node_to_participant_mapping.md</code>、<code>discovery_and_negotiation.md</code></td>
+<td>DDS 选型、rmw 接口、节点与 DDS 参与者的对应。</td>
+</tr>
+<tr>
+<td><code>About-Middleware-Implementations.rst</code></td>
+<td><code>ROS-Framework/client-libraries/About-Middleware-Implementations.rst</code>、<code>About-Different-Middleware-Vendors.rst</code></td>
+<td>各中间件实现对比。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>端口算术</strong>：组播端口 <span class="arithmatex">\(7400+250d\)</span>（<span class="arithmatex">\(d\)</span> 是域号）；第 <span class="arithmatex">\(p\)</span> 个参与者的单播端口 <span class="arithmatex">\(7400+250d+10+2p\)</span>；<span class="arithmatex">\(7400+250d\le 65535\)</span> 给出 <span class="arithmatex">\(d\le 232\)</span>。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>组播端口 <span class="arithmatex">\(=7400+250d\)</span></td>
+</tr>
+<tr>
+<td>单播端口 <span class="arithmatex">\(=7400+250d+10+2p\)</span></td>
+</tr>
+<tr>
+<td>域号上限 <span class="arithmatex">\(=\lfloor(65535-7400)/250\rfloor=232\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch08_domain_ports.py</code>，配套测试 <code>tests/test_ch06_10.py</code>；同名 notebook 在 <code>notebooks/ch08_domain_ports.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch08_domain_ports.py   # 一步一步打印  
+uv run pytest tests/test_ch06_10.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 组播端口</td>
+<td>7400 + 250 × 域号</td>
+<td><code>multicast_ports(1)</code></td>
+<td>(7650, 7651)，文档 L92</td>
+</tr>
+<tr>
+<td>第 1 步 单播端口</td>
+<td>每多一个进程往后挪 2 个</td>
+<td><code>unicast_ports(1, 120)</code></td>
+<td>(7900, 7901)，撞上域 2，文档 L96</td>
+</tr>
+<tr>
+<td>第 1 步 域号上限</td>
+<td>端口最大 65535</td>
+<td><code>max_domain()</code></td>
+<td>232，文档 L50</td>
+</tr>
+<tr>
+<td>第 1 步 Linux 0–101</td>
+<td>避开临时端口段 32768–60999</td>
+<td><code>unicast_ports(101, 54)</code></td>
+<td>(32768, 32769)，文档 L107</td>
+</tr>
+<tr>
+<td>同上</td>
+<td>域 101 / 232 最多几个进程</td>
+<td><code>max_participants(...)</code></td>
+<td>54 / 63，文档 L109–L110</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">PB, DG, PG, D_UNICAST = 7400, 250, 2, 10     # 基数、每域段长、每参与者端口数、单播偏移
+base = PB + DG * domain                       # 组播：发现 base，用户数据 base + 1
+base = PB + DG * domain + D_UNICAST + PG * participant   # 单播：每个进程两个
+(MAX_PORT - PB) // DG                         # 65535 以内最大域号 = 232
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>讲义只说了"域号算出端口，上限 232"</strong>，公式在官方文档链接的外部文章里。这里的四个常数取自 DDS 线上协议 RTPS 的默认值，测试拿 <code>About-Domain-ID.rst</code> L92–L110 给出的每一个例子逐个核对，全部吻合。</li>
+<li><strong>"安全"的意思是组播端口不进临时端口段</strong>：域 101 的组播端口 32650 在 32768 以下，但开到第 54 号进程时单播端口就进去了，所以文档说域 101 最多 54 个进程。</li>
+<li><strong>Zenoh 不用这套端口</strong>：它的路由器监听 TCP 7447（第 2 步），和域号算端口无关。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>算一算你常用的域号（比如 7、42）的组播端口；</li>
+<li>把 <code>LINUX_EPHEMERAL</code> 换成 macOS 的 (49152, 65535)，用 <code>multicast_ports</code> 验证文档 L73 说的"macOS 上 0–166 安全"。</li>
+</ul><nav class="pager"><a href="07-qos.html">← 第 7 章 · QoS：通信质量设置</a><a href="09-executors.html">第 9 章 · Executor 与回调组：谁在什么时候、哪个线程里跑你的回调 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

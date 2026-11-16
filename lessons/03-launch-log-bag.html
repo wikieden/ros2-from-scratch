@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 3 章 · 日志、launch 和 bag：一次启动、看清日志、录下来重放 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="3-launch-bag">第 3 章 · 日志、launch 和 bag：一次启动、看清日志、录下来重放</h1><p><a class="btn" href="../animations/03-launch-log-bag.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：节点一多，每个开一个终端太累，怎么一条命令全启动？几十个节点同时打印，怎么看日志？机器人出了怪事，怎么把当时的数据录下来，回到桌前重放复现？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/02-turtlesim-cli.html">第 2 章 用命令行看懂 turtlesim</a> · 下一章：<a href="../lessons/04-workspace-package.html">第 4 章 工作区与第一个包</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/nodes/About-Logging/About-Logging.rst</code>；<code>ros2_documentation/source/ROS-Framework/nodes/Working-with-nodes/Launching-Multiple-Nodes/Launching-Multiple-Nodes.rst</code>；<code>ros2_documentation/source/ROS-Framework/interfaces/Working-with-interfaces/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 A4，动手里程碑 R-M1。<br />
+本章缩写：stderr = standard error（标准 / 错误输出：终端里日志走的通道）；DEBUG / INFO / WARN / ERROR / FATAL（调试 / 信息 / 警告 / 错误 / 致命：五个日志级别）；ns = namespace（命名空间）；MCAP（不是缩写，一种机器人数据录制文件格式，现为 rosbag2 默认）；CDR = Common Data Representation（通用 / 数据 / 表示：DDS 的序列化格式）；SQLite（一种单文件数据库，rosbag2 的旧默认存储）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：launch 启动 → 日志三去处 → bag 录放</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>日志：五个级别、三个去处、<code>--log-level</code>、rqt_console</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>launch：<code>ros2 launch</code>、读懂一个 launch 文件、命名空间</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>bag：<code>record / info / play</code>，录话题、服务和动作</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 一个系统的"开机、看病、录像"</h3>
+<p><img alt="launch、日志与 bag 总图" src="../animations/03-launch-log-bag.gif" /></p>
+<p>可交互版：<a href="../animations/03-launch-log-bag.html">animations/03-launch-log-bag.html</a>（内置浏览器里看：启动 <code>ros2-animations</code> 预览，打开 <code>http://localhost:8340/03-launch-log-bag.html</code>）。</p>
+<p><strong>类比</strong>：开一家店有三件事和做菜无关但天天要做：<strong>开门</strong>（launch：一句话把所有员工叫到岗）、<strong>看监控和记录</strong>（日志：谁在什么时候说了什么）、<strong>录像回放</strong>（bag：出事后调录像，看当时到底发生了什么）。</p>
+<h3 id="1">第 1 步 · 日志：五个级别、三个去处</h3>
+<p>依据：<code>ROS-Framework/nodes/About-Logging/About-Logging.rst</code>（下称"日志文档"）。</p>
+<p><strong>五个级别</strong>，从低到高：<code>DEBUG</code>（调试细节）→ <code>INFO</code>（正常信息）→ <code>WARN</code>（警告，能继续跑）→ <code>ERROR</code>（出错）→ <code>FATAL</code>（致命，通常要退出）。每个节点有一个日志器（logger），<strong>只处理不低于设定级别的消息</strong>。默认级别是 INFO，所以 DEBUG 平时看不到。</p>
+<p><strong>三个去处</strong>（日志文档 Overview）：默认同时送到</p>
+<ol>
+<li><strong>终端</strong>（走 stderr）；</li>
+<li><strong>磁盘上的日志文件</strong>，通常在 <code>~/.ros/log/</code>（可用环境变量 <code>ROS_LOG_DIR</code> 改）；</li>
+<li><strong><code>/rosout</code> 话题</strong>：所有节点的日志汇成一个话题，任何节点都能订阅。第 2 章 <code>node info</code> 里每个节点都发布 <code>/rosout</code>，原因就在这。</li>
+</ol>
+<p><strong>为什么要有第 3 个去处？</strong> 机器人上跑着几十个节点，可能分布在几台电脑上。你在笔记本上订阅 <code>/rosout</code>，就能看到全机所有节点的日志，不用一台台登录看终端。<code>rqt_console</code> 就是干这个的图形工具：</p>
+<pre><code class="language-bash">ros2 run rqt_console rqt_console
+</code></pre>
+<p>它按级别、节点名过滤 <code>/rosout</code> 上的日志。</p>
+<p><strong>调级别</strong>：启动时加 <code>--log-level</code>：</p>
+<pre><code class="language-bash">ros2 run turtlesim turtlesim_node --ros-args --log-level debug          # 整个节点
+ros2 run demo_nodes_cpp talker --ros-args --log-level talker:=DEBUG     # 只调一个日志器（日志文档第 182 行）
+</code></pre>
+<p><strong>代码里怎么写</strong>：Python 里 <code>self.get_logger().info('...')</code>，还能加 <code>throttle_duration_sec=1.0</code>（每秒最多打一次）、<code>once=True</code>（只打一次）。C++ 用 <code>RCLCPP_INFO(node-&gt;get_logger(), "...")</code> 一族宏，带 <code>_THROTTLE</code>、<code>_ONCE</code> 等变体（日志文档 APIs 一节）。在 50 Hz 的控制回调里打日志，<strong>一定要节流</strong>，否则终端被刷屏、还拖慢回调。</p>
+<p><strong>Lyrical 新功能</strong>：日志后端可以在运行时用环境变量 <code>RCL_LOGGING_IMPLEMENTATION</code> 换（默认 <code>rcl_logging_spdlog</code>，<code>rcl_logging_noop</code> 关掉写文件）；launch 文件里也能按条设置日志级别（<code>Releases/Release-Lyrical-Luth.rst</code> 对应两节）。</p>
+<h3 id="2-launch">第 2 步 · launch：一条命令启动整个系统</h3>
+<p>依据：<code>ROS-Framework/nodes/Working-with-nodes/Launching-Multiple-Nodes/Launching-Multiple-Nodes.rst</code>（下称"launch 教程"）。</p>
+<p><strong>用法</strong>：<code>ros2 launch &lt;包名&gt; &lt;launch 文件名&gt;</code>。turtlesim 自带一个：</p>
+<pre><code class="language-bash">ros2 launch turtlesim multisim.launch.py
+</code></pre>
+<p>会弹出<strong>两个</strong>模拟器窗口。这个文件只有十几行（launch 教程附带的 <code>launch/multisim.launch.py</code>）：</p>
+<pre><code class="language-python">from launch import LaunchDescription
+import launch_ros.actions
+
+def generate_launch_description():                 # 固定的入口函数名
+    return LaunchDescription([                     # 一张&quot;要启动什么&quot;的清单
+        launch_ros.actions.Node(
+            namespace='turtlesim1', package='turtlesim',
+            executable='turtlesim_node', output='screen'),
+        launch_ros.actions.Node(
+            namespace='turtlesim2', package='turtlesim',
+            executable='turtlesim_node', output='screen'),
+    ])
+</code></pre>
+<p>逐项看：</p>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>意思</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>generate_launch_description()</code></td>
+<td><code>ros2 launch</code> 会找这个函数并调用它</td>
+</tr>
+<tr>
+<td><code>LaunchDescription([...])</code></td>
+<td>一张清单，列出要启动的东西</td>
+</tr>
+<tr>
+<td><code>Node(package=, executable=)</code></td>
+<td>等于一条 <code>ros2 run 包 可执行文件</code></td>
+</tr>
+<tr>
+<td><code>namespace='turtlesim1'</code></td>
+<td><strong>命名空间</strong>：给这个节点的所有名字加前缀</td>
+</tr>
+<tr>
+<td><code>output='screen'</code></td>
+<td>节点的输出打到当前终端</td>
+</tr>
+</tbody>
+</table>
+<p><strong>命名空间是关键。</strong> 两个模拟器如果不加前缀，都会订阅 <code>/turtle1/cmd_vel</code>，按一下键两只乌龟一起动（第 2 章练习 2-1 的情形）。加了命名空间后，话题变成 <code>/turtlesim1/turtle1/cmd_vel</code> 和 <code>/turtlesim2/turtle1/cmd_vel</code>，彼此分开。<strong>多台同型号机器人共用一个网络时，靠的就是命名空间</strong>（比如 <code>/robot1/...</code>、<code>/robot2/...</code>）。</p>
+<p>要遥控其中一只，把遥控节点也放进同一个命名空间：</p>
+<pre><code class="language-bash">ros2 run turtlesim turtle_teleop_key --ros-args -r __ns:=/turtlesim1
+</code></pre>
+<p><code>-r</code> 是 <code>--remap</code> 的缩写，<code>__ns</code> 指命名空间（第 2 章改节点名用的是 <code>__node</code>）。</p>
+<p><strong>其他要点</strong>：</p>
+<ul>
+<li>launch 文件可以用 <strong>Python、XML 或 YAML</strong> 写（launch 教程的 FAQ）。Python 最灵活，XML / YAML 更短。</li>
+<li>可以传参数：<code>ros2 launch &lt;包&gt; &lt;文件&gt; 参数名:=值</code>，前提是文件里声明过这个参数（launch 教程 FAQ）。</li>
+<li>launch 还能加载参数文件、做条件判断、监听"某节点退出就关掉全部"之类的事件，这些放到第 14 章。</li>
+</ul>
+<h3 id="3-bag">第 3 步 · bag：把数据录下来，回放复现</h3>
+<p>依据：<code>ROS-Framework/interfaces/Working-with-interfaces/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.rst</code>（下称"bag 教程"）。</p>
+<p><strong>bag</strong> 是 ROS 的"录像带"：把话题上的消息按时间录进文件，之后按原来的节奏重新发布出去。工具叫 <strong>rosbag2</strong>，命令是 <code>ros2 bag</code>。</p>
+<p><strong>录</strong>（bag 教程第 3 步）：</p>
+<pre><code class="language-bash">ros2 bag record --topics /turtle1/cmd_vel                         # 录一个话题，目录名自动按时间起
+ros2 bag record -o subset --topics /turtle1/cmd_vel /turtle1/pose  # 录两个，目录叫 subset
+ros2 bag record -o subset_split -d 5 --topics ...                 # 每 5 秒切一个文件（-b 按大小切）
+</code></pre>
+<p>按 Ctrl+C 停止。得到一个<strong>目录</strong>，里面是数据文件加一个 <code>metadata.yaml</code>（说明书）。</p>
+<p><strong>看</strong>（bag 教程第 4 步）：</p>
+<pre><code>$ ros2 bag info subset
+Files:             subset_0.mcap
+Bag size:          228.5 KiB
+Storage id:        mcap
+Duration:          48.47s
+Messages:          3013
+Topic information: Topic: /turtle1/cmd_vel | Type: geometry_msgs/msg/Twist | Count: 9 | Serialization Format: cdr
+                   Topic: /turtle1/pose | ...
+</code></pre>
+<p>两个细节：</p>
+<ul>
+<li><strong>存储格式默认是 MCAP</strong>（<code>Storage id: mcap</code>），一种通用的机器人数据格式，Foxglove 等可视化工具能直接打开。老版本默认是 SQLite（<code>.db3</code>）。</li>
+<li>消息是以<strong>序列化后的字节</strong>（<code>cdr</code> 格式）存的，也就是第 1 章总图 2 第 ⑥ 步的样子。录制时不用反序列化，所以很省 CPU。</li>
+</ul>
+<p><strong>放</strong>（bag 教程第 5 步）：</p>
+<pre><code class="language-bash">ros2 bag play subset                              # 按原节奏重新发布；空格暂停，方向键调速
+ros2 bag play -i subset_cmd_vel -i subset_pose    # 同时放两个 bag，时间对齐
+</code></pre>
+<p>回放 <code>/turtle1/cmd_vel</code> 时，乌龟会重走当时的路线。注意：如果 bag 里<strong>也录了 <code>/turtle1/pose</code></strong>，回放时会有两个来源往 pose 上发（真模拟器 + bag），订阅者会看到两套数据打架。所以<strong>回放时，被录的那个话题的原始发布者通常要关掉</strong>。</p>
+<p><strong>还能录服务和动作</strong>（bag 教程后两部分）：<code>--service &lt;名&gt;</code> / <code>--all-services</code>，回放时用 <code>--publish-service-requests</code> 把请求重新发给服务端。前提是节点开了服务内省（第 2 章第 3 步提过）。</p>
+<p><strong>为什么 bag 对你很重要：</strong></p>
+<ol>
+<li><strong>复现</strong>：机器人在现场"偶尔"出错，录下来就能在桌前一遍遍重放、调试，不用再上机器。</li>
+<li><strong>数据集</strong>：VLA / 模仿学习的示范数据，最原始的形态往往就是遥操作时录的 bag（相机 + 关节状态 + 动作指令），再转成 LeRobot 等训练格式。</li>
+<li><strong>离线测试</strong>：新写的感知节点不用连真相机，订阅 bag 回放的 <code>/image</code> 就能测。</li>
+</ol>
+<p><strong>Lyrical 新功能</strong>（<code>Release-Lyrical-Luth.rst</code>）：用服务远程开始 / 停止录制、Python API 控制录放、<code>--max-bag-files</code> 循环录制（盘满前删最旧的分片）、丢包统计话题 <code>events/rosbag2_messages_lost</code>。机器人上长期"黑匣子"式录制正需要这些。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 3-1</strong>（第 1 步）：你的控制节点每秒执行 100 次回调，你想在里面打一条"当前速度"的日志，但不想刷屏。Python 里怎么写？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 3-2</strong>（第 2 步）：把 <code>multisim.launch.py</code> 里两个 <code>namespace=</code> 都删掉，再启动。会发生什么？<code>ros2 node list</code> 会看到什么问题？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 3-3</strong>（第 3 步）：你录了一个包含 <code>/turtle1/cmd_vel</code> 和 <code>/turtle1/pose</code> 的 bag。现在想在<strong>开着 turtlesim</strong> 的情况下回放，只让乌龟重走路线，不想让 pose 打架。命令怎么写？（提示：<code>ros2 bag play --help</code> 里找"只放部分话题"的选项。）</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>日志</strong>：五级（调试、信息、警告、错误、致命），三去处（终端、文件、<code>/rosout</code>）；高频回调要节流。</li>
+<li><strong>launch</strong>：一张清单起全家；命名空间分你我。</li>
+<li><strong>bag</strong>：record 录、info 看、play 放；录的是字节，存的是 MCAP；回放时关掉原来的发布者。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R10–R12，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Logging.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/nodes/About-Logging/About-Logging.rst</code></td>
+<td>级别、日志器层级、三个去处、环境变量（<code>ROS_LOG_DIR</code>、<code>RCUTILS_CONSOLE_OUTPUT_FORMAT</code>）。</td>
+</tr>
+<tr>
+<td><code>Using-Rqt-Console.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Using-Rqt-Console/Using-Rqt-Console.rst</code></td>
+<td>rqt_console 的用法。</td>
+</tr>
+<tr>
+<td>★ <code>Launching-Multiple-Nodes</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Launching-Multiple-Nodes/</code></td>
+<td>第一次运行 launch 文件。</td>
+</tr>
+<tr>
+<td><code>Creating-Launch-Files.rst</code></td>
+<td><code>Developer-Tools/Launch/Creating-Launch-Files.rst</code>、<code>Launch-file-different-formats.rst</code></td>
+<td>自己写 launch 文件，Python / XML / YAML 三种写法对照（第 14 章展开）。</td>
+</tr>
+<tr>
+<td>★ <code>Recording-And-Playing-Back-Data</code></td>
+<td><code>ROS-Framework/interfaces/Working-with-interfaces/Recording-And-Playing-Back-Data/</code></td>
+<td>bag 录放话题、服务、动作。</td>
+</tr>
+<tr>
+<td><code>Recording-A-Bag-From-Your-Own-Node-Py.rst</code></td>
+<td><code>ROS-Framework/client-libraries/Working-with-Client-Libraries/Recording-A-Bag-From-Your-Own-Node-Py.rst</code>、<code>Reading-From-A-Bag-File-Python.rst</code></td>
+<td>在自己的代码里录 / 读 bag（做数据转换时用）。</td>
+</tr>
+<tr>
+<td><code>141_static_remapping.md</code></td>
+<td><code>design/articles/141_static_remapping.md</code>、<code>160_ros_command_line_arguments.md</code></td>
+<td>命名空间与 remap 规则。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li>本章没有用到数学。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>相对名 → /命名空间/名字；/ 开头的绝对名不变；~ → /命名空间/节点名/…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch03_log_launch_bag.py</code>，配套测试 <code>tests/test_ch01_05.py</code>；同名 notebook 在 <code>notebooks/ch03_log_launch_bag.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch03_log_launch_bag.py   # 一步一步打印  
+uv run pytest tests/test_ch01_05.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 日志级别</td>
+<td>只处理不低于设定级别的</td>
+<td><code>passes(level, 'INFO')</code></td>
+<td>DEBUG 丢掉，其余打印</td>
+</tr>
+<tr>
+<td>第 2 步 命名空间</td>
+<td>相对名加前缀</td>
+<td><code>resolve_name('turtle1/cmd_vel', 'turtlesim1')</code></td>
+<td><code>/turtlesim1/turtle1/cmd_vel</code></td>
+</tr>
+<tr>
+<td>第 2 步 绝对名</td>
+<td><code>/</code> 开头不受影响</td>
+<td><code>resolve_name('/rosout', ...)</code></td>
+<td><code>/rosout</code></td>
+</tr>
+<tr>
+<td>第 3 步 录</td>
+<td>存序列化后的字节</td>
+<td><code>record(raw)</code></td>
+<td><code>(10.0, '/turtle1/cmd_vel', b'...')</code></td>
+</tr>
+<tr>
+<td>第 3 步 放</td>
+<td>按原节奏；可调速</td>
+<td><code>play(bag)</code> / <code>play(bag, rate=2.0)</code></td>
+<td>0, 0.5, 2.0 秒 / 0, 0.25, 1.0 秒</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">LEVELS = [&quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARN&quot;, &quot;ERROR&quot;, &quot;FATAL&quot;]
+LEVELS.index(level) &gt;= LEVELS.index(threshold)         # 不低于门槛才处理
+if name.startswith(&quot;/&quot;): return name                    # 绝对名原样
+return f&quot;{ns}/{name}&quot;                                   # 相对名接在命名空间后
+(round((t - t0) / rate, 3), topic, json.loads(data))    # 回放：保持相对时间，rate 倍速
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>私有名 <code>~</code></strong>：讲义第 2 步没展开。<code>~/xxx</code> 接在"命名空间 / 节点名"后面，第 2 章看到的 <code>/turtlesim/set_parameters</code> 就是 <code>~/set_parameters</code> 展开的结果。</li>
+<li><strong>回放只保相对时间</strong>：bag 里存的是录制时的绝对时间戳，回放从"现在"开始按间隔重新发；要让节点用 bag 里的时间，得配合第 11 章的仿真时间。</li>
+<li><strong>三条指令和时间是编的</strong>，只为看清录放保持间隔。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把门槛改成 <code>WARN</code>，看哪些级别被丢掉；</li>
+<li>在 <code>raw</code> 里再加一条 <code>/turtle1/pose</code> 的消息，看录放后时间顺序是否还对。</li>
+</ul><nav class="pager"><a href="02-turtlesim-cli.html">← 第 2 章 · 用命令行看懂 turtlesim</a><a href="04-workspace-package.html">第 4 章 · 工作区、colcon 和第一个包 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

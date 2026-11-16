@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 9 章 · Executor 与回调组：谁在什么时候、哪个线程里跑你的回调 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="9-executor">第 9 章 · Executor 与回调组：谁在什么时候、哪个线程里跑你的回调</h1><p><a class="btn" href="../animations/09-executor-timeline.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：一个慢回调为什么会让别的回调全都卡住？多线程 executor 加上了为什么还是不并行？回调组是什么、怎么分组？第 5 章那个服务死锁到底怎么正确地修？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/08-middleware-discovery.html">第 8 章 中间件、发现与网络</a> · 下一章：<a href="../lessons/10-composition-zero-copy.html">第 10 章 组合、进程内通信与零拷贝</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/client-libraries/About-Executors/About-Executors.rst</code>；<code>ros2_documentation/source/ROS-Framework/nodes/Working-with-nodes/Using-callback-groups.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 C4，动手里程碑 R-M4 前半。<br />
+本章缩写：FIFO = First In, First Out（先进 / 先出：排队顺序）；CPU = Central Processing Unit（中央 / 处理 / 单元）；GIL = Global Interpreter Lock（全局 / 解释器 / 锁：Python 同一时刻只让一个线程跑 Python 代码的锁）；CBG = Callback Group（回调组）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：同一组回调在不同 executor / 回调组下的时间线</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>executor 怎么调度：等待集、轮转、三种 executor</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>回调组：互斥组、可重入组、默认组</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>实战：修好服务死锁，给控制回路单独线程</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 线程时间线</h3>
+<p><img alt="executor 与回调组时间线" src="../animations/09-executor-timeline.gif" /></p>
+<p>可交互版：<a href="../animations/09-executor-timeline.html">animations/09-executor-timeline.html</a>（内置浏览器：<code>http://localhost:8340/09-executor-timeline.html</code>）。</p>
+<p><strong>类比</strong>：executor 是餐厅的服务员团队，回调是各桌的需求。单线程 executor = 只有一个服务员，一桌没招呼完，别桌只能等。多线程 executor = 好几个服务员，但<strong>回调组</strong>规定了哪些桌只能由一个人按顺序服务（互斥组），哪些桌可以同时派人（可重入组）。</p>
+<h3 id="1-executor">第 1 步 · executor 怎么调度</h3>
+<p>依据：<code>ROS-Framework/client-libraries/About-Executors/About-Executors.rst</code>（下称"executor 文档"）。</p>
+<p><strong><code>rclpy.spin(node)</code> 背后</strong>：其实是创建一个<strong>单线程 executor</strong>、把节点加进去、再 <code>spin()</code>（executor 文档第一段）。<code>spin()</code> 让当前线程不停地向 rcl 和中间件询问"有没有新消息、定时器到了没有"，有就调对应回调，直到节点关闭。</p>
+<p><strong>消息存在哪？</strong> 新消息<strong>不</strong>在客户端库里排队，而是<strong>留在中间件里</strong>，等回调真要处理时才取出来。这样中间件的 QoS 设置（比如队列深度）才能生效。这是和 ROS 1 的关键区别（executor 文档 Basic 一节）。</p>
+<p><strong>等待集只告诉"有没有"，不告诉"有几条、谁先到"。</strong> 所以回调处理得快时，executor 基本按先来后到（FIFO）处理；回调一慢，消息在下层堆起来，executor 就按<strong>轮转（round-robin）</strong>挨个话题处理，而不是严格按到达顺序（executor 文档 Scheduling semantics）。</p>
+<p><strong>一个 executor 可以管多个节点</strong>：<code>executor.add_node(node1)</code>、<code>add_node(node2)</code>……单线程时，一个线程服务所有这些节点的回调。</p>
+<p><strong>三种 executor</strong>（rclcpp；rclpy 有对应的单线程和多线程版本）：</p>
+<table>
+<thead>
+<tr>
+<th>executor</th>
+<th>线程</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SingleThreadedExecutor</td>
+<td>1</td>
+<td>默认；一次只跑一个回调</td>
+</tr>
+<tr>
+<td>MultiThreadedExecutor</td>
+<td>可配置多个</td>
+<td>线程池；<strong>能不能并行由回调组决定</strong></td>
+</tr>
+<tr>
+<td>EventsCBGExecutor（Lyrical 新增）</td>
+<td>1 或多个</td>
+<td>不轮询等待集，而是"谁就绪谁进先进先出事件队列"；比前两种省 10%–15% CPU；支持仿真时间；可直接替换多线程 executor</td>
+</tr>
+</tbody>
+</table>
+<p>EventsCBGExecutor 的一个提醒：事件队列<strong>没有上限</strong>，进程过载时队列会无限增长（executor 文档对应一节的 Note）。</p>
+<p><strong>为什么默认 executor 不适合硬实时</strong>（executor 文档 Outlook）：调度规则复杂难分析；高优先级回调可能被低优先级回调挡住（优先级反转）；不能显式控制回调执行顺序；CPU 和内存开销不小。真正的实时控制回路通常放在 ros2_control 里（第 15 章）。</p>
+<h3 id="2">第 2 步 · 回调组</h3>
+<p>依据：executor 文档 Callback groups 一节、<code>ROS-Framework/nodes/Working-with-nodes/Using-callback-groups.rst</code>（下称"回调组指南"）。</p>
+<p><strong>两种回调组</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>规则</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>互斥组</strong>（MutuallyExclusiveCallbackGroup）</td>
+<td>组内回调<strong>不能</strong>同时执行</td>
+<td>一个服务员负责这几桌，一次只服务一桌</td>
+</tr>
+<tr>
+<td><strong>可重入组</strong>（ReentrantCallbackGroup）</td>
+<td>组内回调<strong>可以</strong>同时执行，<strong>同一个回调也可以同时跑多份</strong></td>
+<td>这几桌随便派几个服务员</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>不同组之间的回调总是可以并行</strong>（在多线程 executor 下）。</li>
+<li><strong>没指定组的回调都进节点的默认组，默认组是互斥组</strong>。所以：只换成多线程 executor、不分组，回调<strong>还是一个一个跑</strong>。这是最常见的误解。</li>
+<li>回调组对象要<strong>存住</strong>（比如存成 <code>self.cb_group</code>），否则 executor 触发不了其中的回调（executor 文档）。</li>
+</ul>
+<p><strong>怎么用</strong>（Python）：</p>
+<pre><code class="language-python">from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
+
+self.control_group = MutuallyExclusiveCallbackGroup()
+self.io_group = ReentrantCallbackGroup()
+self.timer = self.create_timer(0.02, self.control_step, callback_group=self.control_group)
+self.sub = self.create_subscription(Image, 'image', self.on_image, qos_profile_sensor_data,
+                                    callback_group=self.io_group)
+
+executor = MultiThreadedExecutor(num_threads=4)
+executor.add_node(node)
+executor.spin()
+</code></pre>
+<p><strong>分组原则</strong>（回调组指南的 guidelines）：</p>
+<ol>
+<li>一个回调<strong>自己和自己</strong>能并行吗？能 → 可重入组；不能 → 互斥组。</li>
+<li>两个回调<strong>永远不能同时跑</strong>（比如都改同一个成员变量又没加锁）→ 放进<strong>同一个</strong>互斥组。</li>
+<li>两个回调需要并行 → 放进<strong>不同</strong>的组（或同一个可重入组）。</li>
+</ol>
+<p><strong>Python 的特别提醒</strong>：Python 有全局解释器锁（GIL），多个线程同一时刻只能有一个在执行 Python 代码。多线程 executor 在 Python 里主要解决<strong>等待</strong>（等服务回复、等 I/O）时的互相阻塞，而不是把计算变快。计算密集的部分（比如模型推理）放在 C++ 或 GPU 上。</p>
+<h3 id="3">第 3 步 · 实战</h3>
+<p><strong>修好第 5 章的服务死锁。</strong> 死锁原因：定时器回调里同步调用服务，executor 唯一的线程卡在这个回调里，没人去取回复。修法（回调组指南的核心例子）：</p>
+<pre><code class="language-python">self.client_group = MutuallyExclusiveCallbackGroup()
+self.timer_group = MutuallyExclusiveCallbackGroup()
+self.cli = self.create_client(AddTwoInts, 'add_two_ints', callback_group=self.client_group)
+self.timer = self.create_timer(1.0, self.timer_cb, callback_group=self.timer_group)
+
+def timer_cb(self):
+    result = self.cli.call(req)   # 现在可以了：回复由另一个线程在 client_group 里处理
+</code></pre>
+<p>再用 <code>MultiThreadedExecutor</code> 去 spin。定时器和客户端在<strong>不同的组</strong>，一个线程卡在定时器回调里等，另一个线程去处理客户端收到的回复。当然，能用 <code>call_async</code> 就别用 <code>call</code>。</p>
+<p><strong>给控制回路一个"专用线程"。</strong> 一个节点同时有 50 Hz 的控制定时器和 30 Hz 的图像订阅（图像处理很慢）。单线程时，图像回调一跑 40 ms，控制回路就漏拍。做法：</p>
+<ol>
+<li>控制定时器放一个互斥组，图像订阅放另一个组，用多线程 executor；</li>
+<li>更进一步（C++）：用 <code>add_callback_group</code> 把控制组交给<strong>单独的 executor</strong>，跑在单独的线程上，再用操作系统调度器给这个线程更高优先级（executor 文档 Callback groups 一节末尾；示例包 <code>examples_rclcpp_cbg_executor</code>）。</li>
+</ol>
+<p><strong>动作服务端</strong>也一样：第 6 章 <code>execute_callback</code> 里 <code>time.sleep(1)</code> 会占住线程。把动作服务端放可重入组 + 多线程 executor，执行期间取消请求、新目标才能及时处理。</p>
+<p><strong>和本仓库的连接</strong>：VLA 策略节点的典型结构正是"慢的推理 + 快的执行"：推理回调几十到几百毫秒一次，动作块插值发给控制器要 50 Hz 以上。两者必须分组、分线程，否则推理一卡，机器人就停顿（VLA 讲义里实时分块 RTC 要解决的也是这个问题，R-M10 会做）。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 9-1</strong>（第 1 步）：一个节点有两个订阅：A 的回调每次 200 ms，B 的消息 100 Hz 到达、回调 1 ms。用单线程 executor，B 的回调实际能跑多少 Hz？为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 9-2</strong>（第 2 步）：你把 executor 换成了 <code>MultiThreadedExecutor(num_threads=8)</code>，但没建任何回调组。练习 9-1 的问题解决了吗？为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 9-3</strong>（第 2 步）：两个订阅回调都会修改同一个列表 <code>self.buffer</code>，你又希望它们和定时器并行。怎么分组？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>spin</strong>：spin 就是单线程 executor；消息留在中间件，等回调来取。</li>
+<li><strong>调度</strong>：快时先来后到，慢时轮转；一个慢回调拖累全节点。</li>
+<li><strong>回调组</strong>：互斥组一个一个来，可重入组随便并行；不同组总能并行；默认组是互斥组。</li>
+<li><strong>多线程不分组 = 还是串行</strong>；同步等待和被等待的回调放不同组。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R24–R25，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Executors.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/client-libraries/About-Executors/About-Executors.rst</code></td>
+<td>调度语义、三种 executor、回调组、实时局限（本章主要依据）。</td>
+</tr>
+<tr>
+<td>★ <code>Using-callback-groups.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Using-callback-groups.rst</code></td>
+<td>分组原则和死锁例子。</td>
+</tr>
+<tr>
+<td><code>Sync-Vs-Async.rst</code></td>
+<td><code>ROS-Framework/interfaces/services/Working-with-services/Sync-Vs-Async.rst</code></td>
+<td>同步调用与死锁（第 5 章）。</td>
+</tr>
+<tr>
+<td><code>Writing-An-Async-Node-With-Asyncio-Python.rst</code></td>
+<td><code>ROS-Framework/nodes/Working-with-nodes/Writing-An-Async-Node-With-Asyncio-Python.rst</code></td>
+<td>Lyrical 的 <code>AsyncNode</code>。</td>
+</tr>
+<tr>
+<td><code>Release-Lyrical-Luth.rst</code></td>
+<td><code>Releases/Release-Lyrical-Luth.rst</code> "Callback Group Events executor" 一节；组件容器可用 <code>--executor-type</code> 选 executor。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>论文</td>
+<td>Casini, Blass, Lütkebohle, Brandenburg, "Response-Time Analysis of ROS 2 Processing Chains under Reservation-Based Scheduling", ECRTS 2019（executor 文档引用，首次分析 ROS 2 executor 的调度语义）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>视频</td>
+<td>Michael Pöhnl et al., "ROS 2 Executor: How to make it efficient, real-time and deterministic?"（ROS World 2021）；Ralph Lange, "Advanced Execution Management with ROS 2"（ROS-Industrial Conference 2020）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>120_realtime_background.md</code></td>
+<td><code>materials/design/articles/120_realtime_background.md</code>、<code>121_realtime_proposal.md</code></td>
+<td>实时背景（第 15 章再读）。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>负载率</strong>：每秒要干的活 = 频率 × 每次耗时；超过 1（比如 30 Hz × 40 ms = 1.2）单线程注定跟不上。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>同一互斥组：一次一个；不同组：可以并行（要多线程 executor）</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch09_executor.py</code>，配套测试 <code>tests/test_ch06_10.py</code>；同名 notebook 在 <code>notebooks/ch09_executor.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch09_executor.py   # 一步一步打印  
+uv run pytest tests/test_ch06_10.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 3 步 单线程</td>
+<td>一个线程、默认组，图像回调 40 ms</td>
+<td><code>simulate(single, threads=1)</code></td>
+<td>控制跑 25 次、漏 23 拍</td>
+</tr>
+<tr>
+<td>第 3 步 分组</td>
+<td>控制一组、图像一组，两个线程</td>
+<td><code>simulate(grouped, threads=2)</code></td>
+<td>控制跑 49 次、漏 0 拍、晚 0 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">for c in sorted(callbacks, key=lambda c: not c.is_timer):   # 定时器先看
+    if len(busy) &gt;= threads: break                           # 没有空闲线程
+    if any(g == c.group for _, g in busy): continue          # 同一互斥组正有人在跑
+    busy.append((t + c.cost_ms, c.group))                    # 占住一个线程 cost_ms 毫秒
+</code></pre>
+<p><strong>代码里才看得到的 4 件事</strong>：</p>
+<ol>
+<li><strong>为什么不用真线程</strong>：真 Python 线程受 GIL 和系统调度影响，每次结果不同；按毫秒推进的模拟每次都一样，适合核对。</li>
+<li><strong>"漏拍"的定义</strong>：50 Hz 定时器下一拍到点时上一拍还没跑，就记一次漏拍，晚了的那拍不补发——rclpy 的定时器也是这样。</li>
+<li><strong>图像只留最新一张</strong>：相当于订阅用 Keep last 1。30 Hz × 40 ms = 每秒要 1.2 秒的活，单线程注定跟不上，旧图被新图顶掉。</li>
+<li><strong>1 秒里定时器到点 49 次</strong>（20、40、…、980 ms），所以分组后"跑了 49 次"就是一拍不漏。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把图像回调的 <code>cost_ms</code> 改成 10，再跑单线程，看控制回路还漏不漏拍；</li>
+<li>把 <code>threads=2</code> 改成 <code>threads=1</code>（保留两个组），看分组但只有一个线程时会怎样。</li>
+</ul><nav class="pager"><a href="08-middleware-discovery.html">← 第 8 章 · 中间件、发现与网络</a><a href="10-composition-zero-copy.html">第 10 章 · 组合、进程内通信与零拷贝 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

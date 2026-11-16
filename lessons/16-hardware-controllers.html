@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 16 章 · 硬件组件与控制器 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="16">第 16 章 · 硬件组件与控制器</h1><p><a class="btn" href="../animations/16-hardware-lifecycle.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：要让 ros2_control 驱动自己的电机，硬件组件要实现哪些函数？上电、松刹车该写在哪？最常用的标准控制器（关节轨迹、差速底盘、关节状态广播）怎么用？自己写控制器要遵守什么？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/15-realtime-ros2-control.html">第 15 章 实时与 ros2_control 架构</a> · 下一章：<a href="../lessons/17-nav2.html">第 17 章 Nav2</a><br />
+对应原文：<code>ecosystem/ros2_control/hardware_interface/doc/writing_new_hardware_component.rst</code>、<code>lifecycle_of_a_hardware_component.rst</code>；<code>ecosystem/ros2_controllers/joint_trajectory_controller/doc/userdoc.rst</code>；<code>ecosystem/ros2_controllers/doc/writing_new_controller.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 F3–F5，动手里程碑 R-M7（给自己的 2 连杆臂配 mock 硬件 + 轨迹控制器，再写一个自己的 <code>SystemInterface</code>）。<br />
+本章缩写：JTC = Joint Trajectory Controller（关节 / 轨迹 / 控制器）；PID = Proportional-Integral-Derivative（比例 / 积分 / 微分）；C0 / C2（位置连续 / 二阶导数连续：轨迹的平滑程度）；<code>hpp</code> / <code>cpp</code>（C++ 头文件 / 源文件后缀）；DC = Direct Current（直流）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：一个硬件组件从加载到干活的全过程</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>写硬件组件：要实现的函数、生命周期每一步干什么</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>标准控制器：关节轨迹控制器、差速底盘控制器、广播器</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>写控制器：接口声明、实时的 <code>update()</code>、级联</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 硬件组件的一生</h3>
+<p><img alt="硬件组件的生命周期与读写" src="../animations/16-hardware-lifecycle.gif" /></p>
+<p>可交互版：<a href="../animations/16-hardware-lifecycle.html">animations/16-hardware-lifecycle.html</a>（内置浏览器：<code>http://localhost:8340/16-hardware-lifecycle.html</code>）。</p>
+<p>硬件组件也是一个托管对象，生命周期和第 11 章完全一样：UNCONFIGURED → INACTIVE → ACTIVE，还有 FINALIZED。区别是每一步对应<strong>真实的硬件动作</strong>：建立通信、上电、松刹车。</p>
+<h3 id="1">第 1 步 · 写一个硬件组件</h3>
+<p>依据：<code>materials/ecosystem/ros2_control/hardware_interface/doc/writing_new_hardware_component.rst</code>（下称"硬件组件指南"）、<code>lifecycle_of_a_hardware_component.rst</code>（下称"硬件生命周期"）。</p>
+<p><strong>它是一个 C++ 插件</strong>：<code>ament_cmake</code> 包里一个类，继承 <code>hardware_interface::SystemInterface</code>（或 <code>ActuatorInterface</code>、<code>SensorInterface</code>），由控制器管理器用 pluginlib 动态加载（硬件组件指南开头）。</p>
+<p><strong>要实现的函数和各自该做的事</strong>（硬件组件指南第 4 步；硬件生命周期）：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>之后的状态</th>
+<th>该做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_init(info)</code></td>
+<td>UNCONFIGURED</td>
+<td>先调父类 <code>on_init</code>；读 URDF <code>&lt;ros2_control&gt;</code> 里的参数（<code>info</code>）、检查关节和接口是否齐全；初始化成员变量。还<strong>不</strong>和硬件通信</td>
+</tr>
+<tr>
+<td><code>on_configure</code></td>
+<td>INACTIVE</td>
+<td><strong>建立通信</strong>：打开串口 / 连上 EtherCAT 主站；之后可以读状态</td>
+</tr>
+<tr>
+<td><code>on_activate</code></td>
+<td>ACTIVE</td>
+<td><strong>上电</strong>："功率电路打开、硬件可以动了，比如刹车松开"；命令接口开始生效</td>
+</tr>
+<tr>
+<td><code>read(time, period)</code></td>
+<td>—</td>
+<td>每拍从硬件读状态，<code>set_state("joint1/position", 值)</code></td>
+</tr>
+<tr>
+<td><code>write(time, period)</code></td>
+<td>—</td>
+<td>每拍取命令 <code>get_command("joint1/position")</code>，发给硬件</td>
+</tr>
+<tr>
+<td><code>on_deactivate</code></td>
+<td>INACTIVE</td>
+<td>与 activate 相反：断功率、上刹车</td>
+</tr>
+<tr>
+<td><code>on_cleanup</code></td>
+<td>UNCONFIGURED</td>
+<td>与 configure 相反：断开通信</td>
+</tr>
+<tr>
+<td><code>on_shutdown</code> / <code>on_error</code></td>
+<td>FINALIZED / 处理错误</td>
+<td>收尾 / 错误处理</td>
+</tr>
+</tbody>
+</table>
+<p>返回值 <code>CallbackReturn::SUCCESS</code> / <code>FAILURE</code>（转换失败）/ <code>ERROR</code>（严重错误，进 <code>on_error</code>）（硬件生命周期）。</p>
+<p><strong>接口不用自己创建了</strong>：框架根据 URDF <code>&lt;ros2_control&gt;</code> 标签里列的接口<strong>自动导出</strong>状态接口和命令接口，名字是 <code>&lt;关节名&gt;/&lt;接口类型&gt;</code>，你在 <code>read</code> / <code>write</code> 里按名字读写即可（硬件组件指南"Command-/StateInterfaces are now created and exported automatically"一条）。</p>
+<p><strong>导出插件</strong>（硬件组件指南第 5–7 步）：文件末尾加 <code>PLUGINLIB_EXPORT_CLASS(my_pkg::MyHardware, hardware_interface::SystemInterface)</code>；写一个插件描述 <code>my_pkg.xml</code>；CMake 里 <code>pluginlib_export_plugin_description_file(hardware_interface my_pkg.xml)</code>。之后 URDF 里 <code>&lt;plugin&gt;my_pkg/MyHardware&lt;/plugin&gt;</code> 就能找到它。</p>
+<p><strong><code>read</code> / <code>write</code> 是实时回路的一部分</strong>：第 15 章的规矩全部适用。和硬件通信本身可能很慢（比如串口），常见做法是另开一个通信线程，<code>read</code> / <code>write</code> 只和它交换最新值；控制器管理器也支持把某个硬件组件设成异步更新（<code>async_updates.rst</code>）。</p>
+<p><strong>想发诊断信息怎么办？</strong> 不要在 <code>read</code> / <code>write</code> 里直接发布话题。硬件组件指南给了三种实时安全的办法：框架管理的状态发布器（推荐）、框架为每个组件建好的节点（<code>get_node()</code>，在 <code>on_configure</code> 里建发布者和定时器）、或从 <code>on_init</code> 参数拿到 executor 自己加节点。</p>
+<p><strong>mock 硬件</strong>：<code>mock_components/GenericSystem</code> 把命令原样当成状态返回（可选加一阶延迟），不需要任何硬件就能把控制器、上层全跑通（<code>mock_components_userdoc.rst</code>）。</p>
+<h3 id="2">第 2 步 · 标准控制器</h3>
+<p>依据：<code>materials/ecosystem/ros2_controllers/</code> 各控制器目录的 <code>doc/userdoc.rst</code>。</p>
+<p><strong>关节轨迹控制器 JTC</strong>（<code>joint_trajectory_controller/doc/userdoc.rst</code>）：机械臂最常用。</p>
+<ul>
+<li>输入：一条<strong>关节空间轨迹</strong>：一串路点，每个路点有到达时刻、各关节位置（可选速度、加速度）。路点之间可以隔得很远，控制器按时间<strong>插值</strong>，每拍算出当前该到的位置；只有一个路点的轨迹也接受。</li>
+<li>两个入口：话题 <code>&lt;控制器名&gt;/joint_trajectory</code>（<code>trajectory_msgs/msg/JointTrajectory</code>，发了就执行，无反馈）和动作 <code>&lt;控制器名&gt;/follow_joint_trajectory</code>（<code>control_msgs/action/FollowJointTrajectory</code>，有反馈和结果，MoveIt 用这个）。</li>
+<li>新轨迹来时会<strong>替换</strong>正在执行的轨迹；通过动作发来的新目标会让旧目标被 abort（第 6 章的动作语义）。2026 年起替换默认是"融合"：保留旧轨迹到交接点的部分，再平滑接上新路点（参数 <code>allow_trajectory_replacement</code>）；只有位置的路点可开 <code>positions_upsampling</code> 补出平滑的速度（详见第 20 章、<code>control.ros.org/doc/resources/gsoc2026_physical_ai.rst</code>）。</li>
+<li>命令接口可以是 <code>position</code>、<code>velocity</code>、<code>effort</code> 等组合：位置接口直接转发；速度或力矩接口时，用 PID 把"轨迹跟踪误差"变成速度 / 力矩命令（需配置 PID 增益）。</li>
+<li>其他特性：实时安全实现；正确处理连续关节的角度绕圈；系统时钟跳变不影响已排队的轨迹；取消时可平滑减速停下。</li>
+</ul>
+<p>最小配置：</p>
+<pre><code class="language-yaml">controller_manager:
+  ros__parameters:
+    joint_trajectory_controller:
+      type: &quot;joint_trajectory_controller/JointTrajectoryController&quot;
+joint_trajectory_controller:
+  ros__parameters:
+    joints: [joint1, joint2]
+    command_interfaces: [position]
+    state_interfaces: [position, velocity]
+</code></pre>
+<p><strong>差速底盘控制器</strong>（<code>diff_drive_controller/doc/userdoc.rst</code>）：订阅 <code>~/cmd_vel</code>（<code>geometry_msgs/msg/TwistStamped</code>），按轮距、轮径算出左右轮速度，写进轮子的速度命令接口；同时用轮子的状态算里程计，发布 <code>~/odom</code>（<code>nav_msgs/msg/Odometry</code>），可选发布 <code>odom → base_link</code> 的 tf（第 12 章 REP 105 里"里程计负责的那一段"）。注意它要的是<strong>带时间戳</strong>的 TwistStamped，第 2 章 turtlesim 用的是不带时间戳的 Twist。</p>
+<p><strong>其他常用的</strong>（<code>ros2_controllers/doc/controllers_index.rst</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>控制器</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>joint_state_broadcaster</code></td>
+<td>把所有状态接口发布成 <code>/joint_states</code>（几乎每个系统都要）</td>
+</tr>
+<tr>
+<td><code>forward_command_controller</code>（位置 / 速度 / 力矩版）</td>
+<td>话题收到一组数，原样写进命令接口：最简单，适合学习型策略直接输出关节目标</td>
+</tr>
+<tr>
+<td><code>admittance_controller</code></td>
+<td>导纳控制：根据力传感器读数让末端"顺从"外力</td>
+</tr>
+<tr>
+<td><code>pid_controller</code></td>
+<td>通用 PID，可做级联中的一环</td>
+</tr>
+<tr>
+<td><code>imu_sensor_broadcaster</code>、<code>force_torque_sensor_broadcaster</code></td>
+<td>把传感器状态接口发布成话题</td>
+</tr>
+<tr>
+<td><code>parallel_gripper_controller</code></td>
+<td>平行夹爪</td>
+</tr>
+<tr>
+<td><code>mecanum_drive_controller</code>、<code>ackermann_steering_controller</code> 等</td>
+<td>其他底盘构型</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3">第 3 步 · 写控制器</h3>
+<p>依据：<code>materials/ecosystem/ros2_controllers/doc/writing_new_controller.rst</code>（下称"控制器指南"）。</p>
+<p>继承 <code>controller_interface::ControllerInterface</code>，实现（控制器指南第 5–8 步）：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>做什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>on_init</code></td>
+<td>声明参数</td>
+</tr>
+<tr>
+<td><code>command_interface_configuration()</code></td>
+<td>返回"我要独占哪些命令接口"，如 <code>joint1/position</code></td>
+</tr>
+<tr>
+<td><code>state_interface_configuration()</code></td>
+<td>返回"我要读哪些状态接口"</td>
+</tr>
+<tr>
+<td><code>on_configure</code></td>
+<td>读参数、建订阅者（接收上层目标）、准备好一切</td>
+</tr>
+<tr>
+<td><code>on_activate</code> / <code>on_deactivate</code></td>
+<td>拿到 / 释放接口句柄，设初始命令（通常是"保持当前位置"）</td>
+</tr>
+<tr>
+<td><code>update(time, period)</code></td>
+<td><strong>主入口，每拍调用，必须实时安全</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>订阅者回调和 <code>update()</code> 在不同线程</strong>：订阅回调跑在普通 executor 里（非实时），<code>update()</code> 跑在实时回路里。两者之间用 <code>realtime_tools</code> 提供的实时安全缓冲区交换数据（订阅回调写、<code>update</code> 读，不会互相阻塞）。这是写控制器最容易错的地方。</p>
+<p><strong>级联控制</strong>（<code>ros2_control/controller_manager/doc/controller_chaining.rst</code>）：控制器可以把自己的"参考输入"导出成接口，让上一级控制器写进来，形成"位置环 → 速度环"这样的级联，整条链都在同一个实时回路里，不经过话题。</p>
+<p><strong>和本仓库的连接</strong>：学习型策略接入 ros2_control 有两条路：① 策略输出关节目标，经 <code>forward_command_controller</code> 或 JTC（把动作块当成短轨迹）下发，策略本身留在实时回路外面；② 把策略推理写进一个控制器的 <code>update()</code>（小模型、CPU 上可以，大模型不行）。R-M10 走第①条：VLA 动作块 → 插值成轨迹 → JTC。运控 RL 的"50 Hz 输出关节目标 + 关节 PD"在 ros2_control 里就是"策略 → forward_command / JTC → 硬件组件里的 PD"（cs285 运控专题）。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 16-1</strong>（第 1 步）：下面四件事分别放在硬件组件的哪个函数：打开 CAN 总线、读 URDF 里的减速比参数、给电机驱动器上使能、每拍读编码器？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 16-2</strong>（第 2 步）：JTC 的话题入口和动作入口有什么区别？MoveIt 为什么用动作入口？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 16-3</strong>（第 2 步）：一个差速小车：Nav2 输出速度指令，你需要里程计和 <code>odom → base_link</code> 的 tf。ros2_control 里用哪个控制器？它订阅什么、发布什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 16-4</strong>（第 3 步）：你在控制器的订阅回调里收到新目标后，直接给一个成员变量 <code>std::vector&lt;double&gt; target_</code> 赋值，<code>update()</code> 里读它。可能出什么问题？该怎么改？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>硬件组件四步</strong>：init 读配置，configure 通信，activate 上电松刹车，read / write 每拍收发。</li>
+<li><strong>接口自动导出</strong>：名字 <code>关节/类型</code>，read 里 <code>set_state</code>，write 里 <code>get_command</code>。</li>
+<li><strong>JTC</strong>：路点 + 时刻，插值执行；话题无反馈，动作有反馈；新轨迹替换旧的。</li>
+<li><strong>差速</strong>：收 TwistStamped，发 odom 和 tf。</li>
+<li><strong>写控制器</strong>：声明要哪些接口；update 要实时；订阅回调和 update 之间用实时缓冲区。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R38–R39，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>writing_new_hardware_component.rst</code></td>
+<td><code>materials/ecosystem/ros2_control/hardware_interface/doc/writing_new_hardware_component.rst</code>、<code>lifecycle_of_a_hardware_component.rst</code>、<code>hardware_components_userdoc.rst</code>、<code>mock_components_userdoc.rst</code>、<code>joint_limiting.rst</code>、<code>handling_errors_during_read_write.rst</code>、<code>asynchronous_components.rst</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>★ <code>doc</code></td>
+<td><code>materials/ecosystem/ros2_controllers/joint_trajectory_controller/doc/</code>（<code>userdoc.rst</code>、<code>trajectory.rst</code>、<code>parameters.rst</code>）。</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>userdoc.rst</code></td>
+<td><code>materials/ecosystem/ros2_controllers/diff_drive_controller/doc/userdoc.rst</code>；<code>doc/mobile_robot_kinematics.rst</code></td>
+<td>各种底盘的运动学。</td>
+</tr>
+<tr>
+<td>★ <code>writing_new_controller.rst</code></td>
+<td><code>materials/ecosystem/ros2_controllers/doc/writing_new_controller.rst</code>、<code>doc/controllers_index.rst</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>controller_chaining.rst</code></td>
+<td><code>materials/ecosystem/ros2_control/controller_manager/doc/controller_chaining.rst</code></td>
+<td>级联控制。</td>
+</tr>
+<tr>
+<td><code>ros2_control_demos</code></td>
+<td><code>ros2_control_demos</code> 仓库（入门文档链接，本地未收录）</td>
+<td>Example 1 RRBot、差速底盘、mock 硬件等完整例子，R-M7 照着做。</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>cs285 运控专题（RL 策略 + 关节 PD）；vla-deep-dive（动作块、RTC）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li><strong>线性插值</strong>：<span class="arithmatex">\(q(t)=q_0+(q_1-q_0)\dfrac{t-t_0}{t_1-t_0}\)</span>；真 JTC 用样条让速度、加速度也连续。</li>
+<li><strong>差速运动学</strong>：左右轮线速度 <span class="arithmatex">\(v\mp\omega L/2\)</span>（<span class="arithmatex">\(L\)</span> 是轮距），除以轮半径 <span class="arithmatex">\(r\)</span> 得到轮子角速度。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(q(t)=q_0+(q_1-q_0)\dfrac{t-t_0}{t_1-t_0}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\omega_{\text{左}}=(v-\omega L/2)/r\)</span>，<span class="arithmatex">\(\omega_{\text{右}}=(v+\omega L/2)/r\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch16_hardware_jtc.py</code>，配套测试 <code>tests/test_ch16_20.py</code>；同名 notebook 在 <code>notebooks/ch16_hardware_jtc.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch16_hardware_jtc.py   # 一步一步打印  
+uv run pytest tests/test_ch16_20.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 生命周期</td>
+<td>on_init → on_configure → on_activate</td>
+<td><code>FakeHardware()</code></td>
+<td>ACTIVE 之前 read 不干活</td>
+</tr>
+<tr>
+<td>第 2 步 JTC 插值</td>
+<td>路点之间按时间插值</td>
+<td><code>interpolate(waypoints, t)</code></td>
+<td>t=0.5 → 0.5；t=1.5 → 0.75；t=2.5 → 0.5</td>
+</tr>
+<tr>
+<td>同上</td>
+<td>1 kHz 每拍算一个点</td>
+<td><code>[interpolate(wp, k/1000) for k in range(2001)]</code></td>
+<td>2001 个点</td>
+</tr>
+<tr>
+<td>第 2 步 差速底盘</td>
+<td>按轮距、轮径算左右轮速度</td>
+<td><code>diff_drive(0.2, 1.0, 0.3, 0.05)</code></td>
+<td>左 1.0 rad/s，右 7.0 rad/s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">q0 + (q1 - q0) * (t - t0) / (t1 - t0)        # 两个路点之间线性插值
+left = (v - w * wheel_separation / 2) / wheel_radius    # 左轮线速度 / 轮半径
+right = (v + w * wheel_separation / 2) / wheel_radius   # 往左转（ω &gt; 0）时右轮快
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>差速公式讲义没写，这里补上</strong>：底盘绕中心以角速度 ω 转时，离中心 L/2 的左右轮线速度分别是 <span class="arithmatex">\(v-\omega L/2\)</span> 和 <span class="arithmatex">\(v+\omega L/2\)</span>（L 是轮距），再除以轮半径 r 得到轮子角速度。数字（轮距 0.3 m、轮半径 0.05 m）是编的。</li>
+<li><strong>真 JTC 用样条，不是折线</strong>：只给位置时，线性插值在路点处速度会突变；JTC 用三次 / 五次样条让速度、加速度连续（讲义第 2 步）。</li>
+<li><strong>三个路点是编的</strong>；过了最后一个路点就停在终点，和 JTC 执行完保持位置一致。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>给 <code>waypoints</code> 加一个 (3.0, 1.0)，看 t = 2.5 时的位置；</li>
+<li>把 <code>diff_drive</code> 的 ω 改成 0（直走），看左右轮速度是不是一样。</li>
+</ul><nav class="pager"><a href="15-realtime-ros2-control.html">← 第 15 章 · 实时与 ros2_control 架构</a><a href="17-nav2.html">第 17 章 · Nav2：移动机器人导航栈 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

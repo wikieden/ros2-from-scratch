@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 18 章 · MoveIt 2：机械臂运动规划 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="18-moveit-2">第 18 章 · MoveIt 2：机械臂运动规划</h1><p><a class="btn" href="../animations/18-moveit-pipeline.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：让机械臂"把手移到杯子上方 10 厘米、别撞桌子"，MoveIt 2 内部经过哪几步？SRDF 是什么？路径和轨迹有什么区别？规划完怎么交给第 16 章的轨迹控制器执行？实时遥操作 / 视觉伺服用什么？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/17-nav2.html">第 17 章 Nav2</a> · 下一章：<a href="../lessons/19-sim-deploy.html">第 19 章 仿真与部署</a><br />
+对应原文：<code>ecosystem/moveit2_tutorials/doc/concepts/</code> 下的 <code>move_group.rst</code>、<code>motion_planning.rst</code>、<code>kinematics.rst</code>、<code>trajectory_processing.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 H1–H4，动手里程碑 R-M9（Panda 演示，MoveItPy 规划到目标位姿）。接 VLA 专题：规划方法与学习方法的对照。<br />
+本章缩写：SRDF = Semantic Robot Description Format（语义 / 机器人 / 描述 / 格式）；OMPL = Open Motion Planning Library（开放 / 运动规划 / 库）；RRT = Rapidly-exploring Random Tree（快速 / 探索 / 随机树）；CHOMP = Covariant Hamiltonian Optimization for Motion Planning（协变哈密顿优化运动规划）；Pilz（德国 Pilz 公司贡献的工业运动规划器：直线、圆弧等）；KDL = Kinematics and Dynamics Library（运动学与动力学库）；IK = Inverse Kinematics（逆运动学）；TOTG = Time-Optimal Trajectory Generation（时间 / 最优 / 轨迹 / 生成）；ACM = Allowed Collision Matrix（允许 / 碰撞 / 矩阵）；MTC = MoveIt Task Constructor（MoveIt 任务构造器）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：move_group 的输入、规划流水线、执行</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>move_group 与配置：URDF + SRDF + 配置文件</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>规划流水线：请求 → 规划器 → 适配器 → 时间参数化</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>用起来：RViz 插件、MoveItPy、Servo、任务构造器</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="move_group">总图 · move_group 是"集成者"</h3>
+<p><img alt="MoveIt 2 规划与执行" src="../animations/18-moveit-pipeline.gif" /></p>
+<p>可交互版：<a href="../animations/18-moveit-pipeline.html">animations/18-moveit-pipeline.html</a>（内置浏览器：<code>http://localhost:8340/18-moveit-pipeline.html</code>）。</p>
+<p><strong>类比：搬家公司的路线规划员。</strong> 他手里有房子的户型图（URDF）、家具清单和哪些家具本来就挨着（SRDF）、现场照片（规划场景：哪里有障碍）。你说"把沙发搬到阳台"，他先想好哪些位置可行（逆运动学），再规划一条不撞墙的搬运路线（规划器），最后排好每一步的节奏（时间参数化），交给搬运工执行（轨迹控制器）。</p>
+<h3 id="1-move_group">第 1 步 · move_group 与配置</h3>
+<p>依据：<code>materials/ecosystem/moveit2_tutorials/doc/concepts/move_group.rst</code>（下称"move_group 文档"）。</p>
+<p><strong>move_group 是一个节点，把各个组件集成起来</strong>，对用户提供动作和服务（move_group 文档开头）。它从参数里拿三类信息：</p>
+<table>
+<thead>
+<tr>
+<th>信息</th>
+<th>参数 / 来源</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>URDF</td>
+<td><code>robot_description</code></td>
+<td>连杆、关节、外形（第 13 章）</td>
+</tr>
+<tr>
+<td><strong>SRDF</strong></td>
+<td><code>robot_description_semantic</code></td>
+<td><strong>语义信息</strong>：规划组（"arm"包含哪几个关节）、末端执行器、预定义姿态（"ready"、"extended"）、哪些连杆对<strong>不用</strong>检查碰撞（本来就挨着的相邻连杆）</td>
+</tr>
+<tr>
+<td>MoveIt 配置</td>
+<td>各 YAML</td>
+<td>关节限位、运动学求解器、规划器、感知（八叉树）等</td>
+</tr>
+</tbody>
+</table>
+<p>SRDF 和配置文件一般用 <strong>MoveIt Setup Assistant</strong> 生成一次（move_group 文档 Configuration 一节）。</p>
+<p><strong>它和机器人怎么通信</strong>（move_group 文档 Robot Interface 各节）：</p>
+<ul>
+<li>读 <code>/joint_states</code> 知道当前关节位置（<strong>自己不发布</strong>，要机器人侧提供，第 16 章的 <code>joint_state_broadcaster</code>）；</li>
+<li>读 tf 知道机器人在世界里的位置（要 <code>robot_state_publisher</code>，第 13 章）；</li>
+<li>通过 <strong><code>FollowJointTrajectory</code> 动作</strong>把轨迹交给机器人上的控制器执行，<strong>动作服务器不由 MoveIt 提供</strong>，就是第 16 章的关节轨迹控制器。</li>
+<li>维护一个<strong>规划场景</strong>（planning scene）：机器人当前状态 + 周围障碍物 + 手里拿着的物体（视为刚性连在机器人上）。</li>
+</ul>
+<h3 id="2">第 2 步 · 规划流水线</h3>
+<p>依据：<code>concepts/motion_planning.rst</code>（下称"规划文档"）、<code>concepts/kinematics.rst</code>、<code>concepts/trajectory_processing.rst</code>（下称"轨迹处理文档"）。</p>
+<p><strong>① 请求</strong>（规划文档 "The Motion Plan Request"）：目标可以是<strong>关节空间</strong>的一组关节角，或<strong>末端位姿</strong>；可加约束：位置约束（某连杆在某区域内）、姿态约束（比如杯子保持竖直，roll / pitch 有限）、可见性约束、关节约束、自定义约束。默认检查碰撞（含自碰撞和手持物体）。</p>
+<p><strong>② 逆运动学（IK）</strong>：目标是末端位姿时，要先求"关节角取多少，手才能到那儿"。默认插件用 KDL 的数值雅可比求解器（<code>kinematics.rst</code>），也可换其他插件。</p>
+<p><strong>③ 规划器</strong>：插件化。默认 <strong>OMPL</strong>（基于采样的规划器库，如 RRT 系列：在关节空间里随机撒点、连成不碰撞的树，直到连通起点和终点）；另有 <strong>Pilz</strong> 工业规划器（直线 LIN、点到点 PTP、圆弧 CIRC）和 <strong>CHOMP</strong>（基于优化，把一条初始路径往远离障碍、更平滑的方向推）（规划文档 "The Motion Planning Plugin"）。</p>
+<p><strong>④ 规划请求适配器</strong>：规划前后的预处理 / 后处理。比如 <code>CheckStartStateBounds</code>：真机关节读数略超出限位时，把起点修正到限位上，否则规划器会认为起点非法（规划文档 "Motion planning adapters"）。</p>
+<p><strong>⑤ 时间参数化</strong>：<strong>规划器给的是"路径"（一串关节位形，没有时间）</strong>；要变成"<strong>轨迹</strong>"（每个点什么时刻到、速度加速度多少），必须在速度、加速度限制下排时间。推荐算法 <strong>TOTG</strong>（时间最优轨迹生成），默认时间步长 0.1 秒，要求起止都静止；限值来自 <code>joint_limits.yaml</code>，会覆盖 URDF 里的值（轨迹处理文档）。规划文档也强调：move_group 输出的是<strong>轨迹而不只是路径</strong>。</p>
+<p><strong>⑥ 执行</strong>：轨迹经 <code>FollowJointTrajectory</code> 动作交给关节轨迹控制器，控制器在 1 kHz 回路里插值执行（第 15–16 章）。</p>
+<h3 id="3">第 3 步 · 用起来</h3>
+<p><strong>RViz 运动规划插件</strong>（<code>tutorials/quickstart_in_rviz/</code>）：拖动末端的交互标记设目标，点 Plan、Execute。R-M9 先从这里开始。</p>
+<p><strong>MoveItPy（Python API）</strong>（<code>examples/motion_planning_python_api/</code>，取自教程代码）：</p>
+<pre><code class="language-python">from moveit.planning import MoveItPy
+
+panda = MoveItPy(node_name=&quot;moveit_py&quot;)
+panda_arm = panda.get_planning_component(&quot;panda_arm&quot;)     # SRDF 里定义的规划组
+
+panda_arm.set_start_state_to_current_state()
+panda_arm.set_goal_state(configuration_name=&quot;extended&quot;)    # SRDF 里预定义的姿态
+plan_result = panda_arm.plan()
+if plan_result:
+    panda.execute(plan_result.trajectory, controllers=[])
+</code></pre>
+<p>目标也可以是 <code>set_goal_state(pose_stamped_msg=..., pose_link="panda_link8")</code>（末端位姿）或一个 <code>RobotState</code>。C++ 对应 <code>MoveGroupInterface</code>。</p>
+<p><strong>MoveIt Servo：实时伺服</strong>（<code>examples/realtime_servo/realtime_servo_tutorial.rst</code>）：不规划整条轨迹，而是<strong>持续接收</strong>指令并实时转成关节命令。接受三种指令：各关节速度、末端速度（Twist）、末端目标位姿。自带奇异点检查、碰撞检查（接近时自动减速）、平滑、关节限位。适合手柄遥操作、视觉伺服、以及<strong>学习型策略持续输出末端速度</strong>的场景。</p>
+<p><strong>MoveIt Task Constructor（MTC）</strong>（<code>tutorials/pick_and_place_with_moveit_task_constructor/</code>）：把"抓取放置"拆成一串阶段（接近、抓、提起、搬运、放下、撤回），每个阶段单独规划、整体搜索可行组合。</p>
+<p><strong>规划 vs 学习</strong>（和 VLA 专题对照）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>MoveIt（规划）</th>
+<th>VLA / 模仿学习（学习）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>需要</td>
+<td>精确的模型和场景（URDF、障碍物位置）</td>
+<td>大量示范数据</td>
+</tr>
+<tr>
+<td>擅长</td>
+<td>无碰撞保证、精确到位、可解释</td>
+<td>接触丰富、可变形物体、难以建模的任务</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>一整条时间参数化轨迹</td>
+<td>每次一个动作块，闭环反复推理</td>
+</tr>
+<tr>
+<td>常见结合</td>
+<td>学习模型给出目标位姿 / 抓取点 → MoveIt 规划无碰撞路径；或策略输出末端速度 → Servo 做安全过滤</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">练习与作答记录</h2>
+<p><strong>练习 18-1</strong>（第 1 步）：URDF 和 SRDF 各描述什么？为什么"相邻连杆不检查碰撞"要写在 SRDF 而不是 URDF？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 18-2</strong>（第 2 步）："路径"和"轨迹"差在哪？哪一步把前者变成后者？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 18-3</strong>（第 2 步）：MoveIt 规划成功，但执行时报"找不到 follow_joint_trajectory 动作服务器"。缺的是什么？由谁提供？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 18-4</strong>（第 3 步）：你的 VLA 策略每 50 ms 输出一个"末端速度"。直接用 MoveIt 的规划（plan + execute）合适吗？用什么更合适，为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_3">口诀</h2>
+<ul>
+<li><strong>三份配置</strong>：URDF 长什么样，SRDF 怎么分组、哪些不查碰撞，YAML 管限位求解器规划器。</li>
+<li><strong>流水线</strong>：请求 → 逆解 → 规划器（OMPL 采样 / Pilz 工业 / CHOMP 优化）→ 适配器 → 时间参数化（TOTG）→ 动作交给 JTC。</li>
+<li><strong>路径没时间，轨迹有时间</strong>。</li>
+<li><strong>用法</strong>：RViz 点点点，MoveItPy 写脚本，Servo 做实时，MTC 搭任务。</li>
+</ul>
+<h2 id="_4">本章复习卡片编号</h2>
+<p>R42–R43，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_5">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_6">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>concepts</code></td>
+<td><code>materials/ecosystem/moveit2_tutorials/doc/concepts/</code></td>
+<td><code>move_group.rst</code>、<code>motion_planning.rst</code>、<code>kinematics.rst</code>、<code>planning_scene_monitor.rst</code>、<code>trajectory_processing.rst</code>、<code>hybrid_planning/</code>、<code>moveit_task_constructor/</code>。</td>
+</tr>
+<tr>
+<td>★ <code>tutorials</code></td>
+<td><code>.../doc/tutorials/</code></td>
+<td><code>getting_started/</code>、<code>quickstart_in_rviz/</code>、<code>your_first_project/</code>、<code>visualizing_in_rviz/</code>、<code>planning_around_objects/</code>、<code>pick_and_place_with_moveit_task_constructor/</code>。</td>
+</tr>
+<tr>
+<td>★ <code>motion_planning_python_api</code></td>
+<td><code>.../doc/examples/motion_planning_python_api/</code>（MoveItPy）、<code>realtime_servo/</code>、<code>setup_assistant/</code>、<code>urdf_srdf/</code>、<code>ompl_interface/</code>、<code>time_parameterization/</code>、<code>perception_pipeline/</code>。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>论文</td>
+<td>Kavraki et al., "Probabilistic roadmaps for path planning in high-dimensional configuration spaces"（1996，PRM）；LaValle, "Rapidly-exploring random trees"（1998，RRT）；Ratliff et al., "CHOMP"（ICRA 2009）；Kunz &amp; Stilman, "Time-Optimal Trajectory Generation for Path Following with Bounded Acceleration and Velocity"（RSS 2012，TOTG）。均未收录本地。</td>
+<td>—</td>
+</tr>
+<tr>
+<td>本仓库</td>
+<td>vla-deep-dive（动作块、学习型操作）；robot-system-architecture 第 2 章（运动学）、第 8 章（自主栈）。</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">数学原理</h3>
+<ul>
+<li><strong>时间参数化（只看速度）</strong>：一段要走 <span class="arithmatex">\(\Delta q_j\)</span>，关节 <span class="arithmatex">\(j\)</span> 最快 <span class="arithmatex">\(v_j\)</span>，这一段时长 <span class="arithmatex">\(\max_j |\Delta q_j|/v_j\)</span>。</li>
+</ul>
+<h3 id="_8">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>路径 + 时间（速度、加速度限制下）= 轨迹</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch18_time_param.py</code>，配套测试 <code>tests/test_ch16_20.py</code>；同名 notebook 在 <code>notebooks/ch18_time_param.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch18_time_param.py   # 一步一步打印  
+uv run pytest tests/test_ch16_20.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 2 步 ④ 适配器</td>
+<td>起点略超限位就截到限位</td>
+<td><code>check_start_state_bounds([1.0005, -0.2], ...)</code></td>
+<td>[1.0, -0.2]</td>
+</tr>
+<tr>
+<td>第 2 步 ⑤ 路径</td>
+<td>只有位形，没有时间</td>
+<td><code>path</code></td>
+<td>3 个路点</td>
+</tr>
+<tr>
+<td>第 2 步 ⑤ 时间参数化</td>
+<td>排上时间变成轨迹</td>
+<td><code>time_parameterize(path, v_max)</code></td>
+<td>t = 0、0.5、2.1 秒</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">dt = max(abs(qb - qa) / v for qa, qb, v in zip(a, b, v_max))   # 最慢的关节决定这一段要多久
+vel = [(qb - qa) / dt for qa, qb in zip(a, b)]                  # 这一段每个关节的速度
+points[-1][&quot;velocities&quot;] = [0.0] * len(path[0])                 # 终点停下
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>这只是最简单的时间参数化</strong>：只管速度上限，不管加速度，所以速度在路点处会突变。MoveIt 推荐的 TOTG（Time-Optimal Trajectory Generation：时间 / 最优 / 轨迹 / 生成）同时满足速度和加速度上限，还尽量快。</li>
+<li><strong>第二段由关节 2 决定</strong>：关节 1 走 0.3 只要 0.3 秒，关节 2 走 0.8 要 1.6 秒，两个关节必须同时到，所以这一段 1.6 秒。</li>
+<li><strong>路径和速度上限都是编的</strong>。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把关节 2 的速度上限改成 1.0，看总时长；</li>
+<li>在路径中间再插一个点，看 <code>time_from_start</code> 怎么变。</li>
+</ul><nav class="pager"><a href="17-nav2.html">← 第 17 章 · Nav2：移动机器人导航栈</a><a href="19-sim-deploy.html">第 19 章 · 仿真与部署 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

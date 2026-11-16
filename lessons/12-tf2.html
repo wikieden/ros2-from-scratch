@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 12 章 · tf2：坐标变换树 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="12-tf2">第 12 章 · tf2：坐标变换树</h1><p><a class="btn" href="../animations/12-tf-tree.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：相机看到杯子在"相机前方 0.5 米"，机械臂要的是"杯子相对底座在哪"，这个换算谁来做？机器人身上几十个坐标系，怎么管？为什么 tf2 总报"变换在未来 / 过去"？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/11-time-lifecycle.html">第 11 章 时间与托管节点</a> · 下一章：<a href="../lessons/13-urdf-rviz.html">第 13 章 URDF 与 RViz</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/interfaces/About-Tf2/About-Tf2.rst</code>（Position 一节）；<code>ros2_documentation/source/ROS-Framework/interfaces/Working-with-interfaces/Quaternion-Fundamentals.rst</code>；<code>ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/state_estimation.md</code>（REP 105）（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 D1、D2，动手里程碑 R-M6 前半。<br />
+本章缩写：tf2 = transform library 第 2 版（变换 / 库）；TF = transform（变换）；REP = ROS Enhancement Proposal（ROS / 改进 / 提案：ROS 社区的约定文档）；SLAM = Simultaneous Localization And Mapping（同时 / 定位 / 与 / 建图）；AMCL = Adaptive Monte Carlo Localization（自适应 / 蒙特卡洛 / 定位）；IMU = Inertial Measurement Unit（惯性 / 测量 / 单元）；VIO = Visual-Inertial Odometry（视觉 / 惯性 / 里程计）；GPS = Global Positioning System（全球 / 定位 / 系统）；slerp = spherical linear interpolation（球面 / 线性 / 插值：旋转之间的插值，代码对照里提到）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：map → odom → base_link → 传感器，一次查询怎么沿树走</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>坐标系与变换：平移 + 旋转（四元数），怎么串起来</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>树、时间缓冲、REP 105 的标准坐标系</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>代码与工具：广播、静态广播、监听、<code>tf2_echo</code>、<code>view_frames</code></td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="_2">总图 · 一棵带时间的树</h3>
+<p><img alt="tf2 变换树与查询" src="../animations/12-tf-tree.gif" /></p>
+<p>可交互版：<a href="../animations/12-tf-tree.html">animations/12-tf-tree.html</a>（内置浏览器：<code>http://localhost:8340/12-tf-tree.html</code>）。</p>
+<p><strong>tf2 是什么</strong>：它记录机器人上<strong>所有坐标系之间的关系</strong>，组织成一棵<strong>树</strong>，并且<strong>按时间缓存</strong>（默认缓存最近 10 秒左右）。你可以问它任意两个坐标系在任意时刻的关系（<code>ROS-Framework/interfaces/About-Tf2/About-Tf2.rst</code>，下称"tf2 文档"），例如：</p>
+<ul>
+<li>5 秒前，头部相对世界在哪？</li>
+<li>夹爪里那个物体，相对底座的位姿是什么？</li>
+<li>底盘现在在地图的哪个位置？</li>
+</ul>
+<p><strong>类比：家谱。</strong> 每个人只需记住"我和父亲的关系"，要算你和远房表亲的关系，沿着家谱往上找到共同祖先、再往下走就行。tf2 里每个坐标系只需要发布"我相对父坐标系在哪"。</p>
+<h3 id="1">第 1 步 · 坐标系与变换</h3>
+<p><strong>坐标系（frame）</strong>：一个原点加三根轴（x 前、y 左、z 上，这是 ROS 的约定）。机器人身上每个部件都有自己的坐标系：底座 <code>base_link</code>、相机 <code>camera_link</code>、夹爪 <code>gripper</code>……</p>
+<p><strong>变换（transform）</strong>：描述"子坐标系相对父坐标系在哪"，两部分：</p>
+<ul>
+<li><strong>平移</strong> <span class="arithmatex">\(t=(t_x,t_y,t_z)\)</span>：子坐标系原点在父坐标系里的位置，单位米；</li>
+<li><strong>旋转</strong> <span class="arithmatex">\(q=(x,y,z,w)\)</span>：用<strong>四元数</strong>表示，读作"q"，四个数里 <span class="arithmatex">\(w\)</span> 是"实部"。不转时是 <span class="arithmatex">\((0,0,0,1)\)</span>（<code>.../Working-with-interfaces/Quaternion-Fundamentals.rst</code>）。</li>
+</ul>
+<p><strong>为什么用四元数，不用"绕 x、y、z 各转多少度"（欧拉角）？</strong> 欧拉角直观，但有"万向节锁"（某些姿态下会丢掉一个自由度）、插值不平滑，而且"先转哪个轴"有很多种约定。四元数没有这些问题。规矩是：<strong>存储和传输用四元数，人看的时候再换成欧拉角</strong>。转换用 <code>quaternion_from_euler(roll, pitch, yaw)</code>。四元数必须是<strong>单位长度</strong>的，手工算完要 <code>normalize()</code>。</p>
+<p><strong>把一个点从相机坐标系换到底座坐标系</strong>（tf2 文档 Position 一节的写法）：</p>
+<div class="arithmatex">\[P_{\text{base}}={}_{\text{base}}T_{\text{camera}}\cdot P_{\text{camera}}\]</div>
+<p>读作：底座坐标系下的点 <span class="arithmatex">\(P_{\text{base}}\)</span> 等于"从相机到底座的变换" <span class="arithmatex">\({}_{\text{base}}T_{\text{camera}}\)</span> 作用在相机坐标系下的点 <span class="arithmatex">\(P_{\text{camera}}\)</span> 上。左下标是<strong>目标</strong>坐标系，右下标是<strong>源</strong>坐标系。</p>
+<p><strong>数字演示</strong>：相机装在底座前方 0.1 米、上方 0.3 米，<strong>没有旋转</strong>。相机看到杯子在自己前方 0.5 米：<span class="arithmatex">\(P_{\text{camera}}=(0.5,0,0)\)</span>。只有平移时，变换就是加上平移：</p>
+<div class="arithmatex">\[P_{\text{base}}=(0.5+0.1,\;0+0,\;0+0.3)=(0.6,\;0,\;0.3)\]</div>
+<p>杯子在底座前方 0.6 米、高 0.3 米。</p>
+<p><strong>再加一个旋转</strong>：如果相机朝左转了 90°（绕 z 轴，yaw = 90°），相机的"前方"其实是底座的"左方"。相机看到的 <span class="arithmatex">\((0.5,0,0)\)</span> 先转成底座朝向下的 <span class="arithmatex">\((0,0.5,0)\)</span>，再加平移：<span class="arithmatex">\((0.1,\;0.5,\;0.3)\)</span>。<strong>先旋转、后平移</strong>，这就是变换的作用顺序。</p>
+<p><strong>串起来</strong>：多个变换可以相乘（tf2 文档的 Car A / Car B 例子）：</p>
+<div class="arithmatex">\[{}_{B}T_{A}={}_{B}T_{E}\cdot{}_{E}T_{A}\]</div>
+<p>从 A 到 B 的变换 = 先从 A 到 E，再从 E 到 B。tf2 的 <code>lookup_transform(目标, 源, 时间)</code> 做的就是这件事：沿着树找到路径，把路上的变换乘起来，必要时取逆。</p>
+<h3 id="2">第 2 步 · 树、时间缓冲、标准坐标系</h3>
+<p><strong>必须是树</strong>：每个坐标系<strong>只能有一个父亲</strong>，不能有环。两个节点同时发布"camera_link 的父亲是 X"，tf2 就会混乱。</p>
+<p><strong>两种变换</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>话题</th>
+<th>特点</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>动态</td>
+<td><code>/tf</code></td>
+<td>一直在变，要高频发布</td>
+<td>底盘在里程计里的位置、关节转动带来的连杆位置</td>
+</tr>
+<tr>
+<td>静态</td>
+<td><code>/tf_static</code></td>
+<td>永远不变，只发一次（Transient local QoS，第 7 章）</td>
+<td>相机固定在底座上的安装位置</td>
+</tr>
+</tbody>
+</table>
+<p><strong>按时间缓存</strong>：每个变换都带时间戳。查询时要给时间：<code>rclpy.time.Time()</code>（即时间 0）表示"给我<strong>最新</strong>可用的"；给具体时间则返回那一刻的（必要时在前后两个记录之间插值）。</p>
+<p><strong>为什么报"变换在未来 / 过去"？</strong></p>
+<ul>
+<li>要的时刻<strong>晚于</strong>缓存里最新的记录（比如图像时间戳比最新 tf 还新一点）→ "extrapolation into the future"。常见做法：等一小会儿（<code>lookup_transform</code> 带超时），或用消息过滤器等 tf 到了再处理（<code>.../Tf2/Using-Stamped-Datatypes-With-Tf2-Ros-MessageFilter.rst</code>）。</li>
+<li>要的时刻<strong>早于</strong>缓存最早的记录 → "into the past"。</li>
+<li>一部分节点用仿真时间、一部分不用（第 11 章的坑）→ 时间对不上，满屏报错。</li>
+</ul>
+<p><strong>REP 105 标准坐标系</strong>（Nav2 文档 <code>getting_started/navigation_concepts/state_estimation.md</code>）：移动机器人至少要有一棵</p>
+<pre><code>map ──▶ odom ──▶ base_link ──▶ 各传感器（camera_link、laser …）
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>变换</th>
+<th>谁负责发布</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>map → odom</code></td>
+<td>全局定位：SLAM、AMCL、GPS、动捕</td>
+<td>修正累积漂移，可能<strong>跳变</strong></td>
+</tr>
+<tr>
+<td><code>odom → base_link</code></td>
+<td>里程计：轮式编码器、IMU、VIO，常用滤波器融合</td>
+<td><strong>连续平滑</strong>，但会慢慢漂</td>
+</tr>
+<tr>
+<td><code>base_link → 传感器</code></td>
+<td>静态：来自 URDF（第 13 章）</td>
+<td>不变</td>
+</tr>
+</tbody>
+</table>
+<p><strong>为什么要分 map 和 odom 两层？</strong> 控制器需要平滑连续的位置（不能突然跳一下），定位需要绝对准确（会纠正漂移，可能跳）。分成两层，控制用 <code>odom</code>，规划用 <code>map</code>，各取所需。</p>
+<h3 id="3">第 3 步 · 代码与工具</h3>
+<p><strong>动态广播</strong>（<code>.../Tf2/Writing-A-Tf2-Broadcaster-Py.rst</code> 的核心，把小乌龟位姿发成 tf）：</p>
+<pre><code class="language-python">from tf2_ros import TransformBroadcaster
+from geometry_msgs.msg import TransformStamped
+
+self.tf_broadcaster = TransformBroadcaster(self)
+
+def handle_turtle_pose(self, msg):
+    t = TransformStamped()
+    t.header.stamp = self.get_clock().now().to_msg()   # 时间戳
+    t.header.frame_id = 'world'                        # 父
+    t.child_frame_id = self.turtlename                 # 子
+    t.transform.translation.x = msg.x
+    t.transform.translation.y = msg.y
+    q = quaternion_from_euler(0, 0, msg.theta)         # 平面上只绕 z 转
+    t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w = q
+    self.tf_broadcaster.sendTransform(t)
+</code></pre>
+<p><strong>静态广播</strong>：代码里用 <code>StaticTransformBroadcaster</code>；更常用的是命令行 / launch 里直接起一个（<code>.../Writing-A-Tf2-Static-Broadcaster-Py.rst</code> 第二部分）：</p>
+<pre><code class="language-bash">ros2 run tf2_ros static_transform_publisher --x 0.1 --y 0 --z 0.3 --yaw 0 --pitch 0 --roll 0 \
+  --frame-id base_link --child-frame-id camera_link
+</code></pre>
+<p><strong>监听和查询</strong>（<code>.../Tf2/Writing-A-Tf2-Listener-Py.rst</code>）：</p>
+<pre><code class="language-python">from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+from tf2_ros import TransformException
+
+self.tf_buffer = Buffer()                                  # 缓存
+self.tf_listener = TransformListener(self.tf_buffer, self)  # 后台订阅 /tf、/tf_static 填缓存
+
+try:
+    t = self.tf_buffer.lookup_transform('base_link', 'camera_link', rclpy.time.Time())
+except TransformException as ex:
+    self.get_logger().info(f'Could not transform: {ex}')
+</code></pre>
+<p>参数顺序：<strong>目标坐标系在前，源坐标系在后</strong>。要变换一个带坐标系的点，推荐用 <code>tf_buffer.transform(point_stamped, 'base_link')</code>：它自动从消息头读源坐标系，结果里写好目标坐标系（tf2 文档 Position 一节的建议）。</p>
+<p><strong>命令行工具</strong>（<code>.../Introduction-To-Tf2/Introduction-To-Tf2.rst</code>）：</p>
+<pre><code class="language-bash">ros2 run tf2_tools view_frames            # 生成整棵树的 PDF 图，含发布频率和最新时间
+ros2 run tf2_ros tf2_echo turtle2 turtle1 # 实时打印两个坐标系间的变换
+# At time 1683385337.850619099
+# - Translation: [2.157, 0.901, 0.000]
+# - Rotation: in Quaternion [0.000, 0.000, 0.172, 0.985]
+</code></pre>
+<p>RViz 里加 "TF" 显示，能直接看到所有坐标轴（第 13 章）。</p>
+<p><strong>和本仓库的连接</strong>：VLA 的动作如果是"末端执行器在底座坐标系下移动 Δx"，那相机看到的、模型输出的、控制器执行的，三者必须在同一个坐标系里对齐，tf2 就是做这个对齐的地方。相机外参标定（手眼标定）的结果，最终也是写成一条 <code>base_link → camera_link</code> 的静态变换。</p>
+<h2 id="_3">练习与作答记录</h2>
+<p><strong>练习 12-1</strong>（第 1 步）：相机装在底座前方 0.2 米、上方 0.5 米，没有旋转。相机看到物体在 <span class="arithmatex">\((1.0,\;-0.1,\;-0.5)\)</span>。物体在底座坐标系下的坐标是多少？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 12-2</strong>（第 1 步）：不转动的单位四元数是什么？为什么 ROS 传输姿态时用四元数而不用欧拉角？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 12-3</strong>（第 2 步）：<code>map → odom</code> 和 <code>odom → base_link</code> 分别由谁发布？为什么不让定位系统直接发布 <code>map → base_link</code>？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 12-4</strong>（第 3 步）：<code>lookup_transform('base_link', 'camera_link', Time())</code> 里两个坐标系，哪个是目标、哪个是源？得到的变换能把哪个坐标系里的点换到哪个坐标系？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_4">口诀</h2>
+<ul>
+<li><strong>树</strong>：每个坐标系一个爹，不能有环；查询沿树走，乘起来。</li>
+<li><strong>变换</strong>：先转后移；四元数存，欧拉角看；手算完要归一化。</li>
+<li><strong>两种 tf</strong>：会动的发 <code>/tf</code>，不动的发 <code>/tf_static</code>。</li>
+<li><strong>REP 105</strong>：map 到 odom 管准（会跳），odom 到 base_link 管顺（会漂），base_link 往下来自 URDF。</li>
+<li><strong>查询</strong>：目标在前、源在后；时间给 0 拿最新；报未来过去先查时间戳和 sim time。</li>
+</ul>
+<h2 id="_5">本章复习卡片编号</h2>
+<p>R30–R31，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_6">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_7">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>About-Tf2.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/interfaces/About-Tf2/About-Tf2.rst</code></td>
+<td>变换的数学写法（位置、速度）、<code>lookupTransform</code> 的方向。</td>
+</tr>
+<tr>
+<td>★ <code>Introduction-To-Tf2</code></td>
+<td><code>.../Working-with-interfaces/Introduction-To-Tf2/</code></td>
+<td>turtlesim 跟随 demo、<code>view_frames</code>、<code>tf2_echo</code>。</td>
+</tr>
+<tr>
+<td>★ <code>Quaternion-Fundamentals.rst</code></td>
+<td><code>.../Working-with-interfaces/Quaternion-Fundamentals.rst</code></td>
+<td>四元数组成、单位四元数、归一化、乘法应用旋转。</td>
+</tr>
+<tr>
+<td><code>Tf2</code></td>
+<td><code>.../Working-with-Client-Libraries/Tf2/</code></td>
+<td>广播、静态广播、监听（Py / C++）、加坐标系、时间与"时间旅行"查询、消息过滤器。</td>
+</tr>
+<tr>
+<td><code>Debugging-Tf2-Problems</code></td>
+<td><code>Developer-Tools/Debugging/Debugging-Tf2-Problems/</code></td>
+<td>tf2 排错。</td>
+</tr>
+<tr>
+<td>★ <code>state_estimation.md</code></td>
+<td><code>materials/ecosystem/docs.nav2.org/docs/getting_started/navigation_concepts/state_estimation.md</code></td>
+<td>REP 105 坐标系与各自的发布者。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_8">数学原理</h3>
+<ul>
+<li>齐次变换矩阵 <span class="arithmatex">\(T=\begin{bmatrix}R&amp;t\\0&amp;1\end{bmatrix}\)</span>（<span class="arithmatex">\(R\)</span> 为 3×3 旋转矩阵），复合即矩阵相乘，逆为 <span class="arithmatex">\(\begin{bmatrix}R^\top&amp;-R^\top t\\0&amp;1\end{bmatrix}\)</span>；四元数与旋转矩阵互转。推荐：Lynch &amp; Park《Modern Robotics》第 3 章（刚体运动）。</li>
+</ul>
+<h3 id="_9">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(P_{\text{target}}={}_{\text{target}}T_{\text{source}}\cdot P_{\text{source}}\)</span></td>
+</tr>
+<tr>
+<td><span class="arithmatex">\({}_{B}T_{A}={}_{B}T_{E}\cdot{}_{E}T_{A}\)</span></td>
+</tr>
+<tr>
+<td>单位四元数 <span class="arithmatex">\((0,0,0,1)\)</span></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_10">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch12_tf2.py</code>，配套测试 <code>tests/test_ch11_15.py</code>；同名 notebook 在 <code>notebooks/ch12_tf2.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch12_tf2.py   # 一步一步打印  
+uv run pytest tests/test_ch11_15.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 单位四元数</td>
+<td>不转是 (0, 0, 0, 1)</td>
+<td><code>IDENTITY</code></td>
+<td>(0, 0, 0, 1)</td>
+</tr>
+<tr>
+<td>第 1 步 只平移</td>
+<td><span class="arithmatex">\(P_{\text{base}}={}_{\text{base}}T_{\text{camera}}\cdot P_{\text{camera}}\)</span></td>
+<td><code>Transform((0.1, 0, 0.3)).apply((0.5, 0, 0))</code></td>
+<td>(0.6, 0, 0.3)</td>
+</tr>
+<tr>
+<td>第 1 步 加旋转</td>
+<td>先旋转、后平移</td>
+<td><code>Transform(t, quat_from_yaw(π/2)).apply(...)</code></td>
+<td>先 (0, 0.5, 0)，再 (0.1, 0.5, 0.3)</td>
+</tr>
+<tr>
+<td>第 1 步 相乘</td>
+<td><span class="arithmatex">\({}_{B}T_{A}={}_{B}T_{E}\cdot{}_{E}T_{A}\)</span></td>
+<td><code>B_T_E * E_T_A</code></td>
+<td>一步到位 = 分两步</td>
+</tr>
+<tr>
+<td>第 2 步 树查询</td>
+<td>沿树找共同祖先，一路相乘</td>
+<td><code>lookup(tree, 'map', 'camera_link')</code></td>
+<td>(5.0, 1.1, 0.3)</td>
+</tr>
+<tr>
+<td>第 2 步 时间缓冲</td>
+<td>前后两条之间插值；超出报错</td>
+<td><code>interpolate(buf, t)</code></td>
+<td>1.5 → 0.5；2.1 future；0.5 past</td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">(0.0, 0.0, math.sin(yaw / 2), math.cos(yaw / 2))    # 绕 z 转 yaw：注意是半角
+quat_mul(quat_mul(q, (*v, 0.0)), quat_conj(q))       # 转一个向量：q · v · q⁻¹
+r = rotate(self.q, p); return r + self.t             # 先旋转、后平移
+Transform(self.apply(other.t), quat_mul(self.q, other.q))   # 两个变换相乘
+</code></pre>
+<p><strong>代码里才看得到的 4 件事</strong>：</p>
+<ol>
+<li><strong>四元数用的是半角</strong>：转 90° 时 <span class="arithmatex">\(z=\sin 45°\approx 0.707\)</span>，不是 <span class="arithmatex">\(\sin 90°=1\)</span>。四个数平方和永远是 1。</li>
+<li><strong><code>Transform</code> 存的是"父 ← 子"</strong>：<code>tree['base_link'] = ('odom', T)</code> 里的 T 把 base_link 里的点换到 odom。<code>lookup(目标, 源)</code> 的参数顺序和 tf2 的 <code>lookup_transform</code> 一样：目标在前。</li>
+<li><strong>树里 map → odom、odom → base_link 的数是编的</strong>；base_link → camera_link 用的是第 1 步的安装位置。</li>
+<li><strong>时间缓冲只缓存了一个数（x 平移）</strong>：真 tf2 对平移做线性插值、对旋转做球面插值（slerp）。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>把相机改成朝右转 90°（<code>quat_from_yaw(-math.pi / 2)</code>），看杯子在底座坐标系里到了哪；</li>
+<li>在 <code>tree</code> 里再挂一个 <code>gripper</code>（父是 <code>base_link</code>），用 <code>lookup</code> 查 <code>camera_link ← gripper</code>，看共同祖先是谁。</li>
+</ul><nav class="pager"><a href="11-time-lifecycle.html">← 第 11 章 · 时间与托管节点（lifecycle）</a><a href="13-urdf-rviz.html">第 13 章 · URDF、xacro、robot_state_publisher 与 RViz →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>

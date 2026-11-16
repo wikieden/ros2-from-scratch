@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 4 章 · 工作区、colcon 和第一个包 · 从零学 ROS 2</title>
+<style>
+:root{--bg:#fbfbfa;--fg:#1f2328;--mute:#5d6470;--line:#e3e5e8;--card:#fff;--acc:#2f6fdf;--code:#f2f3f5;--quote:#f4f6fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}}
+:root[data-theme="dark"]{--bg:#15181d;--fg:#e4e7ec;--mute:#9aa3b2;--line:#2c323b;--card:#1c2026;--acc:#7aa7ff;--code:#22272f;--quote:#1b2029}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 -apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Helvetica Neue",sans-serif}
+a{color:var(--acc)}
+header.top{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+header.top .in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:14px}
+header.top .brand{font-weight:600;color:var(--fg);text-decoration:none;margin-right:auto}
+header.top a{text-decoration:none}
+main{max-width:860px;margin:0 auto;padding:24px 16px 72px;overflow-wrap:anywhere}
+h1{font-size:28px;line-height:1.35;margin:8px 0 16px} h2{font-size:22px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)} h3{font-size:18px;margin:28px 0 8px}
+img{max-width:100%;height:auto;border-radius:8px;border:1px solid var(--line);background:#fff}
+blockquote{margin:16px 0;padding:10px 16px;background:var(--quote);border-left:3px solid var(--acc);border-radius:4px;color:var(--mute)}
+blockquote p{margin:4px 0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.9em}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto} pre code{padding:0;background:none}
+table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:12px 0;font-size:15px}
+th,td{border:1px solid var(--line);padding:6px 10px;vertical-align:top} th{background:var(--code)}
+details{border:1px solid var(--line);border-radius:8px;padding:6px 12px;margin:8px 0;background:var(--card)}
+details[open]{padding-bottom:10px} summary{cursor:pointer;color:var(--acc);font-weight:500}
+mjx-container{overflow-x:auto;overflow-y:hidden;max-width:100%}
+.btn{display:inline-block;margin:4px 8px 4px 0;padding:6px 14px;border:1px solid var(--acc);border-radius:999px;text-decoration:none;font-size:14px}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:48px;padding-top:16px;border-top:1px solid var(--line);font-size:15px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin:16px 0}
+.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.card:hover{border-color:var(--acc)} .card img{border:0;border-bottom:1px solid var(--line);border-radius:0;aspect-ratio:16/10;object-fit:contain;width:100%}
+.card .no{color:var(--mute);font-size:13px;padding:8px 12px 0} .card .t{padding:0 12px 12px;font-weight:500;line-height:1.5}
+.lead{font-size:17px;color:var(--mute)}
+footer{max-width:860px;margin:0 auto;padding:0 16px 40px;color:var(--mute);font-size:13px}
+</style>
+<script>window.MathJax={tex:{inlineMath:[["\\(","\\)"]],displayMath:[["\\[","\\]"],["$$","$$"]],processEscapes:true,processEnvironments:true}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js"></script>
+</head><body>
+<header class="top"><div class="in">
+<a class="brand" href="../index.html">从零学 ROS 2</a>
+<a href="../lessons/index.html">讲义目录</a>
+<a href="../animations/index.html">动画</a>
+<a href="../review.html">复习卡片</a>
+<a href="../lessons/appendix-glossary.html">缩写表</a>
+</div></header>
+<main>
+<h1 id="4-colcon">第 4 章 · 工作区、colcon 和第一个包</h1><p><a class="btn" href="../animations/04-workspace-build.html">▶ 打开本章可交互动画</a></p>
+<blockquote>
+<p>本章回答：自己写的 ROS 代码放哪？怎么编译？编译完为什么还要 source？"包"里必须有哪些文件？<br />
+讲解日期：2026-11-13 · 上一章：<a href="../lessons/03-launch-log-bag.html">第 3 章 日志、launch 和 bag</a> · 下一章：<a href="../lessons/05-python-nodes.html">第 5 章 用 Python 写节点</a><br />
+对应原文：<code>ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/</code> 下的 <code>Creating-A-Workspace/Creating-A-Workspace.rst</code>、<code>Creating-Your-First-ROS2-Package.rst</code>；<code>ros2_documentation/source/Developer-Tools/Build/About-Build-System.rst</code>（路径相对 <code>ros2/materials/</code>）<br />
+对应 study-plan 阶段 B1、B6，动手里程碑 R-M2 的前半。<br />
+本章缩写：ament（不是缩写，ROS 2 的构建辅助工具集，读作"阿门特"）；colcon = collective construction（集体 / 构建：一次编译一堆包的工具）；CMake = Cross-platform Make（跨平台 / 构建：C++ 常用的构建配置工具）；XML = eXtensible Markup Language（可扩展 / 标记 / 语言）；rosdep = ROS dependency（ROS 依赖安装工具）；apt = Advanced Package Tool（Ubuntu 的软件安装工具）。全部缩写见 <a href="../lessons/appendix-glossary.html">附录 · 缩写与术语表</a></p>
+</blockquote>
+<p>本章先看总图，再分 3 步：</p>
+<table>
+<thead>
+<tr>
+<th>步</th>
+<th>内容</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>总图：src → rosdep → colcon build → install → source → run</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>1</td>
+<td>工作区和 overlay / underlay</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>2</td>
+<td>包：<code>ros2 pkg create</code>、<code>package.xml</code>、Python 包和 C++ 包的骨架</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>3</td>
+<td>构建：rosdep、colcon、构建系统三层</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">讲解</h2>
+<h3 id="ros2-run">总图 · 从源码到 <code>ros2 run</code></h3>
+<p><img alt="工作区构建流程" src="../animations/04-workspace-build.gif" /></p>
+<p>可交互版：<a href="../animations/04-workspace-build.html">animations/04-workspace-build.html</a>（内置浏览器：<code>ros2-animations</code> 预览，<code>http://localhost:8340/04-workspace-build.html</code>）。</p>
+<pre><code>~/ros2_ws/                ← 工作区（workspace）
+├── src/                  ← 你只动这里：一个子目录一个包
+│   └── my_package/
+├── build/                ← colcon 生成：中间文件
+├── install/              ← colcon 生成：成品 + setup.bash
+└── log/                  ← colcon 生成：构建日志
+</code></pre>
+<p>流程：<code>src/</code> 里写包 → <code>rosdep install</code> 装系统依赖 → <code>colcon build</code> 编译 → 新终端里 <code>source install/setup.bash</code> → <code>ros2 run</code>。</p>
+<h3 id="1-overlay-underlay">第 1 步 · 工作区和 overlay / underlay</h3>
+<p>依据：<code>ROS-Framework/client-libraries/Working-with-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.rst</code>（下称"工作区教程"）。</p>
+<p><strong>工作区（workspace）</strong>就是一个放 ROS 包的目录，惯例是 <code>~/ros2_ws/</code>，源码都放在它的 <code>src/</code> 子目录里（工作区教程第 2 步："把包放进 <code>src</code> 是最佳实践"）。</p>
+<p><strong>overlay / underlay：一层叠一层。</strong></p>
+<ul>
+<li><strong>underlay（底层）</strong>：你已经装好的 ROS，<code>/opt/ros/lyrical/</code>。</li>
+<li><strong>overlay（上层）</strong>：你自己的工作区。它建立在 underlay 之上，可以用 underlay 里的所有包。</li>
+<li><strong>同名包时 overlay 优先</strong>（工作区教程背景一节："overlay 里的包会覆盖 underlay 里的包"）。</li>
+</ul>
+<p><strong>类比</strong>：底层是图书馆的正式藏书，上层是你书桌上的笔记。找资料时先翻书桌，书桌上没有再去图书馆。你可以把 turtlesim 的源码克隆进自己的 <code>src/</code>，改一改窗口标题，编译后 <code>ros2 run turtlesim turtlesim_node</code> 跑的就是你改过的版本，而系统里装的那份完全没动（工作区教程第 7 步就是这么做的）。</p>
+<p><strong>source 的顺序</strong>（工作区教程第 6 步）：</p>
+<pre><code class="language-bash"># 新开一个终端！
+source /opt/ros/lyrical/setup.bash     # 先 source 底层
+cd ~/ros2_ws
+source install/local_setup.bash        # 再 source 上层
+</code></pre>
+<ul>
+<li><code>local_setup.bash</code> 只加上本工作区的包；<code>setup.bash</code> 会把本工作区<strong>和</strong>它编译时用的底层一起加上。所以上面两行等于直接 <code>source ~/ros2_ws/install/setup.bash</code>。</li>
+<li>官方特别强调：<strong>在一个新终端里 source overlay，不要在编译用的那个终端里 source</strong>，也不要在已经 source 了 overlay 的终端里编译，否则会出现难查的问题。</li>
+</ul>
+<h3 id="2">第 2 步 · 包：最小骨架</h3>
+<p>依据：<code>.../Creating-Your-First-ROS2-Package.rst</code>（下称"建包教程"）。</p>
+<p><strong>包（package）</strong>是 ROS 代码的组织和发布单位：想让别人能编译、能安装你的代码，就要把它组织成包（建包教程背景第 1 节）。一个工作区可以有很多包，C++ 包和 Python 包可以混放，但<strong>包不能嵌套</strong>。</p>
+<p><strong>建包</strong>（在 <code>src/</code> 里运行）：</p>
+<pre><code class="language-bash">ros2 pkg create --build-type ament_python --license Apache-2.0 --node-name my_node my_package
+</code></pre>
+<ul>
+<li><code>--build-type</code>：<code>ament_python</code>（纯 Python）或 <code>ament_cmake</code>（C++，也可以带 Python）。</li>
+<li><code>--node-name my_node</code>：顺便生成一个能跑的 hello world 节点。</li>
+</ul>
+<p><strong>Python 包的骨架</strong>（建包教程背景第 2 节）：</p>
+<pre><code>my_package/
+├── package.xml           ← 包的&quot;身份证&quot;：名字、版本、依赖
+├── setup.py              ← 怎么安装（Python 标准）；可执行入口写在这
+├── setup.cfg             ← 有可执行文件时必须有，让 ros2 run 找得到
+├── resource/my_package   ← 空的标记文件，ROS 工具靠它找包
+└── my_package/
+    ├── __init__.py
+    └── my_node.py
+</code></pre>
+<p><strong>C++ 包的骨架</strong>：<code>package.xml</code> + <code>CMakeLists.txt</code>（怎么编译）+ <code>include/my_package/</code>（头文件）+ <code>src/</code>（源文件）。</p>
+<p><strong><code>package.xml</code> 是每个包都必须有的</strong>，不管用什么语言（<code>Developer-Tools/Build/About-Build-System.rst</code> ament_package 一节）。核心几行：</p>
+<pre><code class="language-xml">&lt;package format=&quot;3&quot;&gt;
+  &lt;name&gt;my_package&lt;/name&gt;
+  &lt;version&gt;0.0.0&lt;/version&gt;
+  &lt;description&gt;TODO: Package description&lt;/description&gt;
+  &lt;maintainer email=&quot;user@todo.todo&quot;&gt;user&lt;/maintainer&gt;
+  &lt;license&gt;Apache-2.0&lt;/license&gt;
+  &lt;depend&gt;rclpy&lt;/depend&gt;              &lt;!-- 依赖：编译和运行都要 --&gt;
+  &lt;depend&gt;std_msgs&lt;/depend&gt;
+  &lt;export&gt;&lt;build_type&gt;ament_python&lt;/build_type&gt;&lt;/export&gt;
+&lt;/package&gt;
+</code></pre>
+<p>依赖标签有几种：<code>&lt;depend&gt;</code>（编译和运行都要）、<code>&lt;build_depend&gt;</code>、<code>&lt;exec_depend&gt;</code>（只运行时要）、<code>&lt;test_depend&gt;</code>（只测试要）。<strong>依赖要写全</strong>：colcon 靠它排编译顺序，rosdep 靠它装系统库。</p>
+<p><strong>Python 节点怎么变成 <code>ros2 run</code> 能跑的命令？</strong> 在 <code>setup.py</code> 的 <code>entry_points</code> 里登记：</p>
+<pre><code class="language-python">entry_points={
+    'console_scripts': [
+        'my_node = my_package.my_node:main',   # 命令名 = 模块路径:函数名
+    ],
+},
+</code></pre>
+<p>这就是第 2 章"可执行文件名"的来历。忘了登记，<code>ros2 run</code> 就会说找不到可执行文件。</p>
+<h3 id="3-rosdepcolcon">第 3 步 · 构建：rosdep、colcon 和三层构建系统</h3>
+<p><strong>rosdep：先把系统依赖装齐。</strong></p>
+<pre><code class="language-bash">cd ~/ros2_ws
+rosdep install -i --from-path src --rosdistro lyrical -y
+</code></pre>
+<p>它扫描 <code>src/</code> 里所有 <code>package.xml</code>，把声明了但还没装的依赖（比如 OpenCV、某个 ROS 包）用 apt 装上（工作区教程第 4 步）。全齐时打印 <code>#All required rosdeps installed successfully</code>。<strong>rosdep 只在 Linux 上可用</strong>。</p>
+<p><strong>colcon build：编译整个工作区。</strong> 在工作区根目录运行（工作区教程第 5 步）：</p>
+<pre><code>$ colcon build
+Starting &gt;&gt;&gt; my_package
+Finished &lt;&lt;&lt; my_package [1.2s]
+Summary: 1 package finished [1.3s]
+</code></pre>
+<p>colcon 先读所有 <code>package.xml</code>，<strong>按依赖关系排序</strong>：A 依赖 B，就先编 B。互不依赖的包并行编译。常用参数：</p>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--packages-select my_package</code></td>
+<td>只编这一个</td>
+</tr>
+<tr>
+<td><code>--packages-up-to my_package</code></td>
+<td>编它和它依赖的包</td>
+</tr>
+<tr>
+<td><code>--symlink-install</code></td>
+<td>安装时用软链接指回源码：改 Python 脚本、launch 文件、YAML 后<strong>不用重新编译</strong></td>
+</tr>
+<tr>
+<td><code>--event-handlers console_direct+</code></td>
+<td>编译输出直接打到终端（否则在 <code>log/</code> 里）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>构建系统的三层</strong>（<code>Developer-Tools/Build/About-Build-System.rst</code>）：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>是什么</th>
+<th>ROS 2 里用的</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>构建工具（build tool）</td>
+<td>编译<strong>一个</strong>包</td>
+<td>C++ 用 CMake，Python 用 setuptools</td>
+</tr>
+<tr>
+<td>构建辅助（build helpers）</td>
+<td>给构建工具加 ROS 便利功能</td>
+<td>ament 系列（<code>ament_cmake</code>、<code>ament_python</code>）</td>
+</tr>
+<tr>
+<td>元构建工具（meta-build tool）</td>
+<td>编译<strong>一堆</strong>包，排好顺序</td>
+<td>colcon</td>
+</tr>
+</tbody>
+</table>
+<p><strong>类比</strong>：CMake / setuptools 是一个厨师做一道菜；ament 是厨房里的标准化流程卡；colcon 是厨师长，看菜单（<code>package.xml</code>）安排谁先做、谁同时做。</p>
+<p><strong>跑起来</strong>：新终端里 source 之后，</p>
+<pre><code>$ ros2 run my_package my_node
+Hi from my_package.
+</code></pre>
+<p>（建包教程第 4 步，Python 版的输出。）</p>
+<p><strong>本仓库约定</strong>：之后写的代码都放 <code>ros2/solutions/ros2_ws/src/</code> 下（study-plan 的 R-M2 起），<code>build/ install/ log/</code> 不入库。</p>
+<h2 id="_2">练习与作答记录</h2>
+<p><strong>练习 4-1</strong>（第 1 步）：你在 <code>~/ros2_ws/src/</code> 里克隆了 turtlesim 源码，改了窗口标题并编译。新终端里只 <code>source /opt/ros/lyrical/setup.bash</code>，没 source 工作区，<code>ros2 run turtlesim turtlesim_node</code> 打开的窗口标题是改过的还是原来的？为什么？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 4-2</strong>（第 2 步）：你新写了 <code>my_package/talker.py</code>，里面有 <code>main()</code>，编译后 <code>ros2 run my_package talker</code> 报"No executable found"。最可能漏了哪一步？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<p><strong>练习 4-3</strong>（第 3 步）：工作区里有 <code>robot_msgs</code>（自定义消息）和 <code>robot_driver</code>（用到这些消息）两个包。<code>robot_driver/package.xml</code> 里忘了写 <code>&lt;depend&gt;robot_msgs&lt;/depend&gt;</code>。<code>colcon build</code> 可能出什么问题？为什么有时又能侥幸编过？</p>
+<ul>
+<li>作答：（待作答）</li>
+</ul>
+<h2 id="_3">口诀</h2>
+<ul>
+<li><strong>工作区</strong>：源码进 src，产物三兄弟（build、install、log）。</li>
+<li><strong>叠层</strong>：先 source 底层，再 source 上层；同名上层优先；新终端里 source。</li>
+<li><strong>包</strong>：<code>package.xml</code> 是身份证，依赖写全；Python 入口写进 <code>setup.py</code>。</li>
+<li><strong>构建</strong>：rosdep 装依赖，colcon 排顺序；Python 用 <code>--symlink-install</code>，改了不用重编。</li>
+</ul>
+<h2 id="_4">本章复习卡片编号</h2>
+<p>R13–R14，见 <a href="../review.html">../review.md</a>。</p>
+<h2 id="_5">附录 · 延伸阅读</h2>
+<blockquote>
+<p>留给以后深入学习用，不影响本章主线。★ 是建议先读的。<code>materials/</code> 指 <code>ros2/materials/</code>；不带前缀的路径在 <code>materials/ros2_documentation/source/</code> 下（<code>design/</code>、<code>ecosystem/</code> 开头的在 <code>materials/</code> 下）；<code>...</code> 表示省略了和上一条相同的目录。</p>
+</blockquote>
+<h3 id="_6">推荐阅读</h3>
+<table>
+<thead>
+<tr>
+<th>读什么</th>
+<th>读哪里</th>
+<th>读它为了什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>★ <code>Creating-A-Workspace.rst</code></td>
+<td><code>materials/ros2_documentation/source/ROS-Framework/client-libraries/Working-with-Client-Libraries/Creating-A-Workspace/Creating-A-Workspace.rst</code></td>
+<td>工作区、overlay / underlay（第 1 步依据）。</td>
+</tr>
+<tr>
+<td>★ <code>Creating-Your-First-ROS2-Package.rst</code></td>
+<td><code>.../Working-with-Client-Libraries/Creating-Your-First-ROS2-Package.rst</code></td>
+<td>建包、目录结构、<code>package.xml</code>（第 2 步依据）。</td>
+</tr>
+<tr>
+<td><code>Colcon-Tutorial.rst</code></td>
+<td><code>.../Working-with-Client-Libraries/Colcon-Tutorial.rst</code></td>
+<td>colcon 详细用法。</td>
+</tr>
+<tr>
+<td><code>Rosdep.rst</code></td>
+<td><code>.../Working-with-Client-Libraries/Rosdep.rst</code></td>
+<td>rosdep 原理与 rosdistro 键。</td>
+</tr>
+<tr>
+<td>★ <code>About-Build-System.rst</code></td>
+<td><code>Developer-Tools/Build/About-Build-System.rst</code></td>
+<td>构建工具 / 构建辅助 / 元构建工具三层。</td>
+</tr>
+<tr>
+<td><code>Ament-CMake-Documentation.rst</code></td>
+<td><code>Developer-Tools/Build/Ament-CMake-Documentation.rst</code>、<code>Ament-CMake-Python-Documentation.rst</code></td>
+<td>C++ 包和 C++ / Python 混合包怎么写 CMakeLists。</td>
+</tr>
+<tr>
+<td><code>100_ament.md</code></td>
+<td><code>design/articles/100_ament.md</code>、<code>101_build_tool.md</code></td>
+<td>ament 和 colcon 的设计。</td>
+</tr>
+<tr>
+<td><code>Release-Lyrical-Luth.rst</code></td>
+<td><code>Releases/Release-Lyrical-Luth.rst</code> 中 "Call ament_python_install_package multiple times" 和 "New CMake target ament_ros_defaults"</td>
+<td>Lyrical 对构建的两处小改进。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_7">数学原理</h3>
+<ul>
+<li><strong>拓扑排序</strong>：按依赖关系排顺序，被依赖的排前面；colcon 每一轮编"依赖都已编完"的包（代码对照）。</li>
+</ul>
+<h3 id="_8">公式清单</h3>
+<table>
+<thead>
+<tr>
+<th>公式 / 规则</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>找包顺序：后 source 的 overlay → 先 source 的 underlay</td>
+</tr>
+<tr>
+<td>console_scripts：命令名 = 模块路径:函数名</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_9">代码对照：把本章的数字用代码算一遍</h3>
+<blockquote>
+<p>纯 Python 模拟，不需要 ROS 2（原因见第 1 章这一节）。代码在仓库本地 <code>ros2/solutions/chapter-code/ch04_workspace.py</code>，配套测试 <code>tests/test_ch01_05.py</code>；同名 notebook 在 <code>notebooks/ch04_workspace.ipynb</code>（讲解和代码放在一起，一格一格跑）。Mac 上直接能跑：</p>
+<p><code>bash  
+cd ros2/solutions/chapter-code  
+uv run python ch04_workspace.py   # 一步一步打印  
+uv run pytest tests/test_ch01_05.py</code></p>
+</blockquote>
+<p><strong>讲义 ↔ 代码</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>讲义</th>
+<th>规则 / 数字</th>
+<th>写法</th>
+<th>跑出来</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>第 1 步 overlay</td>
+<td>同名包先找上层</td>
+<td><code>find_package('demo_nodes_py', layers)</code></td>
+<td>来自 <code>~/ros2_ws/install</code></td>
+</tr>
+<tr>
+<td>第 1 步 underlay</td>
+<td>上层没有就去底层</td>
+<td><code>find_package('rclpy', layers)</code></td>
+<td>来自 <code>/opt/ros/lyrical</code></td>
+</tr>
+<tr>
+<td>第 3 步 colcon</td>
+<td>A 依赖 B 先编 B，互不依赖的并行</td>
+<td><code>build_order(deps)</code></td>
+<td>3 轮：[description, msgs] → [driver] → [bringup]</td>
+</tr>
+<tr>
+<td>第 2 步 entry_points</td>
+<td>命令名 = 模块路径:函数名</td>
+<td><code>parse_entry_point(...)</code></td>
+<td><code>my_node</code> / <code>my_package.my_node</code> / <code>main</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>关键几行</strong>：</p>
+<pre><code class="language-python">layers = [overlay, underlay]                 # 后 source 的排在前面
+for layer_name, packages in layers:          # 从上往下找，找到就停
+    if name in packages: return layer_name
+ready = [p for p, d in deps.items() if p not in done and d &lt;= done]   # 依赖都编完了
+rounds.append(ready)                         # 这一轮可以并行
+</code></pre>
+<p><strong>代码里才看得到的 3 件事</strong>：</p>
+<ol>
+<li><strong>例子里的包名和依赖是编的</strong>；<code>demo_nodes_py</code> 在两层都有，只为演示"同名先找上层"。</li>
+<li><strong><code>d &lt;= done</code></strong> 是集合的"是不是子集"：一个包的依赖全在"已编完"里，它才能进这一轮。依赖有环时排不出顺序，函数会报错。</li>
+<li><strong>colcon 只认 package.xml 里写的依赖</strong>：代码里 import 了但没写进去的，它不知道，这正是"依赖要写全"的原因。</li>
+</ol>
+<p><strong>自己改一改</strong>（不影响练习答案）：</p>
+<ul>
+<li>在 <code>deps</code> 里加一个 <code>robot_tests</code>，依赖 <code>robot_bringup</code>，看多出第几轮；</li>
+<li>把 <code>layers</code> 的顺序倒过来（相当于先 source 上层、再 source 底层），看 <code>demo_nodes_py</code> 从哪来。</li>
+</ul><nav class="pager"><a href="03-launch-log-bag.html">← 第 3 章 · 日志、launch 和 bag：一次启动、看清日志、录下来重放</a><a href="05-python-nodes.html">第 5 章 · 用 Python 写节点：发布、订阅、服务、参数 →</a></nav>
+</main>
+<footer>来自个人学习仓库的对话讲义，含练习作答记录。源码：<a href="https://github.com/wikieden/ros2-from-scratch">github.com/wikieden/ros2-from-scratch</a></footer>
+</body></html>
