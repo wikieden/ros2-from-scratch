@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>四种传法与复制次数</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 10 章 · 一张 6 MB 图像的四种传法</h1>
+<p class="sub">配套讲义：<a href="../lessons/10-composition-zero-copy.html">第 10 章 · 组合、进程内通信与零拷贝</a>。依据 About-Composition、Intra-Process-Communication、Configure-ZeroCopy-loaned-messages、About-Buffer-Backends。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：普通跨进程要序列化和多次复制；同进程组件交出 unique_ptr，订阅者拿到同一块内存；loaned messages 借共享内存；rosidl::Buffer 让数据留在 GPU 上。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:350,
+ boxes:{
+  P1:[20,20,170,50,'进程 A：相机节点','','accent'],P2:[490,20,170,50,'进程 B：检测节点','','accent'],
+  MW:[255,20,170,50,'序列化 → 传输 → 反序列化','','muted'],
+  CT:[20,100,640,60,'','','purple'],
+  C1:[40,110,170,40,'相机组件','','accent'],C2:[470,110,170,40,'检测组件','','accent'],
+  MEM:[255,110,170,40,'同一块内存 0x7fb0…','','good'],
+  S1:[20,190,170,50,'进程 A','borrow_loaned_message','accent'],S2:[490,190,170,50,'进程 B','','accent'],
+  SHM:[255,190,170,50,'共享内存','中间件借出','teal'],
+  G1:[20,280,170,50,'GPU 渲染 / 推理','','amber'],G2:[490,280,170,50,'GPU 上的下游节点','','amber'],
+  GB:[255,280,170,50,'rosidl::Buffer','数据留在 GPU','amber'],
+ },
+ arrows:{
+  a1:[190,45,253,45,'复制','muted'],a2:[425,45,488,45,'复制','muted'],
+  b1:[210,130,253,130,'move','good'],b2:[425,130,468,130,'同一指针','good'],
+  c1:[190,215,253,215,'写','teal'],c2:[425,215,488,215,'读','teal'],
+  d1:[190,305,253,305,'','amber'],d2:[425,305,488,305,'','amber'],
+ },
+ steps:[
+  {c:['一张 1920×1080 RGB 图像约 6 MB，30 Hz 就是每秒 180 MB。每多复制一次，就多花 CPU、内存带宽和延迟。','四行分别是四种传法。','']},
+  {n:'跨进程',on:['P1','a1','MW','a2','P2'],chip:['a1','6 MB',.5],c:['① 两个独立进程的普通发布订阅：发布端序列化成字节，经共享内存或网络栈送过去，接收端再反序列化。','路上要复制好几次。好处是隔离：一个崩了不影响另一个。','']},
+  {n:'组件',on:['CT','C1','C2'],set:{CT:''},c:['② 组件 = 没有 main 的节点，编成动态库，由组件容器进程加载。','同一批组件，部署时决定是各占一个进程，还是装进同一个容器（同一进程）。','ros2 run rclcpp_components component_container；ros2 component load /ComponentManager 包 类名']},
+  {n:'进程内',on:['C1','b1','MEM','b2','C2'],chip:['b2','unique_ptr',.5],c:['③ 两个组件都开 use_intra_process_comms(true)，发布时 publish(std::move(msg)) 交出 unique_ptr。','订阅者拿到同一块内存：官方 demo 两边打印的地址相同，零复制。','发布者交出后就不能再碰这条消息。']},
+  {n:'借内存',on:['S1','c1','SHM','c2','S2'],chip:['c2','同一块共享内存',.5],c:['④ 跨进程也想零复制：loaned messages。发布者向中间件"借"一块共享内存，填好发布，订阅者直接读。','Fast DDS 支持（Cyclone、Connext 不支持）；消息类型通常要定长，Image 的变长 data 一般不行。','']},
+  {n:'GPU',on:['G1','d1','GB','d2','G2'],chip:['d2','GPU 指针',.5],c:['⑤ Lyrical 新增 rosidl::Buffer：uint8[] 等变长数组字段在 C++ 里不再是 std::vector，','而是可以挂后端的 Buffer，数据能直接放在 GPU 内存里，整条链路不回 CPU。用法和 vector 一样，旧代码不用改。','需要 rmw_fastrtps_cpp 或 rmw_zenoh_cpp，以及厂商提供的后端。']},
+  {n:'总结',all:true,c:['跨进程普通传法：隔离好、复制多；同进程组件 + unique_ptr：零复制；loaned messages：跨进程零复制，限定长类型；','rosidl::Buffer：GPU 数据不回 CPU。感知 → 推理链路要低延迟，就往下面几种靠。','']},
+ ]});
+</script></body></html>

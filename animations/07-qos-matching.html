@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QoS 匹配</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 7 章 · QoS：要求不高于提供，才能连上</h1>
+<p class="sub">配套讲义：<a href="../lessons/07-qos.html">第 7 章 · QoS：通信质量设置</a>。兼容规则取自官方 About-Quality-of-Service-Settings 的兼容表。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：不匹配时不会报错退出，只是收不到；Reliable 在丢包网络里会重传、延迟变大；Transient local 让晚来的订阅者也能拿到旧消息，但两边都要设。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:320,
+ boxes:{
+  CAM:[20,30,180,56,'相机驱动（发布者）','提供：Best effort','teal'],
+  S1:[460,10,200,50,'感知节点','要求：Best effort','accent'],
+  S2:[460,76,200,50,'你的新节点','默认 QoS','accent'],
+  MAP:[20,190,180,56,'地图服务器（发布者）','提供：Transient local','purple'],
+  S3:[460,170,200,50,'导航（早就在）','要求：Transient local','accent'],
+  S4:[460,236,200,50,'RViz（后来才开）','要求：？','accent'],
+  NET:[250,120,150,40,'网络','','muted'],
+ },
+ arrows:{
+  a1:[200,50,458,35,'','teal'],
+  a2:[200,66,458,100,'','bad','dash'],
+  a3:[200,70,458,104,'','teal'],
+  m1:[200,210,458,195,'','purple'],
+  m2:[200,226,458,260,'','purple','dash'],
+ },
+ steps:[
+  {c:['QoS 匹配像快递：发布者"提供"服务等级，订阅者"要求"最低等级。','每一项要求都不高于提供，才能成交（建立连接）。按"单步"看三种情形。','']},
+  {n:'匹配',on:['CAM','a1','S1'],chip:['a1','图像',.5],c:['① 相机驱动用 Sensor data 预设：Best effort（丢了不重发）。感知节点也要求 Best effort。','提供 = 要求，连上了，图像正常流动。','']},
+  {n:'不匹配',on:['CAM','a2','S2'],set:{S2:'要求 Reliable → 收不到'},c:['② 你的新节点用默认 QoS 订阅：要求 Reliable。可相机只提供 Best effort。','要求高于提供 → 不建立连接。不报错、不退出，只打一条 incompatible QoS 警告，你只看到"没数据"。','排查：ros2 topic info /camera/image_raw --verbose；改法：订阅时用 qos_profile_sensor_data。']},
+  {n:'修好',on:['CAM','a3','S2'],set:{S2:'改成 Best effort → 收到'},chip:['a3','图像',.5],c:['③ 订阅者改成 Best effort（或直接 qos_profile_sensor_data），要求不再高于提供，连上了。','反过来"发布者 Reliable、订阅者 Best effort"永远能连：提供的比要求的好。','']},
+  {n:'丢包',on:['CAM','NET','S1'],set:{NET:'网络：丢包 10%'},c:['④ 为什么相机不用 Reliable？网络丢包时 Reliable 会重传旧帧，新帧排在后面，延迟越积越大。','30 Hz 图像宁可丢一帧也要最新的。控制指令则相反：一条都不能丢，用 Reliable。','注意：ROS 2 的 Reliable 也是在 UDP 上由 DDS 自己做确认重传，不是 TCP。']},
+  {n:'锁存',on:['MAP','m1','S3'],chip:['m1','地图（只发一次）',.5],c:['⑤ 地图服务器启动时只发一次 /map，用 Transient local：发布者把最近的消息存着。','导航节点早就在，直接收到。','']},
+  {n:'晚来',on:['MAP','m2','S4'],set:{S4:'RViz：Volatile → 等不到'},c:['⑥ RViz 后来才打开，订阅用了默认的 Volatile：能连上，但只收新消息。','地图早发完了，所以永远等不到。','']},
+  {n:'晚来也有',on:['MAP','m2','S4'],set:{S4:'RViz：Transient local'},chip:['m2','存着的地图',.5],c:['⑦ RViz 也改成 Transient local：连上时发布者把存着的那份地图补发过来。','"锁存"要两边都设 Transient local；发布者 Volatile、订阅者 Transient local 则连不上。','']},
+  {n:'总结',all:true,set:{S2:'改成 Best effort → 收到',S4:'RViz：Transient local'},c:['总结：订阅者要求、发布者提供，要求不高于提供才能连；不匹配不报错，只是收不到。','传感器 Best effort，指令 Reliable，地图等静态信息两边 Transient local；收不到先 topic info -v。','']},
+ ]});
+</script></body></html>

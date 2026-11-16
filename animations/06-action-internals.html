@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>动作的内部结构</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 6 章 · 动作 = 3 个服务 + 2 个话题 + 一台状态机</h1>
+<p class="sub">配套讲义：<a href="../lessons/06-interfaces-actions.html">第 6 章 · 自定义接口与动作</a>。依据 design/articles/actions.md 与官方 Fibonacci 动作例子。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：get_result 请求一开始就发出，服务端做完才回；反馈走话题，不占用服务；取消要服务端同意后先进 CANCELING，收尾完才到 CANCELED。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:340,
+ boxes:{
+  CL:[20,100,150,80,'动作客户端','ActionClient','accent'],
+  SV:[510,100,150,80,'动作服务端','ActionServer','purple'],
+  SG:[230,10,220,34,'send_goal（服务）','','amber'],
+  CG:[230,56,220,34,'cancel_goal（服务）','','amber'],
+  GR:[230,102,220,34,'get_result（服务）','','amber'],
+  FB:[230,148,220,34,'feedback（话题）','','accent'],
+  ST:[230,194,220,34,'status（话题）','','accent'],
+  S1:[20,262,110,40,'ACCEPTED','','muted'],
+  S2:[150,262,110,40,'EXECUTING','','muted'],
+  S3:[280,262,110,40,'CANCELING','','muted'],
+  S4:[410,262,120,40,'SUCCEEDED','','good'],
+  S5:[550,262,110,40,'CANCELED','','bad'],
+ },
+ arrows:{
+  sg1:[170,112,228,28,'','amber'],sg2:[452,28,508,112,'','amber'],
+  cg1:[170,128,228,73,'','amber'],cg2:[452,73,508,128,'','amber'],
+  gr1:[170,140,228,119,'','amber'],gr2:[508,140,452,119,'','amber'],
+  fb:[508,160,452,165,'','accent'],fb2:[228,165,172,160,'','accent'],
+  st:[508,175,452,211,'','accent'],
+  e1:[130,282,148,282,'','muted'],e2:[260,282,278,282,'','muted'],e3:[205,258,468,258,'succeed','good'],e4:[335,308,603,308,'canceled','bad'],
+ },
+ steps:[
+  {c:['动作不是新的底层通信，而是 3 个服务 + 2 个话题拼出来的。名字都带 _action/ 前缀，默认隐藏。','下面是官方 Fibonacci 例子：目标 order=10，反馈是算到目前的数列。','']},
+  {n:'发目标',on:['CL','sg1','SG','sg2','SV'],chip:['sg1','order=10',.5],c:['① 客户端 send_goal_async：通过 send_goal 服务发目标，目标带一个唯一 ID。','服务端的 goal_callback 决定接受还是拒绝（默认接受）。','']},
+  {n:'接受',on:['SV','sg2','SG','sg1','CL','S1'],chip:['sg2','accepted',.5],c:['② 服务端回复"接受"。这个目标进入状态机：ACCEPTED。','被拒绝的目标不进状态机，客户端的 goal_response_callback 里检查 accepted。','']},
+  {n:'取结果',on:['CL','gr1','GR'],chip:['gr1','get_result',.5],c:['③ 客户端马上调用 get_result 服务。这个请求会一直挂着：服务端做完才回复。','所以客户端要用 future + 回调，而不是阻塞等待。','']},
+  {n:'执行',on:['SV','S2','e1','ST','st'],c:['④ 服务端开始执行：ACCEPTED → EXECUTING。status 话题广播所有在办目标的状态。','execute_callback(goal_handle) 在这里运行。','']},
+  {n:'反馈',on:['SV','fb','FB','fb2','CL','S2'],chip:['fb','[0,1,1,2,3]',.5],c:['⑤ 服务端边算边 goal_handle.publish_feedback(...)：走 feedback 话题，不占用服务。','客户端的 feedback_callback 每收到一条就打印一次。','']},
+  {n:'成功',on:['SV','gr2','GR','gr1','CL','S4','e3'],chip:['gr2','sequence=[…]',.5],c:['⑥ 算完：goal_handle.succeed()，状态 EXECUTING → SUCCEEDED，返回 result。','挂着的 get_result 请求这时才收到回复，客户端的 get_result_callback 被调用。','']},
+  {n:'取消',on:['CL','cg1','CG','cg2','SV','S3','e2'],chip:['cg1','cancel ID',.5],c:['⑦ 另一种走法：执行中客户端调 cancel_goal。服务端 cancel_callback 同意后进入 CANCELING，','在这里做收尾（比如让机械臂减速停稳），收尾完调用 canceled()。','']},
+  {n:'已取消',on:['S3','e4','S5','GR','gr2','CL'],c:['⑧ CANCELING → CANCELED：get_result 返回，结局是"已取消"。','另一个终态 ABORTED：服务端自己放弃（出错、或像 turtlesim 那样被新目标顶掉）。','']},
+  {n:'总结',all:true,c:['三服务（发目标、取消、取结果）+ 两话题（反馈、状态）；每个目标一台状态机。','中间态：ACCEPTED、EXECUTING、CANCELING；终态：SUCCEEDED、ABORTED、CANCELED。','']},
+ ]});
+</script></body></html>

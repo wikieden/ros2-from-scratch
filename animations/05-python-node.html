@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Python 节点里的回调</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 5 章 · 一个节点 = 一堆回调 + 一个 spin</h1>
+<p class="sub">配套讲义：<a href="../lessons/05-python-nodes.html">第 5 章 · 用 Python 写节点：发布、订阅、服务、参数</a>。代码取自官方 MinimalPublisher / MinimalSubscriber / MinimalService / MinimalClientAsync。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：__init__ 里只是"登记"；真正干活的是 spin 里的 executor：哪件事发生了就调哪个回调。单线程时，一个回调卡住，其他回调全都等着。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:300,term:true,
+ boxes:{
+  INIT:[20,20,200,64,'__init__：登记','create_timer / create_publisher …','accent'],
+  EX:[250,110,180,70,'executor','rclpy.spin(node)','purple'],
+  TM:[20,110,190,40,'定时器 0.5 s','','teal'],
+  SUB:[20,160,190,40,'订阅 topic','','teal'],
+  SRV:[20,210,190,40,'服务 add_two_ints','','teal'],
+  CB1:[470,20,190,40,'timer_callback()','发布 Hello World','accent'],
+  CB2:[470,90,190,40,'listener_callback(msg)','','accent'],
+  CB3:[470,160,190,40,'add_two_ints_callback','填 response 返回','accent'],
+  FUT:[470,230,190,46,'future（凭条）','call_async 立刻返回','amber'],
+ },
+ arrows:{
+  t:[210,130,248,135,'','teal'],
+  s:[210,180,248,150,'','teal'],
+  v:[210,230,248,165,'','teal'],
+  c1:[430,125,468,42,'调用','purple'],
+  c2:[430,140,468,110,'','purple'],
+  c3:[430,158,468,180,'','purple'],
+  f:[430,172,468,250,'填结果','amber','dash'],
+ },
+ steps:[
+  {c:['ROS 2 节点是事件驱动的：不写 while True 循环，而是登记回调，再 spin。','类比：前台装了闹钟、门铃、电话，坐着等，哪个响就处理哪个。','']},
+  {n:'登记',on:['INIT','TM','SUB','SRV'],c:['① __init__ 里只做登记：创建定时器、发布者、订阅者、服务。这一步什么都不会执行。','对象要存到 self 上，否则被 Python 回收，功能就停了。',''],
+   term:['self.publisher_ = self.create_publisher(String, \'topic\', 10)','self.timer = self.create_timer(0.5, self.timer_callback)','self.sub = self.create_subscription(String, \'topic\', self.listener_callback, 10)','self.srv = self.create_service(AddTwoInts, \'add_two_ints\', self.add_two_ints_callback)']},
+  {n:'spin',on:['EX'],c:['② rclpy.spin(node)：把控制权交给 executor。它在等待集里不停询问"谁有事"。','忘了写 spin，以上所有回调永远不会执行。',''],
+   term:['with rclpy.init(args=args):','    node = MinimalPublisher()','    rclpy.spin(node)']},
+  {n:'定时器',on:['TM','t','EX','c1','CB1'],chip:['c1','0.5 s 到',.5],c:['③ 定时器到点：executor 调用 timer_callback，里面 publish 一条 String。','控制回路就是这么写的：create_timer(0.02, …) = 50 Hz。',''],
+   term:['[INFO] [minimal_publisher]: Publishing: "Hello World: 0"']},
+  {n:'订阅',on:['SUB','s','EX','c2','CB2'],chip:['c2','String',.5],c:['④ 订阅的队列里有新消息：executor 调用 listener_callback(msg)。','队列深度 10：最多攒 10 条没处理的，满了丢最旧的。',''],
+   term:['[INFO] [minimal_subscriber]: I heard: "Hello World: 0"']},
+  {n:'服务',on:['SRV','v','EX','c3','CB3'],chip:['c3','a=41, b=1',.5],c:['⑤ 有客户端请求服务：executor 调用 add_two_ints_callback(request, response)。','回调里填好 response.sum 再 return，ROS 把回复送回去。',''],
+   term:['def add_two_ints_callback(self, request, response):','    response.sum = request.a + request.b','    return response']},
+  {n:'异步',on:['FUT','f','EX'],chip:['f','sum=42',.6],c:['⑥ 客户端 call_async：立刻拿到一张凭条（future），回复到了由 executor 填进去。','spin_until_future_complete = 一边处理回调，一边等凭条被填上。',''],
+   term:['future = self.cli.call_async(self.req)','rclpy.spin_until_future_complete(node, future)','future.result().sum   # 42']},
+  {n:'死锁',on:['CB1','EX'],set:{CB1:'timer_callback()：call() 卡住'},c:['⑦ 反例：在定时器回调里用同步 call()。回调阻塞等回复，而单线程 executor 正卡在这个回调里，','没空去取回复——回调等回复，回复等回调结束，死锁。官方不推荐 call()。','改法：call_async + add_done_callback；或多线程 executor + 回调组（第 9 章）；或 Lyrical 的 AsyncNode。'],
+   term:['def timer_callback(self):','    result = self.cli.call(req)   # ✗ 永远等不到','    ...']},
+  {n:'总结',all:true,c:['总结：__init__ 登记，spin 调度；定时器、订阅、服务都是回调；客户端拿 future。','单线程 executor 一次只跑一个回调：回调要短，不要在里面阻塞等待。','']},
+ ]});
+</script></body></html>

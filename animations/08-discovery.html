@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>发现：DDS 与 Zenoh</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 8 章 · 两种"找到彼此"的方式</h1>
+<p class="sub">配套讲义：<a href="../lessons/08-middleware-discovery.html">第 8 章 · 中间件、发现与网络</a>。依据 About-Domain-ID、Improved-Dynamic-Discovery、Working-with-Zenoh 与 rmw_zenoh/docs/design.md。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：Domain ID 不同就互相看不见；DDS 靠组播"喊"，Wi-Fi / 容器不支持组播时就失灵；Zenoh 靠本机路由器"转告"，同机节点之间仍直连。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:330,
+ boxes:{
+  A1:[20,20,150,44,'talker（电脑 A）','域 0','accent'],
+  A2:[20,90,150,44,'listener（电脑 A）','域 0','accent'],
+  B1:[510,20,150,44,'listener（电脑 B）','域 0','accent'],
+  C1:[510,90,150,44,'同学的节点','域 7','muted'],
+  MC:[250,40,180,60,'局域网组播','"我是谁、发收什么"','teal'],
+  RA:[20,210,150,50,'Zenoh 路由器 A','rmw_zenohd :7447','purple'],
+  RB:[510,210,150,50,'Zenoh 路由器 B','rmw_zenohd','purple'],
+  ZA:[20,280,150,40,'talker（Zenoh）','','accent'],
+  ZA2:[220,280,150,40,'listener（同机）','','accent'],
+  ZB:[510,280,150,40,'listener（电脑 B）','','accent'],
+ },
+ arrows:{
+  m1:[170,42,248,62,'','teal','dash'],m2:[170,112,248,80,'','teal','dash'],m3:[432,62,508,42,'','teal','dash'],
+  mx:[432,80,508,112,'','bad','dash'],
+  d1:[170,32,508,32,'数据直连','accent'],
+  za:[95,278,95,262,'','purple'],zb:[585,278,585,262,'','purple'],
+  rr:[170,235,508,235,'跨机：路由器之间','purple'],
+  zz:[170,300,218,300,'','accent'],
+ },
+ steps:[
+  {c:['节点靠"发现"自动找到彼此，没有中心 master。怎么发现，取决于中间件。','上半部分：DDS（默认 Fast DDS）；下半部分：Zenoh。','']},
+  {n:'组播',on:['A1','A2','B1','MC','m1','m2','m3'],c:['① DDS：每个节点往局域网组播"我是谁、发收什么"，同一域里的人都听得到。','零配置、开箱即用。节点多了以后，这种"喊"的流量会很大。','']},
+  {n:'直连',on:['A1','B1','d1'],chip:['d1','Hello',.5],c:['② 发现完成后，talker 和电脑 B 上的 listener 直接点对点传数据，不经过任何中转。','']},
+  {n:'域号',on:['C1','mx','MC'],set:{C1:'同学的节点：看不见'},c:['③ Domain ID：同学设了 ROS_DOMAIN_ID=7，和我们的 0 不同，互相看不见，不会串台。','DDS 用域号算端口；安全范围 Linux 取 0–101。','']},
+  {n:'组播失效',on:['MC','A1','B1'],set:{MC:'组播被 Wi-Fi / 容器挡住'},c:['④ 很多 Wi-Fi 路由器、VPN、Docker 默认网络不转发组播：DDS 就发现不了对面的电脑。','补救：ROS_STATIC_PEERS 点名对方地址、Fast DDS 发现服务器，或者换 Zenoh。','只想要本机：ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST。']},
+  {n:'路由器',on:['RA','ZA','ZA2','za'],c:['⑤ Zenoh：先启动本机路由器 ros2 run rmw_zenoh_cpp rmw_zenohd（监听 TCP 7447）。','每个节点连上本机路由器登记；路由器把各节点的地址转告给其他节点（gossip）。','不起路由器，节点就互相发现不了：默认关闭了组播发现。']},
+  {n:'同机',on:['ZA','zz','ZA2'],chip:['zz','Hello',.5],c:['⑥ 同一台电脑上的节点拿到彼此地址后直接通信，路由器不当中转站。','']},
+  {n:'跨机',on:['ZA','za','RA','rr','RB','zb','ZB'],chip:['rr','Hello',.5],c:['⑦ 跨电脑：在路由器配置里让两边路由器互连（connect 端点），跨机的发现和数据经路由器转发。','不依赖组播，所以 Wi-Fi、多网段、和云端连接更省心。','']},
+  {n:'总结',all:true,set:{C1:'同学的节点：看不见'},c:['换中间件只要 export RMW_IMPLEMENTATION=…，代码不改；全系统用同一个，DDS 和 Zenoh 互不相通。','看不见对方：查域号、中间件、发现范围、ping、组播；缓存不对就 ros2 daemon stop。','']},
+ ]});
+</script></body></html>
