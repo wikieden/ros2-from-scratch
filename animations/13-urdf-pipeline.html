@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>URDF 到 RViz</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 13 章 · 从模型文件到屏幕上的机器人</h1>
+<p class="sub">配套讲义：<a href="../lessons/13-urdf-rviz.html">第 13 章 · URDF、xacro、robot_state_publisher 与 RViz</a>。链路取自官方 URDF 教程 "Specifying the Pose" 一节与 robot_state_publisher 教程。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：URDF 只描述"长什么样、怎么连"；关节此刻的角度来自 /joint_states；robot_state_publisher 把两者合起来算出每个连杆的坐标变换。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:300,term:true,
+ boxes:{
+  X:[20,20,160,50,'my_arm.urdf.xacro','属性 · 计算 · 宏','amber'],
+  U:[20,110,160,50,'URDF 文本','link + joint 树','amber'],
+  RSP:[250,110,180,60,'robot_state_publisher','参数 robot_description','purple'],
+  JS:[250,10,180,60,'/joint_states','滑条 GUI / 仿真 / 真机','accent'],
+  TFS:[490,80,170,40,'/tf_static','fixed 关节','teal'],
+  TF:[490,140,170,40,'/tf','活动关节，随角度变','teal'],
+  RV:[490,220,170,56,'RViz','RobotModel · TF 显示','good'],
+ },
+ arrows:{
+  x:[100,70,100,108,'xacro 展开','amber'],
+  u:[180,135,248,140,'','amber'],
+  j:[340,70,340,108,'','accent'],
+  s1:[430,125,488,100,'','teal'],
+  s2:[430,150,488,160,'','teal'],
+  r1:[575,180,575,218,'','teal'],
+  r2:[430,165,500,220,'','amber','dash'],
+ },
+ steps:[
+  {c:['一台机器人在 ROS 里怎么"有形状"、怎么"动起来"：模型文件 + 关节角 → 坐标变换 → 显示。','']},
+  {n:'xacro',on:['X','x','U'],c:['① 先写 xacro：属性当常量、${} 做计算、宏去掉重复（左右轮、六个同样的关节）。','xacro 展开得到普通 URDF：一棵由 link（连杆）和 joint（关节）组成的树。',''],
+   term:['$ xacro my_arm.urdf.xacro > my_arm.urdf','<joint name="elbow" type="revolute">','  <parent link="upper_arm"/> <child link="forearm"/>','  <origin xyz="0 0 0.3"/> <axis xyz="0 1 0"/>','  <limit lower="-2.0" upper="2.0" effort="10" velocity="1.0"/>']},
+  {n:'载入',on:['U','u','RSP'],c:['② robot_state_publisher 把 URDF 全文读进参数 robot_description（也发布到同名话题，RViz 从这里读模型）。','fixed 关节的变换永远不变，算一次发到 /tf_static。',''],
+   term:['$ ros2 run robot_state_publisher robot_state_publisher \\','    --ros-args -p robot_description:="$(xacro my_arm.urdf.xacro)"']},
+  {n:'关节角',on:['JS','j','RSP'],chip:['j','elbow = 0.8 rad',.5],c:['③ /joint_states（sensor_msgs/JointState）给出每个关节此刻的角度：','只看模型时由 joint_state_publisher_gui 的滑条发布；仿真时由仿真器发；真机由 ros2_control 的 joint_state_broadcaster 发。',''],
+   term:['$ ros2 topic echo /joint_states --once','name: [shoulder, elbow]','position: [0.3, 0.8]']},
+  {n:'正运动学',on:['RSP','s1','s2','TFS','TF'],c:['④ robot_state_publisher 用关节角做正运动学：每个关节的 origin 再绕 axis 转 θ，','算出每个连杆相对父连杆的变换，活动关节发 /tf，固定关节发 /tf_static。','']},
+  {n:'显示',on:['TF','TFS','r1','r2','RV'],c:['⑤ RViz：RobotModel 显示项读 robot_description 拿到形状，再用 tf 树把每个连杆放到正确位置。','Global Options → Fixed Frame 选 base_link；填了不存在的坐标系，所有显示都会报错。',''],
+   term:['$ ros2 launch urdf_tutorial display.launch.py model:=$PWD/my_arm.urdf.xacro','# = xacro → robot_state_publisher → joint_state_publisher_gui → rviz2']},
+  {n:'拖动',on:['JS','j','RSP','s2','TF','r1','RV'],chip:['j','elbow = 1.4 rad',.5],c:['⑥ 拖动滑条：新的 JointState → 新的 /tf → RViz 里小臂跟着转。整条链路每秒跑几十次。','真机上换成驱动发的 /joint_states，看到的就是机器人的实时姿态。','']},
+  {n:'总结',all:true,c:['URDF 管"长什么样、怎么连"，/joint_states 管"现在什么姿势"，robot_state_publisher 合成 tf，RViz 显示。','VLA 数据里的本体状态就是 /joint_states；末端位姿靠 URDF 的运动学链算。','']},
+ ]});
+</script></body></html>

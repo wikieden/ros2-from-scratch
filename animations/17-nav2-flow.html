@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nav2 架构与一次导航</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 17 章 · Nav2：一个导航目标的旅程</h1>
+<p class="sub">配套讲义：<a href="../lessons/17-nav2.html">第 17 章 · Nav2：移动机器人导航栈</a>。依据 docs.nav2.org 的 navigation_concepts 与默认 Navigate To Pose 行为树。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：BT 导航器只负责编排；规划服务器在全局代价地图上算路径，控制服务器在局部代价地图上算速度；失败时行为树先清地图、再转、等、退，最多重试 6 次。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:360,
+ boxes:{
+  GOAL:[20,10,170,46,'目标（RViz / 你的程序）','NavigateToPose 动作','accent'],
+  BT:[250,10,180,46,'BT 导航器','行为树 XML','purple'],
+  LM:[490,10,170,46,'lifecycle_manager','按序启动 + bond','muted'],
+  PL:[20,100,190,50,'规划服务器','ComputePathToPose','amber'],
+  CT:[245,100,190,50,'控制服务器','FollowPath（MPPI）','amber'],
+  BH:[470,100,190,50,'行为服务器','清图 · 转 · 等 · 退','bad'],
+  GC:[20,190,190,46,'全局代价地图（map）','静态层 + 障碍层 + 膨胀层','teal'],
+  LC:[245,190,190,46,'局部代价地图（odom）','滚动窗口','teal'],
+  TF:[470,190,190,46,'tf：map → odom → base_link','AMCL / SLAM + 里程计','muted'],
+  BASE:[245,280,190,46,'底盘控制器','diff_drive_controller','accent'],
+  SEN:[20,280,190,46,'激光雷达 / 深度相机','','muted'],
+ },
+ arrows:{
+  g:[190,33,248,33,'','accent'],
+  b1:[290,56,140,98,'','purple'],b2:[340,56,340,98,'','purple'],b3:[400,56,540,98,'','purple','dash'],
+  p:[210,125,243,125,'路径','amber'],
+  gc:[115,188,115,152,'','teal'],lc:[340,188,340,152,'','teal'],
+  v:[340,236,340,278,'cmd_vel','accent'],
+  s1:[115,278,115,238,'','muted'],s2:[180,278,280,238,'','muted'],
+  lm:[490,40,432,40,'','muted','dash'],
+ },
+ steps:[
+  {c:['Nav2 = 一组动作服务器（规划、控制、平滑、行为、路线）+ 一个用行为树编排它们的 BT 导航器。','算法都是插件，用别名调用（FollowPath 用 MPPI，换算法只改配置）。','']},
+  {n:'启动',on:['LM','lm','BT','PL','CT','BH'],c:['① 所有服务器都是托管节点：lifecycle_manager 按顺序 configure、activate，并用 bond 心跳监视。','前提：tf 主干 map → odom → base_link 已有人发布（AMCL / SLAM + 里程计）。','']},
+  {n:'目标',on:['GOAL','g','BT'],chip:['g','去 (5, 2)',.5],c:['② 在 RViz 点"Nav2 Goal"（或程序调用）：向 BT 导航器发 NavigateToPose 动作目标。','BT 导航器开始逐个"tick"行为树的节点。','']},
+  {n:'规划',on:['BT','b1','PL','gc','GC','SEN','s1'],chip:['b1','ComputePathToPose',.5],c:['③ 行为树调规划服务器：在全局代价地图（map 坐标系）上搜索一条从当前位姿到目标的路径。','代价地图 = 静态地图 + 传感器实时障碍 + 墙边膨胀；规划器在里面找代价最低的路。','默认树每秒重规划一次（离目标太近时不再重规划）。']},
+  {n:'控制',on:['PL','p','CT','b2','lc','LC','s2','SEN'],chip:['p','路径',.5],c:['④ 路径交给控制服务器：每个周期在局部代价地图（odom 坐标系，滚动窗口）上算下一步速度。','MPPI：采样一批控制序列 → 前向模拟 → 评价函数打分 → softmax 加权，迭代收敛。','局部图在 odom 里：连续不跳，控制才平滑。']},
+  {n:'执行',on:['CT','v','BASE'],chip:['v','cmd_vel',.5],c:['⑤ 速度指令 cmd_vel（TwistStamped）发给底盘控制器（第 16 章 diff_drive_controller），轮子转起来。','底盘控制器同时发布里程计 odom → base_link，闭环。','']},
+  {n:'卡住',on:['BT','b3','BH','LC'],chip:['b3','恢复',.5],c:['⑥ 控制失败（被人群堵住）：先清局部代价地图再试；还不行进恢复子树：清图、原地转、等待、后退，','每做一个恢复就重新尝试导航；整个任务最多重试 6 次，再失败才报告失败。','随时检查 GoalUpdated：有新目标就立刻放弃恢复、响应新目标。']},
+  {n:'总结',all:true,c:['规划算路（全局图），控制跟路（局部图，出 cmd_vel），行为救急；BT 导航器编排，lifecycle_manager 拉起。','学习型导航常只替换其中一环：目标从语言模型来，或策略直接出 cmd_vel 由代价地图兜底。','']},
+ ]});
+</script></body></html>

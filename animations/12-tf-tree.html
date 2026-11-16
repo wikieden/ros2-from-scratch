@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tf2 变换树</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 12 章 · tf2：一棵带时间的坐标树</h1>
+<p class="sub">配套讲义：<a href="../lessons/12-tf2.html">第 12 章 · tf2：坐标变换树</a>。树结构按 REP 105（Nav2 state_estimation 文档）；查询与工具取自官方 tf2 教程。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：每个坐标系只发布"我相对父亲在哪"；查询任意两个坐标系时，tf2 沿树找到路径、把变换乘起来（反方向时取逆）；静态变换只发一次，动态变换要持续发。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:330,term:true,
+ boxes:{
+  MAP:[255,10,170,40,'map','','purple'],
+  ODOM:[255,80,170,40,'odom','','purple'],
+  BASE:[255,150,170,40,'base_link','','accent'],
+  CAM:[60,230,170,40,'camera_link','','teal'],
+  ARM:[450,230,170,40,'arm_link','','accent'],
+  GRIP:[450,290,170,36,'gripper','','accent'],
+  SLAM:[480,10,180,40,'SLAM / AMCL','会跳，管准','muted'],
+  ODO:[480,80,180,40,'轮式里程计 + IMU','连续，会漂','muted'],
+  URDF:[20,150,180,40,'URDF（静态）','/tf_static','muted'],
+ },
+ arrows:{
+  e1:[340,50,340,78,'','purple'],e2:[340,120,340,148,'','purple'],
+  e3:[300,190,170,228,'','teal'],e4:[380,190,520,228,'','accent'],e5:[535,270,535,288,'','accent'],
+  s1:[478,30,427,30,'','muted','dash'],s2:[478,100,427,100,'','muted','dash'],s3:[200,170,253,170,'','muted','dash'],
+ },
+ steps:[
+  {c:['tf2 记录所有坐标系的关系，组织成一棵树，并按时间缓存（最近十秒左右）。','每个坐标系只需发布"我相对父亲在哪"，像家谱里每人只记得自己的父亲。','']},
+  {n:'REP 105',on:['MAP','ODOM','BASE','e1','e2'],c:['① 移动机器人的标准主干：map → odom → base_link（REP 105）。','map→odom 由全局定位（SLAM、AMCL、GPS）发布：修正漂移，可能跳变。','odom→base_link 由里程计发布：连续平滑，但慢慢漂。控制用 odom，规划用 map。']},
+  {n:'发布者',on:['SLAM','s1','ODO','s2','MAP','ODOM','BASE'],c:['② 两层分别由不同节点发布到 /tf（动态变换，要持续高频发）。','一个坐标系只能有一个父亲、一个发布者，树里不能有环。','']},
+  {n:'静态',on:['URDF','s3','BASE','e3','e4','e5','CAM','ARM','GRIP'],c:['③ base_link 往下：相机安装位置是静态的，发到 /tf_static（只发一次，Transient local）。','关节带动的连杆（arm_link、gripper）会动，由 robot_state_publisher 按关节角算好发到 /tf（第 13 章）。',''],
+   term:['$ ros2 run tf2_ros static_transform_publisher --x 0.1 --y 0 --z 0.3 \\','    --yaw 0 --pitch 0 --roll 0 --frame-id base_link --child-frame-id camera_link']},
+  {n:'查询',on:['CAM','e3','BASE','e4','ARM','e5','GRIP'],c:['④ 查询：gripper 看到的东西，相机坐标系下在哪？tf2 沿树找路径：camera_link ↑ base_link ↓ arm_link ↓ gripper。','把路上的变换乘起来，往上走的那段取逆。你只要调一次 lookup_transform。',''],
+   term:['t = self.tf_buffer.lookup_transform(','        \'camera_link\',   # 目标','        \'gripper\',       # 源','        rclpy.time.Time()) # 0 = 最新']},
+  {n:'数字',on:['CAM','e3','BASE'],c:['⑤ 数字演示：相机在底座前 0.1 m、上 0.3 m，无旋转；看到杯子在相机前 0.5 m。','P_base = T · P_camera = (0.5+0.1, 0, 0+0.3) = (0.6, 0, 0.3)。','若相机朝左转 90°：先转成 (0, 0.5, 0)，再平移得 (0.1, 0.5, 0.3)。先转后移。']},
+  {n:'时间',on:['MAP','ODOM','BASE'],c:['⑥ 变换带时间戳、按时间缓存：可以问"0.2 秒前图像拍下那一刻，底盘在哪"。','要的时刻比最新 tf 还新 → "extrapolation into the future"：等一下、或用消息过滤器。','一半节点用 sim time 一半不用，时间对不上，满屏报错（第 11 章）。']},
+  {n:'工具',on:['MAP','ODOM','BASE','CAM','ARM','GRIP'],c:['⑦ 排查工具：view_frames 画整棵树（含频率和最新时间），tf2_echo 实时打印两个坐标系间的变换。','RViz 加 TF 显示能直接看到所有坐标轴。',''],
+   term:['$ ros2 run tf2_tools view_frames','$ ros2 run tf2_ros tf2_echo base_link camera_link','At time 1683385337.850619099','- Translation: [0.100, 0.000, 0.300]','- Rotation: in Quaternion [0.000, 0.000, 0.000, 1.000]']},
+  {n:'总结',all:true,c:['每个坐标系一个父亲；动态发 /tf，静态发 /tf_static；查询目标在前、源在后。','四元数 (x,y,z,w) 存姿态，(0,0,0,1) = 不转；先转后移。','']},
+ ]});
+</script></body></html>

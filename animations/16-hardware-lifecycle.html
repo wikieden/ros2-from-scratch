@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>硬件组件的一生</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 16 章 · 硬件组件：通信 → 上电 → 每拍读写</h1>
+<p class="sub">配套讲义：<a href="../lessons/16-hardware-controllers.html">第 16 章 · 硬件组件与控制器</a>。依据 ros2_control 的 writing_new_hardware_component 与 lifecycle_of_a_hardware_component。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：每个生命周期转换对应真实的硬件动作；接口由框架根据 URDF 自动导出；read / write 在实时回路里，要快、不能阻塞。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:330,term:true,
+ boxes:{
+  URDF:[20,10,200,50,'URDF <ros2_control>','plugin · 关节 · 接口 · 参数','amber'],
+  UN:[20,100,150,46,'UNCONFIGURED','on_init','muted'],
+  IN:[265,100,150,46,'INACTIVE','on_configure','amber'],
+  AC:[510,100,150,46,'ACTIVE','on_activate','good'],
+  HW:[510,10,150,50,'电机驱动器','刹车：锁住','muted'],
+  SI:[20,200,200,40,'状态接口 joint1/position','set_state()','teal'],
+  CI:[460,200,200,40,'命令接口 joint1/position','get_command()','amber'],
+  LOOP:[250,200,180,40,'read() / write()','每拍一次','purple'],
+  CTRL:[250,270,180,40,'控制器 update()','','accent'],
+ },
+ arrows:{
+  i:[120,60,100,98,'读参数','amber'],
+  cfg:[170,123,263,123,'configure','accent'],
+  act:[415,123,508,123,'activate','accent'],
+  link:[585,98,585,62,'','muted','dash'],
+  r:[248,220,222,220,'read','teal'],
+  w:[432,220,458,220,'write','amber'],
+  c1:[120,240,248,280,'','teal'],
+  c2:[432,288,560,242,'','amber'],
+ },
+ steps:[
+  {c:['硬件组件 = 继承 SystemInterface 的 C++ 插件，由资源管理器用 pluginlib 加载。','它的生命周期和托管节点一样，但每一步对应真实的硬件动作。','']},
+  {n:'init',on:['URDF','i','UN'],c:['① on_init(info)：先调父类 on_init，再读 URDF <ros2_control> 标签里的参数（如减速比、串口名），','检查关节和接口是否齐全，初始化成员变量。这时还不和硬件通信。',''],
+   term:['CallbackReturn MyHardware::on_init(const HardwareInfo & info) {','  if (SystemInterface::on_init(info) != CallbackReturn::SUCCESS)','    return CallbackReturn::ERROR;','  port_ = info_.hardware_parameters["port"];','  return CallbackReturn::SUCCESS;','}']},
+  {n:'configure',on:['UN','cfg','IN','HW','link'],set:{HW:'电机驱动器：已连接'},c:['② on_configure：建立通信（打开串口 / CAN / 连 EtherCAT 主站）。之后可以读状态，','但命令接口还不能用。框架已按 URDF 自动导出接口：名字是 关节/类型。','']},
+  {n:'activate',on:['IN','act','AC','HW','link'],set:{HW:'电机驱动器：上电，刹车松开'},c:['③ on_activate：上电、松刹车，"硬件可以动了"。命令接口开始生效。','通常顺手把命令初始化为当前位置，避免一上电就跳。','']},
+  {n:'read',on:['AC','LOOP','r','SI'],chip:['r','编码器 0.52 rad',.5],c:['④ 每拍 read()：从硬件读状态，set_state("joint1/position", 0.52)。','和硬件通信慢（如串口）时：另开通信线程，read / write 只交换最新值；或设成异步组件。','']},
+  {n:'update',on:['SI','c1','CTRL','c2','CI'],chip:['c2','目标 0.55',.5],c:['⑤ 控制器的 update() 读状态接口、算出命令写进命令接口（比如 JTC 按轨迹插值）。','这一步在第 15 章讲过：同一个实时回路，硬件和控制器之间只有共享接口。','']},
+  {n:'write',on:['CI','w','LOOP','AC'],chip:['w','发 0.55 给驱动器',.5],c:['⑥ 每拍 write()：get_command("joint1/position") 取出命令，发给电机驱动器。','read / write 里不分配内存、不打日志、不阻塞；要发诊断信息用框架提供的状态发布器或 get_node()。','']},
+  {n:'deactivate',on:['AC','IN','HW'],set:{HW:'电机驱动器：断功率，上刹车'},c:['⑦ on_deactivate：与 activate 相反，断功率、上刹车，回到 INACTIVE（通信还在）。','on_cleanup 再断开通信回到 UNCONFIGURED；on_shutdown 收尾到 FINALIZED。','']},
+  {n:'导出',on:['URDF'],c:['⑧ 让框架找到它：文件末尾 PLUGINLIB_EXPORT_CLASS(my_pkg::MyHardware, hardware_interface::SystemInterface)，','写插件描述 my_pkg.xml，CMake 里 pluginlib_export_plugin_description_file(hardware_interface my_pkg.xml)，','URDF 里 <plugin>my_pkg/MyHardware</plugin>。没有硬件时换成 mock_components/GenericSystem。']},
+  {n:'总结',all:true,set:{HW:'电机驱动器'},c:['init 读配置，configure 通信，activate 上电松刹车；read 写状态接口，write 取命令接口。','接口按 URDF 自动导出；控制器与硬件只通过接口交换数据。','']},
+ ]});
+</script></body></html>

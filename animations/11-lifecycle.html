@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>托管节点状态机</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 11 章 · 托管节点：先配置、再开工、出错能退回</h1>
+<p class="sub">配套讲义：<a href="../lessons/11-time-lifecycle.html">第 11 章 · 时间与托管节点（lifecycle）</a>。状态与转换取自 design/articles/node_lifecycle.md；回调分工按 Nav2 文档的约定。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：除了 Active 里出错，每次转换都要外部下令；Inactive 时不处理话题、不响应功能性服务；deactivate 后可以直接再 activate，不用重新配置。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:330,term:true,
+ boxes:{
+  U:[20,120,150,56,'Unconfigured','未配置','muted'],
+  I:[265,120,150,56,'Inactive','未激活','amber'],
+  A:[510,120,150,56,'Active','激活：干活中','good'],
+  F:[265,260,150,50,'Finalized','已结束','bad'],
+  E:[510,260,150,50,'ErrorProcessing','错误处理','bad'],
+  M:[20,10,640,40,'监管者：ros2 lifecycle set / launch / lifecycle_manager','','purple'],
+ },
+ arrows:{
+  cfg:[170,135,263,135,'configure','accent'],
+  cln:[263,165,170,165,'cleanup','muted'],
+  act:[415,135,508,135,'activate','accent'],
+  dea:[508,165,415,165,'deactivate','muted'],
+  sd:[340,178,340,258,'shutdown','bad'],
+  err:[585,178,585,258,'出错','bad','dash'],
+  rec:[508,290,170,170,'','muted','dash'],
+ },
+ steps:[
+  {c:['托管节点（lifecycle node）= 带状态机的节点。开工时机由外部统一决定。','类比开店：租下店面 → 进货摆货架 → 开门营业 → 打烊 → 清场 → 关店。','']},
+  {n:'构造',on:['U'],c:['① 刚构造完：Unconfigured。构造函数里不做 ROS 网络设置、不读参数（Nav2 的约定）。','这时节点什么都没有，也什么都不做。',''],
+   term:['$ ros2 lifecycle get /camera_driver','unconfigured [1]']},
+  {n:'配置',on:['M','U','cfg','I'],chip:['cfg','on_configure',.5],c:['② 监管者下令 configure → 调用 on_configure：读参数、创建发布者 / 订阅者、分配内存、连接硬件。','成功后进入 Inactive：一切就绪但不干活，可以安全地改配置。',''],
+   term:['$ ros2 lifecycle set /camera_driver configure','Transitioning successful','$ ros2 lifecycle get /camera_driver','inactive [2]']},
+  {n:'激活',on:['M','I','act','A'],chip:['act','on_activate',.5],c:['③ 下令 activate → on_activate：激活发布者，开始处理。进入 Active，图像开始发出。','Inactive 时 publish 不会真的发出去；功能性服务请求会立刻失败。',''],
+   term:['$ ros2 lifecycle set /camera_driver activate','Transitioning successful','$ ros2 topic hz /image_raw','average rate: 30.0']},
+  {n:'停用',on:['M','A','dea','I'],chip:['dea','on_deactivate',.5],c:['④ deactivate → on_deactivate：停止处理，回到 Inactive。硬件连接还在，','需要时直接 activate 就能恢复，不用重新配置。VLA 节点同理：停用时不必重新加载几 GB 的权重。',''],
+   term:['$ ros2 lifecycle set /camera_driver deactivate','Transitioning successful']},
+  {n:'出错',on:['A','err','E','rec','U'],c:['⑤ Active 里出现无法处理的错误：自动进入 ErrorProcessing（唯一不需要外部下令的变化）。','on_error 处理成功就回到 Unconfigured，可以重新配置；处理失败则到 Finalized。','']},
+  {n:'清理',on:['M','I','cln','U'],chip:['cln','on_cleanup',.5],c:['⑥ cleanup → on_cleanup：释放 configure 时申请的一切（关硬件、删发布者），回到 Unconfigured。','']},
+  {n:'关闭',on:['M','I','sd','F'],chip:['sd','on_shutdown',.5],c:['⑦ shutdown（任何主状态都能下令）→ on_shutdown 收尾 → Finalized，等待被销毁。','',''],
+   term:['$ ros2 lifecycle set /camera_driver shutdown']},
+  {n:'管理器',on:['M'],set:{M:'Nav2 lifecycle_manager：依次 configure → activate，bond 心跳盯着每个服务端'},c:['⑧ 一组节点通常交给生命周期管理器：按顺序把每个节点 configure、activate，任何一个失败就停。','bond 心跳发现某个服务端崩了，就把整个系统有序地降下来。官方建议：能用托管节点就用。','']},
+  {n:'总结',all:true,c:['四主态：Unconfigured、Inactive、Active、Finalized；五转换：configure、activate、deactivate、cleanup、shutdown。','构造函数什么都不做；configure 准备，activate 开工；除出错外，转换都听外部指挥。','']},
+ ]});
+</script></body></html>

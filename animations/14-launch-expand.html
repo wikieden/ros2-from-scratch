@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>launch 的展开过程</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 14 章 · 一次 ros2 launch 是怎么展开的</h1>
+<p class="sub">配套讲义：<a href="../lessons/14-launch-test-debug.html">第 14 章 · launch 进阶、测试与调试</a>。结构取自官方 example_main_launch.py、example_substitutions_launch.py、example_event_handlers_launch.py。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：launch 文件是描述不是脚本；LaunchConfiguration 等替换在启动时才求值；顶层文件只做 include 和传参；事件处理器让"关键进程退出就全部关闭"。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:320,term:true,
+ boxes:{
+  CMD:[20,10,200,44,'ros2 launch','robot.launch.py sim:=true','accent'],
+  TOP:[20,90,200,56,'robot.launch.py（顶层）','只做 include + 传参','purple'],
+  INC1:[270,40,180,44,'base.launch.py','底盘','purple'],
+  INC2:[270,100,180,44,'sensors.launch.py','相机、雷达','purple'],
+  INC3:[270,160,180,44,'sim.launch.py','IfCondition(sim)','purple'],
+  N1:[500,20,160,36,'/robot1/base_driver','','accent'],
+  N2:[500,66,160,36,'/robot1/camera','','accent'],
+  N3:[500,112,160,36,'/robot1/lidar','','accent'],
+  N4:[500,170,160,36,'gazebo（仿真）','','accent'],
+  YAML:[20,180,200,40,'config/robot.yaml','参数文件','amber'],
+  EV:[270,240,390,50,'OnProcessExit(base_driver) → EmitEvent(Shutdown())','关键进程退出就全部关闭','bad'],
+ },
+ arrows:{
+  c:[120,54,120,88,'','accent'],
+  i1:[220,105,268,62,'','purple'],i2:[220,118,268,122,'','purple'],i3:[220,132,268,180,'','purple','dash'],
+  n1:[450,58,498,38,'','accent'],n2:[450,118,498,84,'','accent'],n3:[450,126,498,130,'','accent'],n4:[450,182,498,188,'','accent'],
+  y:[220,200,268,132,'parameters=','amber','dash'],
+  ev:[668,38,668,238,'','bad','dash'],
+ },
+ steps:[
+  {c:['launch 文件是"描述"不是"脚本"：generate_launch_description() 返回一张清单，ros2 launch 再按清单执行。','真实机器人的顶层 launch 往往只做 include，把子系统串起来。','']},
+  {n:'参数',on:['CMD','c','TOP'],c:['① 命令行传参 sim:=true。顶层文件里 DeclareLaunchArgument 声明了它，','LaunchConfiguration(\'sim\') 是一个占位（替换），启动时才求值。在 Python 里直接 if 判断它是错的。',''],
+   term:['$ ros2 launch my_robot robot.launch.py --show-args','    \'sim\': 是否启动仿真 (default: \'false\')','$ ros2 launch my_robot robot.launch.py sim:=true']},
+  {n:'include',on:['TOP','i1','i2','INC1','INC2'],c:['② IncludeLaunchDescription 包含子系统的 launch 文件，用 launch_arguments 往下传参。','路径用 PathJoinSubstitution([FindPackageShare(\'pkg\'), \'launch\', \'base.launch.py\'])，换电脑也找得到。',''],
+   term:['IncludeLaunchDescription(','    PathJoinSubstitution([FindPackageShare(\'my_robot\'), \'launch\', \'base.launch.py\']),','    launch_arguments={\'robot_ns\': \'robot1\'}.items())']},
+  {n:'条件',on:['TOP','i3','INC3','n4','N4'],c:['③ 仿真子系统带 condition=IfCondition(LaunchConfiguration(\'sim\'))：sim 为 true 才执行。','真机部署时同一个顶层文件传 sim:=false，Gazebo 就不会启动。','']},
+  {n:'分组',on:['INC1','INC2','n1','n2','n3','N1','N2','N3'],c:['④ 子文件里 GroupAction + PushRosNamespace(\'robot1\')：一组节点统一进 /robot1 命名空间。','节点的 remappings=[(\'cmd_vel\', \'base/cmd_vel\')] 可改话题名。','']},
+  {n:'参数文件',on:['YAML','y','INC2','N2','N3'],c:['⑤ 节点参数：Node(parameters=[PathJoinSubstitution([... \'config\', \'robot.yaml\']), {\'use_sim_time\': sim}])。','YAML 和字典可以混用，后面的覆盖前面的。几百个参数都放 YAML，launch 里只放路径。','']},
+  {n:'事件',on:['N1','ev','EV'],c:['⑥ RegisterEventHandler(OnProcessExit(target_action=base_driver, on_exit=[EmitEvent(event=Shutdown())]))。','底盘驱动一崩，整个 launch 关闭，比让系统"半残"运行安全。','其他处理器：OnProcessStart、OnProcessIO、OnExecutionComplete、OnShutdown。']},
+  {n:'总结',all:true,c:['替换启动时求值、条件用 IfCondition；顶层 include 传参；命名空间分组；参数进 YAML；关键进程退出就 Shutdown。','测试用 launch_testing 起同样的节点再断言；崩溃用 prefix=gdb；耗时用 ros2_tracing。','']},
+ ]});
+</script></body></html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ros2_control 控制回路</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 15 章 · 一拍三步：read → update → write</h1>
+<p class="sub">配套讲义：<a href="../lessons/15-realtime-ros2-control.html">第 15 章 · 实时与 ros2_control 架构</a>。架构取自 control.ros.org 的 Getting Started（Architecture 一节）。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：控制器和硬件之间只通过"接口"（共享变量）交换数据，回路里没有话题、没有序列化、没有内存分配；话题只在边上：上层下目标、对外发 /joint_states。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:340,
+ boxes:{
+  UP:[20,10,200,46,'上层（慢世界）','规划器 / VLA 策略','muted'],
+  JS:[460,10,200,46,'/joint_states','给 RViz、策略、录 bag','muted'],
+  CM:[220,76,240,44,'控制器管理器 CM','update_rate 1000 Hz','purple'],
+  C1:[40,140,200,50,'轨迹控制器','update()：算位置命令','accent'],
+  C2:[440,140,200,50,'joint_state_broadcaster','把状态发成话题','accent'],
+  SI:[40,214,280,40,'状态接口  joint1/position · velocity','','teal'],
+  CI:[360,214,280,40,'命令接口  joint1/position（独占）','','amber'],
+  RM:[220,276,240,40,'资源管理器 RM','read() / write()','purple'],
+ },
+ arrows:{
+  u:[130,56,140,138,'目标轨迹（话题）','muted','dash'],
+  j:[540,138,550,58,'','muted','dash'],
+  r:[300,274,200,256,'read','teal'],
+  s1:[140,212,140,192,'读','teal'],
+  s2:[300,212,520,192,'','teal'],
+  c1:[200,192,420,212,'写','amber'],
+  w:[500,256,400,274,'write','amber'],
+ },
+ steps:[
+  {c:['ros2_control：关节级的快回路放进专门设计的框架，用 C++ 写，严格守实时规矩。','控制器管理器（CM）按 update_rate 打节拍，每一拍三步：read → update → write。','']},
+  {n:'目标',on:['UP','u','C1'],chip:['u','轨迹',.5],c:['① 上层（MoveIt、VLA 策略）通过话题发来目标轨迹。这是慢世界：10–50 Hz，延迟有抖动也没关系。','控制器在非实时线程里收下，用实时安全的缓冲区交给回路线程。','']},
+  {n:'read',on:['RM','r','SI'],chip:['r','编码器读数',.5],c:['② 一拍开始：read()。资源管理器让每个硬件组件从驱动读最新状态（EtherCAT / CAN / 串口），','写进状态接口：joint1/position、velocity、effort。状态接口只读。','']},
+  {n:'update',on:['CM','SI','s1','C1','c1','CI'],chip:['c1','position cmd',.5],c:['③ update()：CM 依次调用每个激活控制器的 update()。轨迹控制器读状态接口，','按轨迹插值算出这一拍的位置命令，写进命令接口（同一时刻只能被一个控制器占用）。','接口就是共享的 double 变量：一次赋值，没有序列化、没有内存分配。']},
+  {n:'write',on:['CI','w','RM'],chip:['w','发给电机驱动',.5],c:['④ write()：资源管理器让每个硬件组件把命令接口里的值发给硬件。一拍结束，1 ms 后再来一遍。','整个过程不能分配内存、不能缺页、不能等锁、不能打日志：否则节拍会被打乱。','']},
+  {n:'广播',on:['SI','s2','C2','j','JS'],chip:['j','/joint_states',.5],c:['⑤ joint_state_broadcaster 也是一个控制器：它只读状态接口，把值发布成 /joint_states 话题。','robot_state_publisher、RViz、VLA 策略、bag 录制都从这里拿机器人状态（第 13 章）。','']},
+  {n:'换硬件',on:['RM','SI','CI'],set:{RM:'mock_components/GenericSystem'},c:['⑥ 换硬件不改控制器：把 URDF 里 <ros2_control> 的 plugin 换成 mock_components/GenericSystem（命令原样回写成状态），','或仿真器插件。控制器、YAML、上层代码一行不改。R-M7 先用 mock 跑通。','']},
+  {n:'总结',all:true,c:['CM 管控制器和节拍，RM 管硬件组件；控制器 update 读状态写命令；硬件组件 read / write 和真硬件通信。','话题只在边上（下目标、发状态）；快回路里只有共享接口。','']},
+ ]});
+</script></body></html>
