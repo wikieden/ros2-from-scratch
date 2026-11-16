@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VLA 策略节点数据流</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 20 章 · 把学习策略部署成 ROS 2 节点</h1>
+<p class="sub">配套讲义：<a href="../lessons/20-policy-node.html">第 20 章 · 收尾：把学习策略部署成 ROS 2 节点</a>。本章是前 19 章的组合：QoS、回调组、托管节点、tf、JTC、tracing。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：推理慢（5–10 Hz）、执行快（50 Hz），两者分组分线程，中间用缓冲区交换最新动作块；动作块转成短轨迹交给 JTC，由 1 kHz 实时回路插值；过期就停。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:340,
+ boxes:{
+  CAM:[20,10,180,46,'相机驱动','/camera/image_raw','teal'],
+  JS:[20,70,180,46,'ros2_control','/joint_states','teal'],
+  SYNC:[240,40,150,46,'近似时间同步','按采集时间戳','accent'],
+  INF:[430,10,230,60,'推理（慢，~5 Hz）','回调组 A · GPU · VLA 模型','purple'],
+  BUF:[430,100,230,46,'动作块缓冲区','最新块 + 起始时刻','amber'],
+  EXE:[430,176,230,60,'执行（快，50 Hz 定时器）','回调组 B：取当前步 · 衔接 · 限幅','purple'],
+  JTC:[430,270,230,50,'JTC（1 kHz 实时回路）','插值 → 硬件','good'],
+  SAFE:[20,176,370,60,'安全','过期就停 · 输入断就停 · 关键节点退出全停 · 急停在硬件','bad'],
+  BAG:[20,270,370,50,'测量与数据','ros2_tracing 量延迟 / p99 · bag 录输入和动作','muted'],
+ },
+ arrows:{
+  c:[200,33,238,55,'','teal'],j:[200,93,238,72,'','teal'],
+  s:[390,55,428,45,'','accent'],
+  i:[545,70,545,98,'动作块','purple'],
+  e:[545,146,545,174,'','amber'],
+  t:[545,236,545,268,'短轨迹','good'],
+  sf:[392,206,428,206,'','bad','dash'],
+  tr:[392,295,428,295,'','muted','dash'],
+ },
+ steps:[
+  {c:['策略节点没有新的 ROS 概念：订阅（第 5、7 章）、回调组（第 9 章）、托管节点（第 11 章）、','tf（第 12 章）、JTC（第 16 章）、tracing（第 14 章）组合起来。','']},
+  {n:'订阅',on:['CAM','c','JS','j'],c:['① 订阅相机（qos_profile_sensor_data：Best effort，否则和驱动 QoS 不匹配）和 /joint_states。','话题写相对名，用命名空间区分多台机器人。','']},
+  {n:'同步',on:['SYNC','c','j','s'],c:['② message_filters 近似时间同步：按消息头里的采集时间戳把图像和关节状态配对。','多台电脑要 NTP / PTP 对时；图像转 numpy 用 cv_bridge，颜色顺序、分辨率要和训练一致。','坐标：模型输出末端位姿时用 tf 对齐到 base_link，相机外参来自手眼标定。']},
+  {n:'推理',on:['INF','s','i','BUF'],chip:['i','50 步 × 20 ms',.5],c:['③ 推理在回调组 A（单独线程 / 进程，GPU）：取最新观测 → 模型 → 一个动作块（如未来 50 步，每步 20 ms）。','一次 100–300 ms，所以只能 5–10 Hz。结果连同"对应的起始时刻"写进缓冲区（锁很短）。','']},
+  {n:'执行',on:['BUF','e','EXE'],chip:['e','当前步',.5],c:['④ 执行在回调组 B 的 50 Hz 定时器里：按当前时刻从最新块里取该执行的那几步，','新旧块衔接要平滑（时间集成 / RTC），再按关节限位和速度限幅。两个组分开，推理再慢也不挤占执行。','']},
+  {n:'下发',on:['EXE','t','JTC'],chip:['t','JointTrajectory',.5],c:['⑤ 把接下来 0.2 s 的几个点打包成短轨迹，发到 JTC 的 joint_trajectory 话题；','JTC 在 1 kHz 实时回路里插值，新轨迹替换旧的。末端速度输出则交给 MoveIt Servo。','']},
+  {n:'安全',on:['SAFE','sf','EXE'],c:['⑥ 安全：动作块超过 0.5 s 没更新 → 发"保持当前位置"，不外推旧计划；图像 / 关节状态断了 → 停止输出；','关键节点退出 → launch 事件整体停机；急停是硬件回路。做成托管节点：configure 加载权重并预热，activate 才动。','']},
+  {n:'测量',on:['BAG','tr','EXE','INF'],c:['⑦ 测量：ros2_tracing 量"图像采集 → 动作发出"的端到端延迟，看平均值，更看 p99 和抖动；','bag 同时录输入和动作输出：可重放调试，也能直接当新训练数据。R-M10 先用随机 / 回放策略 + 人为延迟做实验。','']},
+  {n:'总结',all:true,c:['模型（VLA 专题）→ 策略节点（本章）→ ros2_control（第 15–16 章）→ 硬件：一条完整的上机路径。','输入对齐时间和坐标，推理执行快慢分离，块间平滑衔接，过期即停，量 p99。','']},
+ ]});
+</script></body></html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>仿真与真机切换</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 19 章 · 仿真到真机：上层不动，只换一层</h1>
+<p class="sub">配套讲义：<a href="../lessons/19-sim-deploy.html">第 19 章 · 仿真与部署</a>。依据 control.ros.org 的 simulators 列表、官方 Gazebo / 部署 / DDS 调优文档。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：Nav2、MoveIt、策略只认话题、动作和 ros2_control 接口；换的只有硬件插件、传感器来源和 use_sim_time。部署时把同一套东西装进 Docker 镜像。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:330,
+ boxes:{
+  TOP:[20,10,640,46,'上层：Nav2 · MoveIt 2 · 你的策略节点','只认话题 / 动作 / ros2_control 接口，一行不改','purple'],
+  CM:[20,80,640,40,'ros2_control：控制器管理器 + JTC / diff_drive / joint_state_broadcaster','','purple'],
+  PLUG:[20,145,300,56,'<plugin>：mock_components/GenericSystem','','amber'],
+  SEN:[360,145,300,56,'传感器：无','','amber'],
+  ENG:[20,225,300,50,'下层：命令原样回写成状态','','muted'],
+  CLK:[360,225,300,50,'时间：系统时间','','muted'],
+  DOCK:[20,290,640,36,'部署：同一套 → Docker 镜像（ros-base + 你的 install/）→ compose → 开机自启','','teal'],
+ },
+ arrows:{
+  a:[340,56,340,78,'','purple'],b:[170,120,170,143,'','purple'],
+  c:[170,201,170,223,'','amber'],d:[510,201,510,223,'','amber'],
+  e:[510,143,500,58,'','amber','dash'],
+ },
+ steps:[
+  {c:['前 18 章的设计在这里汇合：上层只认标准接口，下层可以随便换。','依次看：mock 假硬件 → Gazebo → MuJoCo → 真机 → 打包部署。','']},
+  {n:'mock',on:['PLUG','ENG','CM','TOP'],c:['① 最先用 mock_components/GenericSystem：命令原样回写成状态，没有物理、没有传感器。','用来验证控制器配置、MoveIt / Nav2 的接口有没有接对。R-M7 从这里开始。','']},
+  {n:'Gazebo',on:['PLUG','SEN','ENG','CLK','c','d','e','TOP'],set:{PLUG:'<plugin>：gz_ros2_control',SEN:'传感器：Gazebo → ros_gz_bridge',ENG:'下层：Gazebo 物理引擎',CLK:'时间：/clock + 全体 use_sim_time'},c:['② 换成 Gazebo：硬件插件 gz_ros2_control 的 read / write 直接读写物理引擎；','相机、雷达、IMU 由 Gazebo 生成，经 ros_gz_bridge 发成标准话题；Gazebo 发 /clock，所有节点 use_sim_time:=true。','漏设一个节点，tf 就报"在未来 / 过去"。']},
+  {n:'MuJoCo',on:['PLUG','ENG','CLK'],set:{PLUG:'<plugin>：mujoco_ros2_control',SEN:'传感器：MuJoCo 渲染',ENG:'下层：MuJoCo（接触与动力学准）',CLK:'时间：/clock + 全体 use_sim_time'},c:['③ 换成 MuJoCo：mujoco_ros2_control 插件。接触和动力学更准、更快，学习型控制常用。','Isaac Sim、Webots、AGX 也有社区集成；或用通用的 topic-based 硬件接口接任意仿真器。','']},
+  {n:'真机',on:['PLUG','SEN','ENG','CLK','TOP'],set:{PLUG:'<plugin>：my_robot/MyHardware',SEN:'传感器：真实相机 / 雷达驱动',ENG:'下层：EtherCAT / CAN 电机驱动器',CLK:'时间：系统时间（关掉 use_sim_time）'},c:['④ 换成真机：你写的硬件组件（第 16 章）、真实传感器驱动、关掉 use_sim_time。','上层的 launch、YAML、策略代码不变。仿真和真机的差距（摩擦、延迟、噪声）就是 sim-to-real 要解决的问题。','']},
+  {n:'部署',on:['DOCK','TOP','CM'],set:{PLUG:'<plugin>：my_robot/MyHardware',SEN:'传感器：真实相机 / 雷达驱动',ENG:'下层：EtherCAT / CAN 电机驱动器',CLK:'时间：系统时间（关掉 use_sim_time）'},c:['⑤ 部署：FROM ros:lyrical-ros-base，rosdep 装依赖、colcon 编译；多阶段构建只拷 install/。','docker compose 编排各子系统容器，常用 network_mode: host（容器默认网络里组播常不通）；restart: always 开机自启。','Wi-Fi 传大消息：Best effort、调小 ipfrag_time、压缩图像；联网产品打开 SROS2。']},
+  {n:'总结',all:true,set:{PLUG:'<plugin>：mock / gz / mujoco / 真机',SEN:'传感器：仿真桥接 / 真驱动',ENG:'下层：可替换',CLK:'时间：仿真 /clock 或系统时间'},c:['上层不动，换硬件插件、传感器来源和 use_sim_time，就能在 mock、Gazebo、MuJoCo、真机之间切换。','同一套东西打进 Docker 镜像交付；上线前过一遍清单：时间、网络、停机事件、超时停车、黑匣子、硬件急停。','']},
+ ]});
+</script></body></html>

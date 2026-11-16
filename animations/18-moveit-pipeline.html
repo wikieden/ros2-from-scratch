@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MoveIt 2 规划与执行</title><link rel="stylesheet" href="anim.css"></head>
+<body><main>
+<h1>第 18 章 · MoveIt 2：从"手去那儿"到一条轨迹</h1>
+<p class="sub">配套讲义：<a href="../lessons/18-moveit2.html">第 18 章 · MoveIt 2：机械臂运动规划</a>。依据 moveit2_tutorials 的 concepts（move_group、motion_planning、trajectory_processing）。</p>
+<div class="panel"><svg id="sv"></svg></div>
+<div class="row"><button id="play">▶ 播放</button><button id="step">→ 单步</button><button id="reset">↺ 重来</button></div>
+<p class="note">看点：move_group 自己不发 /joint_states、不提供执行用的动作服务器；规划器只给路径，时间参数化之后才是轨迹；执行交给第 16 章的关节轨迹控制器。</p>
+</main>
+<script src="anim.js"></script><script src="stepper.js"></script>
+<script>
+STEPPER({h:340,
+ boxes:{
+  U:[20,10,150,40,'URDF','robot_description','amber'],
+  S:[20,58,150,40,'SRDF','规划组·姿态·免查碰撞','amber'],
+  Y:[20,106,150,40,'配置 YAML','限位 · 求解器 · 规划器','amber'],
+  MG:[220,40,240,70,'move_group','集成者：动作 / 服务','purple'],
+  PS:[500,10,160,50,'规划场景','机器人 + 障碍 + 手持物','teal'],
+  JS:[500,76,160,40,'/joint_states + tf','机器人侧提供','muted'],
+  REQ:[20,170,120,46,'① 请求','位姿 + 约束','accent'],
+  IK:[150,170,110,46,'② 逆解','KDL','accent'],
+  PL:[270,170,130,46,'③ 规划器','OMPL·Pilz·CHOMP','accent'],
+  AD:[410,170,110,46,'④ 适配器','修起点等','accent'],
+  TP:[530,170,130,46,'⑤ 时间参数化','TOTG','accent'],
+  JTC:[400,270,260,50,'⑥ 关节轨迹控制器','FollowJointTrajectory 动作服务器','good'],
+  APP:[20,270,220,50,'你的程序','RViz 插件 / MoveItPy / Servo','accent'],
+ },
+ arrows:{
+  u:[170,30,218,60,'','amber'],s:[170,78,218,75,'','amber'],y:[170,126,218,95,'','amber'],
+  ps:[498,35,462,60,'','teal'],js:[498,96,462,90,'','muted'],
+  a1:[140,193,148,193,'','accent'],a2:[260,193,268,193,'','accent'],a3:[400,193,408,193,'','accent'],a4:[520,193,528,193,'','accent'],
+  ex:[595,216,560,268,'轨迹','good'],
+  app:[130,268,300,112,'目标','accent','dash'],
+ },
+ steps:[
+  {c:['move_group 把各组件集成起来，对外提供规划和执行的动作 / 服务。','规划流水线：请求 → 逆解 → 规划器 → 适配器 → 时间参数化 → 交给控制器执行。','']},
+  {n:'配置',on:['U','S','Y','u','s','y','MG'],c:['① 三份配置：URDF（长什么样）、SRDF（规划组 arm 含哪些关节、预定义姿态、哪些连杆对不用查碰撞）、','YAML（关节限位、运动学求解器、规划器）。SRDF 和 YAML 用 MoveIt Setup Assistant 生成一次。','']},
+  {n:'状态',on:['PS','ps','JS','js','MG'],c:['② move_group 读 /joint_states 和 tf 知道机器人现在什么姿势、在哪（它自己不发布，要机器人侧提供）。','规划场景 = 机器人当前状态 + 周围障碍物 + 手里拿着的东西（当成刚性连在手上）。','']},
+  {n:'请求',on:['APP','app','MG','REQ'],chip:['app','杯子上方 10 cm',.5],c:['③ 你的程序（RViz 插件、MoveItPy、C++ MoveGroupInterface）发来目标：末端位姿或关节角，','可加约束：位置约束、姿态约束（杯子保持竖直）、关节约束。默认检查碰撞和自碰撞。','']},
+  {n:'逆解',on:['REQ','a1','IK'],c:['④ 目标是末端位姿时，先做逆运动学：关节角取多少手才能到那儿。默认 KDL 数值雅可比求解器（插件可换）。','']},
+  {n:'规划',on:['IK','a2','PL','PS'],c:['⑤ 规划器（插件）在关节空间里找一条不碰撞的路径：OMPL 采样（如 RRT：随机撒点连成树），','Pilz 工业规划（直线 / 点到点 / 圆弧），CHOMP 优化（把路径推离障碍、变平滑）。','此时只有"路径"：一串关节位形，没有时间。']},
+  {n:'适配器',on:['PL','a3','AD'],c:['⑥ 规划请求适配器做前后处理：例如 CheckStartStateBounds 把略超限位的起点修正到限位上，','否则规划器会认为起点非法。','']},
+  {n:'加时间',on:['AD','a4','TP'],c:['⑦ 时间参数化：在速度、加速度限制下给每个点排时刻，路径变成轨迹。推荐 TOTG（默认步长 0.1 s，起止静止）。','限值来自 joint_limits.yaml，会覆盖 URDF。','']},
+  {n:'执行',on:['TP','ex','JTC'],chip:['ex','JointTrajectory',.5],c:['⑧ 执行：通过 FollowJointTrajectory 动作把轨迹交给关节轨迹控制器（第 16 章），','它在 1 kHz 实时回路里插值执行。这个动作服务器由 ros2_control 提供，不是 MoveIt。','']},
+  {n:'总结',all:true,c:['URDF + SRDF + YAML → move_group；请求 → 逆解 → 规划 → 适配 → 加时间 → JTC 执行。','需要持续实时指令（遥操作、视觉伺服、学习策略出末端速度）时用 MoveIt Servo。','']},
+ ]});
+</script></body></html>
