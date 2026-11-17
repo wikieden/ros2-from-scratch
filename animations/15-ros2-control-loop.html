@@ -40,4 +40,5 @@ STEPPER({h:340,
   {n:'换硬件',on:['RM','SI','CI'],set:{RM:'mock_components/GenericSystem'},c:['⑥ 换硬件不改控制器：把 URDF 里 <ros2_control> 的 plugin 换成 mock_components/GenericSystem（命令原样回写成状态），','或仿真器插件。控制器、YAML、上层代码一行不改。R-M7 先用 mock 跑通。','']},
   {n:'总结',all:true,c:['CM 管控制器和节拍，RM 管硬件组件；控制器 update 读状态写命令；硬件组件 read / write 和真硬件通信。','话题只在边上（下目标、发状态）；快回路里只有共享接口。','']},
  ]});
-</script></body></html>
+</script><a href="https://wikieden.github.io/ai-books/" style="position:fixed;right:12px;bottom:12px;z-index:99;padding:4px 10px;border-radius:14px;background:rgba(127,127,127,.18);color:inherit;font:13px/1.6 system-ui,sans-serif;text-decoration:none">← 全部讲义书</a>
+</body></html>

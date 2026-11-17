@@ -38,4 +38,5 @@ STEPPER({h:350,
   {n:'修好',on:['L5','T5','R5','w5'],c:['⑤ 修法：客户端和定时器放进不同的互斥组，用多线程 executor。','线程 1 在定时器回调里等；线程 2 在客户端的组里处理回复，填好结果，线程 1 被唤醒继续。','能用 call_async 还是优先 call_async。']},
   {n:'总结',all:true,c:['默认组是互斥组；不同组总能并行；可重入组连同一个回调都能并行。','慢回调和快回调分组分线程；同步等待的一方和被等的回复分组。Python 有 GIL，多线程主要解决等待，不加速计算。','']},
  ]});
-</script></body></html>
+</script><a href="https://wikieden.github.io/ai-books/" style="position:fixed;right:12px;bottom:12px;z-index:99;padding:4px 10px;border-radius:14px;background:rgba(127,127,127,.18);color:inherit;font:13px/1.6 system-ui,sans-serif;text-decoration:none">← 全部讲义书</a>
+</body></html>

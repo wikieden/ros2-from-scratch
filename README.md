@@ -1,6 +1,6 @@
 # 从零学 ROS 2
 
-**在线阅读：<https://wikieden.github.io/ros2-from-scratch/>** · [讲义目录](https://wikieden.github.io/ros2-from-scratch/lessons/index.html) · [全部动画](https://wikieden.github.io/ros2-from-scratch/animations/index.html) · [复习卡片](https://wikieden.github.io/ros2-from-scratch/review.html)
+**在线阅读：<https://wikieden.github.io/ros2-from-scratch/>** · [讲义目录](https://wikieden.github.io/ros2-from-scratch/lessons/index.html) · [全部动画](https://wikieden.github.io/ros2-from-scratch/animations/index.html) · [复习卡片](https://wikieden.github.io/ros2-from-scratch/review.html) · [全部讲义书](https://wikieden.github.io/ai-books/)
 
 > 20 章 · 21 个动画（GIF + 可交互页面）· 47 张复习卡片 · 覆盖 study-plan 阶段 A–I：从 turtlesim 命令行到把学习策略部署成 ROS 2 节点；目标发行版 Lyrical Luth（2026-05 LTS）
 

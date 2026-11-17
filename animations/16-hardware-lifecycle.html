@@ -45,4 +45,5 @@ STEPPER({h:330,term:true,
   {n:'导出',on:['URDF'],c:['⑧ 让框架找到它：文件末尾 PLUGINLIB_EXPORT_CLASS(my_pkg::MyHardware, hardware_interface::SystemInterface)，','写插件描述 my_pkg.xml，CMake 里 pluginlib_export_plugin_description_file(hardware_interface my_pkg.xml)，','URDF 里 <plugin>my_pkg/MyHardware</plugin>。没有硬件时换成 mock_components/GenericSystem。']},
   {n:'总结',all:true,set:{HW:'电机驱动器'},c:['init 读配置，configure 通信，activate 上电松刹车；read 写状态接口，write 取命令接口。','接口按 URDF 自动导出；控制器与硬件只通过接口交换数据。','']},
  ]});
-</script></body></html>
+</script><a href="https://wikieden.github.io/ai-books/" style="position:fixed;right:12px;bottom:12px;z-index:99;padding:4px 10px;border-radius:14px;background:rgba(127,127,127,.18);color:inherit;font:13px/1.6 system-ui,sans-serif;text-decoration:none">← 全部讲义书</a>
+</body></html>

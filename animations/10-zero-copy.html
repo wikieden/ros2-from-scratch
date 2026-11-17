@@ -37,4 +37,5 @@ STEPPER({h:350,
   {n:'GPU',on:['G1','d1','GB','d2','G2'],chip:['d2','GPU 指针',.5],c:['⑤ Lyrical 新增 rosidl::Buffer：uint8[] 等变长数组字段在 C++ 里不再是 std::vector，','而是可以挂后端的 Buffer，数据能直接放在 GPU 内存里，整条链路不回 CPU。用法和 vector 一样，旧代码不用改。','需要 rmw_fastrtps_cpp 或 rmw_zenoh_cpp，以及厂商提供的后端。']},
   {n:'总结',all:true,c:['跨进程普通传法：隔离好、复制多；同进程组件 + unique_ptr：零复制；loaned messages：跨进程零复制，限定长类型；','rosidl::Buffer：GPU 数据不回 CPU。感知 → 推理链路要低延迟，就往下面几种靠。','']},
  ]});
-</script></body></html>
+</script><a href="https://wikieden.github.io/ai-books/" style="position:fixed;right:12px;bottom:12px;z-index:99;padding:4px 10px;border-radius:14px;background:rgba(127,127,127,.18);color:inherit;font:13px/1.6 system-ui,sans-serif;text-decoration:none">← 全部讲义书</a>
+</body></html>

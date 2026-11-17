@@ -34,4 +34,5 @@ STEPPER({h:330,
   {n:'部署',on:['DOCK','TOP','CM'],set:{PLUG:'<plugin>：my_robot/MyHardware',SEN:'传感器：真实相机 / 雷达驱动',ENG:'下层：EtherCAT / CAN 电机驱动器',CLK:'时间：系统时间（关掉 use_sim_time）'},c:['⑤ 部署：FROM ros:lyrical-ros-base，rosdep 装依赖、colcon 编译；多阶段构建只拷 install/。','docker compose 编排各子系统容器，常用 network_mode: host（容器默认网络里组播常不通）；restart: always 开机自启。','Wi-Fi 传大消息：Best effort、调小 ipfrag_time、压缩图像；联网产品打开 SROS2。']},
   {n:'总结',all:true,set:{PLUG:'<plugin>：mock / gz / mujoco / 真机',SEN:'传感器：仿真桥接 / 真驱动',ENG:'下层：可替换',CLK:'时间：仿真 /clock 或系统时间'},c:['上层不动，换硬件插件、传感器来源和 use_sim_time，就能在 mock、Gazebo、MuJoCo、真机之间切换。','同一套东西打进 Docker 镜像交付；上线前过一遍清单：时间、网络、停机事件、超时停车、黑匣子、硬件急停。','']},
  ]});
-</script></body></html>
+</script><a href="https://wikieden.github.io/ai-books/" style="position:fixed;right:12px;bottom:12px;z-index:99;padding:4px 10px;border-radius:14px;background:rgba(127,127,127,.18);color:inherit;font:13px/1.6 system-ui,sans-serif;text-decoration:none">← 全部讲义书</a>
+</body></html>
