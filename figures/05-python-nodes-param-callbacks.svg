@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="260" viewBox="0 0 860 260">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">ros2 param set 之后：三个回调依次过关，校验不过就整体拒绝</text>
+<text x="16.0" y="250.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">校验回调里不要有副作用：后面还可能被拒绝，成员变量会和真实参数对不上。要在改成功后做事，放 post-set。</text>
+<rect x="20.0" y="80.0" width="130.0" height="60.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">param set</text>
+<text x="85.0" y="122.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">speed = 2.0</text>
+<rect x="190.0" y="80.0" width="150.0" height="60.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="265.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">pre-set</text>
+<text x="265.0" y="122.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">可顺手改 / 加参数</text>
+<rect x="380.0" y="80.0" width="160.0" height="60.0" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="460.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">on-set（校验）</text>
+<text x="460.0" y="122.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">返回 successful?</text>
+<rect x="580.0" y="80.0" width="110.0" height="60.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="635.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">生效</text>
+<text x="635.0" y="122.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">参数值写入</text>
+<rect x="730.0" y="80.0" width="110.0" height="60.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="785.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">post-set</text>
+<text x="785.0" y="122.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">更新成员变量</text>
+<line x1="150.0" y1="110.0" x2="190.0" y2="110.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="190.0,110.0 182.1,114.2 182.1,105.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="340.0" y1="110.0" x2="380.0" y2="110.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="380.0,110.0 372.1,114.2 372.1,105.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="540.0" y1="110.0" x2="580.0" y2="110.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="580.0,110.0 572.1,114.2 572.1,105.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="690.0" y1="110.0" x2="730.0" y2="110.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="730.0,110.0 722.1,114.2 722.1,105.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="543.2" y="64.0" width="33.5" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="560.0" y="75.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="normal">True</text>
+<rect x="380.0" y="180.0" width="160.0" height="40.0" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="460.0" y="203.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">拒绝：值不变</text>
+<line x1="460.0" y1="140.0" x2="460.0" y2="180.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="460.0,180.0 455.8,172.1 464.2,172.1" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="461.3" y="149.5" width="41.4" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="482.0" y="161.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#dc2626" text-anchor="middle" font-weight="normal">False</text>
+<text x="190.0" y="210.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">例：speed 超过 1.5 m/s 就拒绝</text>
+</svg>

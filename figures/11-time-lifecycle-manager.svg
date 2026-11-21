@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="320" viewBox="0 0 860 320">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">lifecycle_manager 按顺序把一串托管节点 configure → activate</text>
+<text x="16.0" y="310.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">任何一个转换失败就停下，后面的不再激活；bond 心跳断了说明某节点挂了，管理器把整组安全地停下来。节点自己不会从 Inactive 跳到 Active。</text>
+<rect x="20.0" y="120.0" width="170.0" height="70.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="105.0" y="151.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">lifecycle_manager</text>
+<text x="105.0" y="167.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">node_names 列表</text>
+<rect x="290.0" y="50.0" width="180.0" height="36.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="380.0" y="71.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">map_server</text>
+<line x1="190.0" y1="155.0" x2="290.0" y2="68.0" stroke="#7c3aed" stroke-width="1.2"/>
+<polygon points="290.0,68.0 286.8,76.4 281.2,70.0" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="500.0" y="54.0" width="105.0" height="28.0" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="552.0" y="73.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Unconfigured</text>
+<rect x="615.0" y="54.0" width="105.0" height="28.0" rx="5" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="667.0" y="73.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Inactive</text>
+<rect x="730.0" y="54.0" width="105.0" height="28.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="782.0" y="73.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Active</text>
+<text x="280.0" y="73.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="end" font-weight="normal">1</text>
+<rect x="290.0" y="100.0" width="180.0" height="36.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="380.0" y="121.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">amcl</text>
+<line x1="190.0" y1="155.0" x2="290.0" y2="118.0" stroke="#7c3aed" stroke-width="1.2"/>
+<polygon points="290.0,118.0 284.0,124.7 281.1,116.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="500.0" y="104.0" width="105.0" height="28.0" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="552.0" y="123.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Unconfigured</text>
+<rect x="615.0" y="104.0" width="105.0" height="28.0" rx="5" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="667.0" y="123.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Inactive</text>
+<rect x="730.0" y="104.0" width="105.0" height="28.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="782.0" y="123.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Active</text>
+<text x="280.0" y="123.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="end" font-weight="normal">2</text>
+<rect x="290.0" y="150.0" width="180.0" height="36.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="380.0" y="171.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">planner_server</text>
+<line x1="190.0" y1="155.0" x2="290.0" y2="168.0" stroke="#7c3aed" stroke-width="1.2"/>
+<polygon points="290.0,168.0 281.6,171.2 282.7,162.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="500.0" y="154.0" width="105.0" height="28.0" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="552.0" y="173.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Unconfigured</text>
+<rect x="615.0" y="154.0" width="105.0" height="28.0" rx="5" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="667.0" y="173.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Inactive</text>
+<rect x="730.0" y="154.0" width="105.0" height="28.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="782.0" y="173.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Active</text>
+<text x="280.0" y="173.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="end" font-weight="normal">3</text>
+<rect x="290.0" y="200.0" width="180.0" height="36.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="380.0" y="221.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">controller_server</text>
+<line x1="190.0" y1="155.0" x2="290.0" y2="218.0" stroke="#7c3aed" stroke-width="1.2"/>
+<polygon points="290.0,218.0 281.0,217.3 285.5,210.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="500.0" y="204.0" width="105.0" height="28.0" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="552.0" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Unconfigured</text>
+<rect x="615.0" y="204.0" width="105.0" height="28.0" rx="5" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="667.0" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Inactive</text>
+<rect x="730.0" y="204.0" width="105.0" height="28.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="782.0" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Active</text>
+<text x="280.0" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="end" font-weight="normal">4</text>
+<rect x="290.0" y="250.0" width="180.0" height="36.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="380.0" y="271.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">bt_navigator</text>
+<line x1="190.0" y1="155.0" x2="290.0" y2="268.0" stroke="#7c3aed" stroke-width="1.2"/>
+<polygon points="290.0,268.0 281.6,264.8 287.9,259.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="500.0" y="254.0" width="105.0" height="28.0" rx="5" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="552.0" y="273.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Unconfigured</text>
+<rect x="615.0" y="254.0" width="105.0" height="28.0" rx="5" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="667.0" y="273.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Inactive</text>
+<rect x="730.0" y="254.0" width="105.0" height="28.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="782.0" y="273.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">Active</text>
+<text x="280.0" y="273.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="end" font-weight="normal">5</text>
+<text x="610.0" y="44.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">configure →    activate →</text>
+<text x="105.0" y="220.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="middle" font-weight="normal">bond 心跳</text>
+<text x="105.0" y="236.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="middle" font-weight="normal">盯着每个节点</text>
+</svg>

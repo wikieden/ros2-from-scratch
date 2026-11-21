@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="320" viewBox="0 0 820 320">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">overlay 叠在 underlay 上：找包时先翻上层，同名包上层优先</text>
+<text x="16.0" y="310.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">source install/setup.bash = 先加底层再加本工作区。在新终端里 source overlay，别在编译用的终端里 source。</text>
+<rect x="40.0" y="70.0" width="360.0" height="70.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="220.0" y="101.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13.5" fill="#1f2937" text-anchor="middle" font-weight="bold">overlay：~/ros2_ws/install/</text>
+<text x="220.0" y="118.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">turtlesim（你改过的）  my_package</text>
+<rect x="40.0" y="160.0" width="360.0" height="70.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="220.0" y="191.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13.5" fill="#1f2937" text-anchor="middle" font-weight="bold">underlay：/opt/ros/lyrical/</text>
+<text x="220.0" y="208.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">turtlesim（原版）  rclpy  nav2_* …</text>
+<line x1="440.0" y1="105.0" x2="440.0" y2="195.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="440.0,195.0 435.8,187.1 444.2,187.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="452.0" y="100.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="normal">① 先找 overlay</text>
+<text x="452.0" y="200.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6b7280" text-anchor="start" font-weight="normal">② 没有再找 underlay</text>
+<rect x="620.0" y="78.0" width="180.0" height="52.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="710.0" y="99.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">ros2 run turtlesim …</text>
+<text x="710.0" y="115.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">→ 用的是你改过的版本</text>
+<text x="40.0" y="262.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="start" font-weight="normal">类比：书桌上的笔记（overlay）压在图书馆藏书（underlay）上面，先翻书桌。</text>
+<text x="470.0" y="250.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">source /opt/ros/lyrical/setup.bash</text>
+<text x="470.0" y="268.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">source ~/ros2_ws/install/local_setup.bash</text>
+</svg>

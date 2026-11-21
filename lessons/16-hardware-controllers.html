@@ -239,6 +239,8 @@ joint_trajectory_controller:
 </tr>
 </tbody>
 </table>
+<p><img alt="JTC 在路点之间插值" src="../figures/16-hardware-jtc.png" /></p>
+<p><em>图 16-1 · 关节轨迹控制器（示意）：上层只给几个路点，JTC 在 1 kHz 回路里插出平滑轨迹，每拍写一个位置命令。</em></p>
 <h3 id="3">第 3 步 · 写控制器</h3>
 <p>依据：<code>materials/ecosystem/ros2_controllers/doc/writing_new_controller.rst</code>（下称"控制器指南"）。</p>
 <p>继承 <code>controller_interface::ControllerInterface</code>，实现（控制器指南第 5–8 步）：</p>
@@ -278,6 +280,8 @@ joint_trajectory_controller:
 </table>
 <p><strong>订阅者回调和 <code>update()</code> 在不同线程</strong>：订阅回调跑在普通 executor 里（非实时），<code>update()</code> 跑在实时回路里。两者之间用 <code>realtime_tools</code> 提供的实时安全缓冲区交换数据（订阅回调写、<code>update</code> 读，不会互相阻塞）。这是写控制器最容易错的地方。</p>
 <p><strong>级联控制</strong>（<code>ros2_control/controller_manager/doc/controller_chaining.rst</code>）：控制器可以把自己的"参考输入"导出成接口，让上一级控制器写进来，形成"位置环 → 速度环"这样的级联，整条链都在同一个实时回路里，不经过话题。</p>
+<p><img alt="订阅回调与 update 之间的实时缓冲区" src="../figures/16-hardware-rt-buffer.png" /></p>
+<p><em>图 16-2 · 订阅回调在普通线程、update() 在实时线程，两者经实时缓冲区交接最新目标。</em></p>
 <p><strong>和本仓库的连接</strong>：学习型策略接入 ros2_control 有两条路：① 策略输出关节目标，经 <code>forward_command_controller</code> 或 JTC（把动作块当成短轨迹）下发，策略本身留在实时回路外面；② 把策略推理写进一个控制器的 <code>update()</code>（小模型、CPU 上可以，大模型不行）。R-M10 走第①条：VLA 动作块 → 插值成轨迹 → JTC。运控 RL 的"50 Hz 输出关节目标 + 关节 PD"在 ros2_control 里就是"策略 → forward_command / JTC → 硬件组件里的 PD"（cs285 运控专题）。</p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 16-1</strong>（第 1 步）：下面四件事分别放在硬件组件的哪个函数：打开 CAN 总线、读 URDF 里的减速比参数、给电机驱动器上使能、每拍读编码器？</p>

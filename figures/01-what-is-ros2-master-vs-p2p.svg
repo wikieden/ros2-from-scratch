@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="320" viewBox="0 0 820 320">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">ROS 1 靠一个 master 登记；ROS 2 没有中心，节点自己互相发现</text>
+<text x="16.0" y="310.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">ROS 1：roscore 挂了，新节点就找不到别人。ROS 2：同一 ROS_DOMAIN_ID 里自动发现，用域号分组（第 8 章）。</text>
+<rect x="16.0" y="50.0" width="380.0" height="236.0" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="26.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6b7280" text-anchor="start" font-weight="bold">ROS 1：single-master</text>
+<rect x="146.0" y="140.0" width="120.0" height="50.0" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="206.0" y="161.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13.5" fill="#1f2937" text-anchor="middle" font-weight="bold">master</text>
+<text x="206.0" y="178.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">roscore</text>
+<rect x="40.0" y="80.0" width="96.0" height="34.0" rx="17.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="88.0" y="100.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node1</text>
+<line x1="117.5" y1="114.0" x2="162.6" y2="140.0" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4 3"/>
+<polygon points="162.6,140.0 153.6,139.7 157.8,132.4" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="276.0" y="80.0" width="96.0" height="34.0" rx="17.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="324.0" y="100.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node2</text>
+<line x1="294.5" y1="114.0" x2="249.4" y2="140.0" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4 3"/>
+<polygon points="249.4,140.0 254.2,132.4 258.4,139.7" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="220.0" width="96.0" height="34.0" rx="17.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="88.0" y="240.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node3</text>
+<line x1="115.9" y1="220.0" x2="165.0" y2="190.0" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4 3"/>
+<polygon points="165.0,190.0 160.4,197.7 156.0,190.5" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="276.0" y="220.0" width="96.0" height="34.0" rx="17.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="324.0" y="240.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node4</text>
+<line x1="296.1" y1="220.0" x2="247.0" y2="190.0" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4 3"/>
+<polygon points="247.0,190.0 256.0,190.5 251.6,197.7" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="206.0" y="276.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="normal">先到 master 登记，再问它“谁发 /image”</text>
+<rect x="424.0" y="50.0" width="380.0" height="236.0" rx="10" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="434.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#2563eb" text-anchor="start" font-weight="bold">ROS 2：分布式发现（DDS / Zenoh）</text>
+<line x1="614.0" y1="94.1" x2="497.0" y2="147.9" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="614.0" y1="94.1" x2="541.7" y2="235.0" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="614.0" y1="94.1" x2="686.3" y2="235.0" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="614.0" y1="94.1" x2="731.0" y2="147.9" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="497.0" y1="147.9" x2="541.7" y2="235.0" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="497.0" y1="147.9" x2="686.3" y2="235.0" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="497.0" y1="147.9" x2="731.0" y2="147.9" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="541.7" y1="235.0" x2="686.3" y2="235.0" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="541.7" y1="235.0" x2="731.0" y2="147.9" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<line x1="686.3" y1="235.0" x2="731.0" y2="147.9" stroke="#93c5fd" stroke-width="1.1" stroke-dasharray="3 3"/>
+<rect x="570.0" y="78.1" width="88.0" height="32.0" rx="16.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="614.0" y="97.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node1</text>
+<rect x="453.0" y="131.9" width="88.0" height="32.0" rx="16.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="497.0" y="151.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node2</text>
+<rect x="497.7" y="219.0" width="88.0" height="32.0" rx="16.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="541.7" y="238.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node3</text>
+<rect x="642.3" y="219.0" width="88.0" height="32.0" rx="16.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="686.3" y="238.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node4</text>
+<rect x="687.0" y="131.9" width="88.0" height="32.0" rx="16.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="731.0" y="151.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">node5</text>
+<text x="614.0" y="276.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">每个节点广播“我是谁、发收什么”，无中心</text>
+</svg>

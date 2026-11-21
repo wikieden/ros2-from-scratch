@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="362" viewBox="0 0 820 362">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">三种时钟：墙上时钟会被校时，稳定时钟只往前，ROS 时间跟着 /clock 走</text>
+<text x="16.0" y="352.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">示意：第 4 秒 NTP 把系统时间往回拨 1 秒；仿真在 3–5 秒暂停、之后以 2 倍速运行。测耗时、做超时用稳定时钟。</text>
+<line x1="80.0" y1="290.0" x2="600.0" y2="290.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="294.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">0</text>
+<line x1="80.0" y1="244.0" x2="600.0" y2="244.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="248.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">2</text>
+<line x1="80.0" y1="198.0" x2="600.0" y2="198.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="202.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">4</text>
+<line x1="80.0" y1="152.0" x2="600.0" y2="152.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="156.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">6</text>
+<line x1="80.0" y1="106.0" x2="600.0" y2="106.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">8</text>
+<line x1="80.0" y1="60.0" x2="600.0" y2="60.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="74.0" y="64.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="end" font-weight="normal">10</text>
+<line x1="80.0" y1="60.0" x2="80.0" y2="290.0" stroke="#f0f1f3" stroke-width="1"/>
+<text x="80.0" y="305.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0</text>
+<line x1="210.0" y1="60.0" x2="210.0" y2="290.0" stroke="#f0f1f3" stroke-width="1"/>
+<text x="210.0" y="305.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">2</text>
+<line x1="340.0" y1="60.0" x2="340.0" y2="290.0" stroke="#f0f1f3" stroke-width="1"/>
+<text x="340.0" y="305.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">4</text>
+<line x1="470.0" y1="60.0" x2="470.0" y2="290.0" stroke="#f0f1f3" stroke-width="1"/>
+<text x="470.0" y="305.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">6</text>
+<line x1="600.0" y1="60.0" x2="600.0" y2="290.0" stroke="#f0f1f3" stroke-width="1"/>
+<text x="600.0" y="305.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">8</text>
+<line x1="80.0" y1="290.0" x2="600.0" y2="290.0" stroke="#1f2937" stroke-width="1.3"/>
+<line x1="80.0" y1="60.0" x2="80.0" y2="290.0" stroke="#1f2937" stroke-width="1.3"/>
+<text x="340.0" y="322.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">真实经过的时间（秒）</text>
+<text transform="translate(40.0,175.0) rotate(-90)" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle">时钟读数（相对）</text>
+<polyline points="80.0,290.0 600.0,106.0" fill="none" stroke="#16a34a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polyline points="80.0,284.2 340.0,192.2" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 4" opacity="1"/>
+<polyline points="340.0,215.2 600.0,123.2" fill="none" stroke="#2563eb" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="7 4" opacity="1"/>
+<line x1="340.0" y1="192.2" x2="340.0" y2="215.2" stroke="#2563eb" stroke-width="1.2" stroke-dasharray="2 2"/>
+<polyline points="80.0,290.0 275.0,221.0 405.0,221.0 567.5,106.0 600.0,83.0" fill="none" stroke="#ea580c" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="620.0" y1="86.0" x2="642.0" y2="86.0" stroke="#16a34a" stroke-width="2.5"/>
+<text x="648.0" y="90.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="normal">SteadyTime：只往前</text>
+<line x1="620.0" y1="110.0" x2="642.0" y2="110.0" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="7 4"/>
+<text x="648.0" y="114.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="normal">SystemTime：会被 NTP 拨</text>
+<line x1="620.0" y1="134.0" x2="642.0" y2="134.0" stroke="#ea580c" stroke-width="2.5"/>
+<text x="648.0" y="138.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="normal">ROSTime（use_sim_time）</text>
+<rect x="248.4" y="160.4" width="79.3" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="288.0" y="171.9" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">NTP 往回拨 ↘</text>
+<rect x="314.0" y="227.1" width="52.0" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="340.0" y="238.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="normal">仿真暂停</text>
+<rect x="507.1" y="174.2" width="42.8" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="528.5" y="185.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="normal">2 倍速</text>
+</svg>

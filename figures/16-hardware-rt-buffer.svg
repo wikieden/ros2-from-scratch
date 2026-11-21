@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="300" viewBox="0 0 860 300">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">订阅回调和 update() 在两个线程：中间用实时缓冲区交接</text>
+<text x="16.0" y="290.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">update() 每拍只读缓冲区里的最新目标，不加会阻塞的锁、不分配内存；订阅回调在普通 executor 里随便慢。硬件通信慢时，read/write 也常另开通信线程。</text>
+<rect x="20.0" y="56.0" width="330.0" height="200.0" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="30.0" y="74.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6b7280" text-anchor="start" font-weight="bold">非实时线程（普通 executor）</text>
+<rect x="510.0" y="56.0" width="330.0" height="200.0" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="520.0" y="74.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">实时线程（controller_manager 回路）</text>
+<rect x="40.0" y="100.0" width="150.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="115.0" y="117.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">~/commands</text>
+<rect x="40.0" y="160.0" width="150.0" height="50.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="115.0" y="180.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">订阅回调</text>
+<text x="115.0" y="196.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">收到上层目标</text>
+<line x1="115.0" y1="126.0" x2="115.0" y2="160.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="115.0,160.0 110.8,152.1 119.2,152.1" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="380.0" y="130.0" width="100.0" height="60.0" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="156.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">实时缓冲区</text>
+<text x="430.0" y="172.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#4b5563" text-anchor="middle" font-weight="normal">RealtimeBuffer</text>
+<line x1="190.0" y1="185.0" x2="380.0" y2="160.0" stroke="#ea580c" stroke-width="1.6"/>
+<polygon points="380.0,160.0 372.7,165.2 371.6,156.8" fill="#ea580c" stroke="#ea580c" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="238.4" y="155.0" width="93.3" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="285.0" y="166.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#ea580c" text-anchor="middle" font-weight="normal">writeFromNonRT</text>
+<rect x="560.0" y="100.0" width="240.0" height="110.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="680.0" y="135.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">update(time, period)</text>
+<text x="680.0" y="151.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">readFromRT() 取最新目标</text>
+<text x="680.0" y="167.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">算命令 → 写命令接口</text>
+<text x="680.0" y="182.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">1 kHz，必须实时安全</text>
+<line x1="480.0" y1="160.0" x2="560.0" y2="155.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="560.0,155.0 552.3,159.7 551.8,151.3" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+</svg>

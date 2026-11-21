@@ -180,6 +180,8 @@ jupyter lab ch07_qos.ipynb</code></pre><p>也可以下载后直接用 VS Code �
 <li>Transient local ≈ ROS 1 的"latched（锁存）"话题。</li>
 </ul>
 <p><strong>Reliable 不是越可靠越好。</strong> 网络差时，Reliable 会不停重传旧的图像帧，新帧排在后面，延迟越积越大。对 30 Hz 的相机，<strong>宁可丢一帧也要最新的</strong>，所以传感器数据默认用 Best effort。</p>
+<p><img alt="差网络下 Reliable 延迟累积" src="../figures/07-qos-reliable-lag.png" /></p>
+<p><em>图 7-1 · 差网络下的 30 Hz 相机（示意数据）：Reliable 重传旧帧，收到的帧越来越旧；Best effort 总是新帧。</em></p>
 <h3 id="2">第 2 步 · 预设配置与兼容规则</h3>
 <p><strong>预设配置</strong>（QoS 文档 QoS profiles 一节）：</p>
 <table>
@@ -293,6 +295,8 @@ jupyter lab ch07_qos.ipynb</code></pre><p>也可以下载后直接用 VS Code �
 <p><strong>最常见的坑</strong>：订阅者用默认（Reliable），发布者是相机驱动（Best effort）。<strong>连不上，也不会报错退出</strong>，只是收不到消息。ROS 1 里同类型同名话题一定能连，所以 ROS 1 转过来的人特别容易踩（QoS 文档兼容一节末尾）。</p>
 <p><strong>另一个坑</strong>：订阅 <code>/map</code>（地图服务器用 Transient local 发，只发一次），订阅者却用默认的 Volatile。能连上，但因为地图早就发过了，<strong>晚来的订阅者永远等不到</strong>。要收"锁存"的消息，两边都得是 Transient local。</p>
 <p>另外：一个发布者可以同时连多个要求不同的订阅者，每一对单独判断，互不影响。</p>
+<p><img alt="可靠性与持久性的兼容矩阵" src="../figures/07-qos-compat.png" /></p>
+<p><em>图 7-2 · QoS 兼容：提供 ≥ 要求才连得上。最常见的坑是相机 Best effort 配默认 Reliable 订阅。</em></p>
 <h3 id="3">第 3 步 · 代码里怎么设、怎么查、出事件怎么知道</h3>
 <p><strong>设</strong>：第 5 章 <code>create_publisher(String, 'topic', 10)</code> 里的 <code>10</code> 是简写，等于"默认配置 + 深度 10"。完整写法：</p>
 <pre><code class="language-python">from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy, qos_profile_sensor_data
@@ -333,6 +337,8 @@ self.create_subscription(OccupancyGrid, 'map', self.on_map, map_qos)
 <p><strong>用 Deadline 做安全停车</strong>：底盘驱动订阅 <code>cmd_vel</code>，设 Deadline 100 ms。上层控制节点卡死、超过 100 ms 没新指令，订阅者触发"requested deadline missed"，驱动立刻停车。这就是第 2 章"看门狗"的一种标准实现。</p>
 <p><strong>不改代码改 QoS</strong>：节点作者可以开放"QoS 覆盖"，用户在参数文件里改（<code>.../Working-with-topics/Configuring-QoS-Overrides.rst</code>）。第 2 章 <code>param dump</code> 里看到的 <code>qos_overrides./parameter_events.publisher...</code> 就是这个机制。</p>
 <p><strong>R-M3 要做什么</strong>：同一话题分别用 Reliable / Best effort、不同深度，用 Linux 的 <code>tc netem</code> 人为制造丢包和延迟，测接收率和延迟。体会"Reliable 在差网络下延迟会越积越大"。</p>
+<p><img alt="Deadline 超时停车" src="../figures/07-qos-deadline.png" /></p>
+<p><em>图 7-3 · 用 Deadline 做超时停车：cmd_vel 断了超过 100 ms，订阅端触发 deadline missed，驱动自己刹停。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 7-1</strong>（第 1 步）：给下面四个话题选 Reliability 和 Durability，并说明理由：(a) 30 Hz 彩色图像；(b) 底盘速度指令 <code>cmd_vel</code>；(c) 只发一次的静态地图 <code>/map</code>；(d) 急停信号。</p>
 <ul>

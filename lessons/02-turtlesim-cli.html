@@ -227,6 +227,8 @@ jupyter lab ch02_turtlesim.ipynb</code></pre><p>也可以下载后直接用 VS C
 <pre><code class="language-bash">ros2 run turtlesim turtlesim_node --ros-args --remap __node:=my_turtle
 </code></pre>
 <p>这会再开一个模拟器窗口，节点叫 <code>/my_turtle</code>，<code>node list</code> 里就有三个节点。remap 不光能改节点名，也能改话题名和服务名（同文 2.1 节）。</p>
+<p><img alt="ros2 node info /turtlesim 的连接" src="../figures/02-turtlesim-node-info.png" /></p>
+<p><em>图 2-1 · ros2 node info /turtlesim 看到的全部连接：订阅 cmd_vel，发布 pose 等，提供一组服务和 rotate_absolute 动作。</em></p>
 <p><strong>和本仓库的连接</strong>：机器人上出问题时，第一件事往往就是 <code>ros2 node list</code> 看该在的节点在不在，再 <code>ros2 node info</code> 看连接对不对。比如 VLA 策略节点没动作，先查它是不是真的订阅到了 <code>/image</code>。</p>
 <h3 id="2">第 2 步 · 话题：看、听、自己发</h3>
 <p>依据：<code>ROS-Framework/interfaces/topics/Understanding-ROS2-Topics/Understanding-ROS2-Topics.rst</code>（下称"话题教程"）。</p>
@@ -425,6 +427,8 @@ float32 remaining   # 反馈：还剩多少没转
 <p>输出依次是：<code>Goal accepted with ID: …</code>（服务端接受）→ 一串 <code>Feedback: remaining: -3.12…</code>、<code>-3.11…</code>（边转边报）→ <code>Result: delta: 3.12…</code> → <code>Goal finished with status: SUCCEEDED</code>（动作教程第 7 步）。</p>
 <p><code>theta</code> 的单位是<strong>弧度</strong>：1.57 ≈ π/2 = 90°，-1.57 就是朝下。而且是<strong>绝对</strong>朝向（转到哪个方向），不是"再转多少"。</p>
 <p><strong>每个目标有一个 ID</strong>：同一个服务端可以同时管多个目标，靠 ID 区分。这也是动作比服务"重"的地方：要维护目标状态、发反馈、处理取消。所以短任务用服务，长任务才用动作。</p>
+<p><img alt="rotate_absolute 的三种结局" src="../figures/02-turtlesim-action-outcomes.png" /></p>
+<p><em>图 2-2 · rotate_absolute 的三种结局：转完 SUCCEEDED，客户端按 F 取消得 CANCELED，新目标打断旧目标时服务端 ABORTED。</em></p>
 <h2 id="_2">练习与作答记录</h2>
 <p><strong>练习 2-1</strong>（第 1 步）：同时开着 <code>/turtlesim</code> 和 <code>/my_turtle</code> 两个模拟器，再开一个 <code>turtle_teleop_key</code>。按方向键时，两个窗口里的乌龟会不会一起动？为什么？（提示：看 <code>node info /my_turtle</code> 里它订阅的话题名。）</p>
 <ul>

@@ -262,6 +262,8 @@ def main(args=None):
 <li>或者用多线程 executor + 回调组（第 9 章），让等待和接收在不同线程里；</li>
 <li>或者用 Lyrical 新增的 <code>AsyncNode</code>，在回调里直接 <code>await client.call(request)</code>（<code>Releases/Release-Lyrical-Luth.rst</code> "AsyncNode" 一节）。</li>
 </ul>
+<p><img alt="单线程里同步 call 造成死锁" src="../figures/05-python-nodes-deadlock.png" /></p>
+<p><em>图 5-1 · 同步 call() 的死锁：唯一的线程卡在定时器回调里等回复，回复留在中间件里没人取。</em></p>
 <h3 id="4">第 4 步 · 参数</h3>
 <p>依据：<code>.../Using-Parameters-In-A-Class-Python.rst</code>（下称"参数教程"）、<code>ROS-Framework/parameters/Working-with-parameters.rst</code>。</p>
 <p><strong>声明 → 读取</strong>：</p>
@@ -310,6 +312,8 @@ def main(args=None):
 <p>官方特别提醒：校验回调里<strong>不要有副作用</strong>（不要顺手改成员变量），因为后面的回调可能还会拒绝这次修改，那样你的成员变量就和真实参数对不上了。要在改成功后做事，用 post-set 回调。</p>
 <p><strong>另一种常见写法</strong>：不用回调，每次用参数时都 <code>get_parameter</code>（像上面的定时器那样）。简单，适合不常改、读取不频繁的参数。</p>
 <p><strong>本章和 R-M2 的关系</strong>：R-M2 要你自己写一个包，里面有一对发布订阅、一对服务客户端、一个可配置参数。照本章骨架写，<strong>不要直接复制官方代码</strong>，改成你自己的消息内容（比如发布"当前时间"、服务"把两个浮点数相乘"）。</p>
+<p><img alt="改参数时的三个回调" src="../figures/05-python-nodes-param-callbacks.png" /></p>
+<p><em>图 5-2 · ros2 param set 之后：pre-set → on-set 校验 → 生效 → post-set；校验返回 False 就整体拒绝。</em></p>
 <h2 id="_2">练习与作答记录</h2>
 <p><strong>练习 5-1</strong>（第 2 步）：写出一个 Python 节点的 <code>__init__</code>：每 20 毫秒发布一次 <code>geometry_msgs/msg/Twist</code> 到相对话题 <code>cmd_vel</code>，线速度固定 0.2。只写关键几行。</p>
 <ul>

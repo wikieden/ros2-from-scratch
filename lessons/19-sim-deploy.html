@@ -160,6 +160,8 @@ jupyter lab ch19_fragments.ipynb</code></pre><p>也可以下载后直接用 VS C
 </ul>
 <p><strong>还有两个轻量选择</strong>（本地文档都有）：Webots（<code>Integrations-and-related/Simulators/Webots/</code>，跨平台，macOS 上也有安装说明）和 MVSim（<code>.../MVSim/</code>，轻量的 2D / 2.5D 移动机器人仿真）。在 Mac 虚拟机里跑 Gazebo 帧率低时（study-plan 已提示），可以先用它们或 turtlesim 级别的 demo 过流程。</p>
 <p><strong>和学习型方法的关系</strong>：RL / VLA 训练通常在 MuJoCo、Isaac Lab 这类可大规模并行的仿真器里直接跑，不经过 ROS；训练好的策略再通过 ROS 2 节点接到"仿真版 ros2_control"上验证，最后换真机插件（第 20 章）。这一步叫<strong>sim-to-real</strong>，中间差的物理参数、传感器噪声、延迟，正是第 20 章要测的东西。</p>
+<p><img alt="Gazebo 接入 ROS 2 的三根线" src="../figures/19-sim-deploy-sim-wiring.png" /></p>
+<p><em>图 19-1 · Gazebo 接进 ROS 2：关节走 gz_ros2_control，传感器走 ros_gz_bridge，时间走 /clock。</em></p>
 <h3 id="2">第 2 步 · 部署</h3>
 <p>依据：<code>Developer-Tools/Build/Deployment-Guidelines/Deployment-Guidelines.rst</code>（下称"部署指南"）、<code>.../Run-2-nodes-in-single-or-separate-docker-containers.rst</code>、<code>.../Cross-compilation.rst</code>。</p>
 <p><strong>Docker 是最常见的交付方式</strong>（部署指南："典型的部署是把容器化应用或软件包发到远程系统"）：</p>
@@ -195,6 +197,8 @@ CMD [&quot;bash&quot;, &quot;-c&quot;, &quot;. /ws/install/setup.bash &amp;&amp;
 <li>日志落盘位置和大小有上限；黑匣子 bag 循环录制（第 3 章，Lyrical 的 <code>--max-bag-files</code>）；</li>
 <li>急停是硬件回路，不依赖 ROS（机器人软硬件架构专题第 10 章）。</li>
 </ol>
+<p><img alt="Wi-Fi 上 IP 分片丢失" src="../figures/19-sim-deploy-ip-frag.png" /></p>
+<p><em>图 19-2 · Wi-Fi 上发大消息：一个 UDP 包拆成几十个 IP 分片，丢一片整包作废，剩下的占着内核缓冲区等 30 秒。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 19-1</strong>（第 1 步）：你在 Gazebo 里调好了 JTC 和 MoveIt，要换到真机。最少需要改哪些地方？</p>
 <ul>

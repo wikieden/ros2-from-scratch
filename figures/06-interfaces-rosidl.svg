@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="330" viewBox="0 0 860 330">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">接口包：.msg / .srv / .action 经 rosidl 生成各语言的类型代码</text>
+<text x="16.0" y="320.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">接口包只能是 ament_cmake 包；Python 节点照样能 from tutorial_interfaces.msg import Num。使用方在 package.xml 写 &lt;depend&gt;。</text>
+<rect x="16.0" y="50.0" width="220.0" height="240.0" rx="10" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="26.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#0d9488" text-anchor="start" font-weight="bold">tutorial_interfaces（ament_cmake）</text>
+<rect x="32.0" y="80.0" width="188.0" height="34.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="126.0" y="102.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">msg/Num.msg</text>
+<rect x="32.0" y="128.0" width="188.0" height="34.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="126.0" y="150.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">msg/Sphere.msg</text>
+<rect x="32.0" y="176.0" width="188.0" height="34.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="126.0" y="198.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">srv/AddThreeInts.srv</text>
+<rect x="32.0" y="224.0" width="188.0" height="34.0" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="126.0" y="246.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">action/Fibonacci.action</text>
+<rect x="300.0" y="120.0" width="170.0" height="90.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="385.0" y="153.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">rosidl_generate_interfaces</text>
+<text x="385.0" y="168.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">CMakeLists.txt 一行</text>
+<text x="385.0" y="184.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">.msg → .idl → 代码</text>
+<line x1="236.0" y1="165.0" x2="300.0" y2="165.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="300.0,165.0 292.1,169.2 292.1,160.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="540.0" y="62.0" width="210.0" height="60.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="645.0" y="88.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">Python 类</text>
+<text x="645.0" y="104.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">from …msg import Num</text>
+<line x1="470.0" y1="165.0" x2="540.0" y2="92.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="540.0,92.0 537.5,100.7 531.5,94.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="540.0" y="142.0" width="210.0" height="60.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="645.0" y="168.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">C++ 结构体</text>
+<text x="645.0" y="184.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">#include …/msg/num.hpp</text>
+<line x1="470.0" y1="165.0" x2="540.0" y2="172.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="540.0,172.0 531.7,175.4 532.5,167.0" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="540.0" y="222.0" width="210.0" height="60.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="645.0" y="248.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">类型支持 typesupport</text>
+<text x="645.0" y="264.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">各中间件的序列化代码</text>
+<line x1="470.0" y1="165.0" x2="540.0" y2="252.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="540.0,252.0 531.7,248.5 538.3,243.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="800.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">talker.py</text>
+<text x="800.0" y="190.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">node.cpp</text>
+<text x="800.0" y="270.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">rmw 用</text>
+</svg>

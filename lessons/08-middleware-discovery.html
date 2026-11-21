@@ -200,6 +200,8 @@ jupyter lab ch08_domain_ports.ipynb</code></pre><p>也可以下载后直接用 V
 <p><strong>典型用法</strong>：在笔记本上做仿真，不想被同网络的真机器人干扰，设 <code>ROS_AUTOMATIC_DISCOVERY_RANGE=LOCALHOST</code>。要连某一台机器人，再加 <code>ROS_STATIC_PEERS=192.168.1.20</code>。</p>
 <p>注意：这两个变量 <strong>Zenoh 不支持</strong>（发现范围一文的提示），Zenoh 用自己的配置文件控制连接。</p>
 <p><strong>Fast DDS 的发现服务器</strong>：节点很多、或网络不支持组播时，还可以让 Fast DDS 改成"集中发现"：启动一个发现服务器，节点都向它登记（<code>Developer-Tools/Launch/Discovery-Server/Discovery-Server.rst</code>）。思路和 Zenoh 路由器类似。</p>
+<p><img alt="域号与发现范围" src="../figures/08-discovery-domain-range.png" /></p>
+<p><em>图 8-1 · 谁能发现谁：域号不同互相看不见；发现范围 LOCALHOST 只看本机，STATIC_PEERS 点名去找。</em></p>
 <h3 id="2">第 2 步 · 换中间件</h3>
 <p>依据：<code>Get-Started/Installation/RMW-Implementations.rst</code> 及其子页、<code>ecosystem/rmw_zenoh/README.md</code> 与 <code>docs/design.md</code>。</p>
 <p><strong>第 1 章总图 1 的 rmw "插座"在这里派上用场</strong>：换中间件不改代码，只设一个环境变量（<code>Working-with-multiple-RMW-implementations.rst</code> 第 46 行）：</p>
@@ -248,6 +250,8 @@ ros2 run demo_nodes_cpp listener
 <li><strong>切换了 <code>ROS_DOMAIN_ID</code> 或中间件后</strong>，旧的 daemon 还在用旧设置。</li>
 </ul>
 <p>这时运行 <code>ros2 daemon stop</code>，下次命令会自动起一个新的（<code>rmw_zenoh</code> README 的测试一节也先 <code>ros2 daemon stop</code>）。</p>
+<p><img alt="看不见节点的排错顺序" src="../figures/08-discovery-troubleshoot.png" /></p>
+<p><em>图 8-2 · “看不见对方的节点”按这个顺序查：先对域号和中间件，再查网络和组播，最后查 QoS。</em></p>
 <p><strong>和本仓库的连接</strong>：机器人 + 远程 GPU 服务器跑 VLA 推理时，跨网络传图像，选 Zenoh 或至少用 <code>ROS_STATIC_PEERS</code> 指定对端，比依赖组播稳得多。</p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 8-1</strong>（第 1 步）：实验室里你和同学都在跑 turtlesim，你的乌龟被同学的遥控指令控制了。最简单的修法是什么？两人各要做什么？</p>

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="350" viewBox="0 0 820 350">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">1080p 图像 30 Hz：每多复制一次，每秒多搬 180 MB</text>
+<text x="16.0" y="340.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">复制次数是示意：跨进程普通发布订阅至少要序列化、传输、反序列化三次搬运；后三种都把数据留在原地，只交出指针或句柄。</text>
+<text x="250.0" y="86.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">两个进程 · 普通发布订阅</text>
+<rect x="266.0" y="68.0" width="48.0" height="28.0" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="290.0" y="87.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="normal">6 MB</text>
+<rect x="322.0" y="68.0" width="48.0" height="28.0" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="346.0" y="87.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="normal">6 MB</text>
+<rect x="378.0" y="68.0" width="48.0" height="28.0" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="402.0" y="87.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="normal">6 MB</text>
+<text x="440.0" y="80.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#dc2626" text-anchor="start" font-weight="bold">复制 3 次</text>
+<text x="440.0" y="98.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#374151" text-anchor="start" font-weight="normal">序列化 → 共享内存 / 网络 → 反序列化</text>
+<text x="250.0" y="142.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">同一进程 · 进程内通信</text>
+<rect x="266.0" y="124.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="322.0" y="124.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="378.0" y="124.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<text x="440.0" y="136.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">0 次</text>
+<text x="440.0" y="154.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#374151" text-anchor="start" font-weight="normal">交出 unique_ptr</text>
+<text x="250.0" y="198.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">两个进程 · loaned messages</text>
+<rect x="266.0" y="180.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="322.0" y="180.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="378.0" y="180.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<text x="440.0" y="192.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">0 次</text>
+<text x="440.0" y="210.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#374151" text-anchor="start" font-weight="normal">中间件借出共享内存（Fast DDS，定长消息）</text>
+<text x="250.0" y="254.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">GPU 数据 · rosidl::Buffer</text>
+<rect x="266.0" y="236.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="322.0" y="236.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<rect x="378.0" y="236.0" width="48.0" height="28.0" rx="4" fill="#fafafa" stroke="#e5e7eb" stroke-width="1.4" opacity="1"/>
+<text x="440.0" y="248.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">0 次</text>
+<text x="440.0" y="266.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#374151" text-anchor="start" font-weight="normal">字段直接指向 GPU 内存，不回 CPU</text>
+<text x="266.0" y="300.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">每次搬运 = 6 MB × 30 = 180 MB/s 内存带宽</text>
+</svg>

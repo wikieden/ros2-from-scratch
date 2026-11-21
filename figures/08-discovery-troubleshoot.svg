@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="380" viewBox="0 0 860 380">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">“看不见对方的节点”排错顺序：先对表，再查网络，最后查 QoS</text>
+<text x="16.0" y="370.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">切换域号或中间件后，旧的 ros2 daemon 还在用旧设置：ros2 daemon stop 后再查。ros2 doctor --report 一次打印全部环境。</text>
+<rect x="40.0" y="56.0" width="300.0" height="34.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="76.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">1. ROS_DOMAIN_ID 一样？</text>
+<line x1="340.0" y1="73.0" x2="400.0" y2="73.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,73.0 392.1,77.2 392.1,68.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="59.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="70.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="77.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">export 成一样</text>
+<line x1="70.0" y1="90.0" x2="70.0" y2="102.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="70.0,102.0 65.8,94.1 74.2,94.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="102.0" width="300.0" height="34.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="122.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">2. RMW_IMPLEMENTATION 一样？</text>
+<line x1="340.0" y1="119.0" x2="400.0" y2="119.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,119.0 392.1,123.2 392.1,114.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="105.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="116.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="123.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">全系统用同一个</text>
+<line x1="70.0" y1="136.0" x2="70.0" y2="148.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="70.0,148.0 65.8,140.1 74.2,140.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="148.0" width="300.0" height="34.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="168.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">3. DISCOVERY_RANGE 不是 LOCALHOST？</text>
+<line x1="340.0" y1="165.0" x2="400.0" y2="165.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,165.0 392.1,169.2 392.1,160.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="151.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="162.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="169.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">改回 SUBNET 或加 STATIC_PEERS</text>
+<line x1="70.0" y1="182.0" x2="70.0" y2="194.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="70.0,194.0 65.8,186.1 74.2,186.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="194.0" width="300.0" height="34.0" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="214.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">4. ping 得通？防火墙放行 UDP？</text>
+<line x1="340.0" y1="211.0" x2="400.0" y2="211.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,211.0 392.1,215.2 392.1,206.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="197.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="208.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="215.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">查网线 / 防火墙</text>
+<line x1="70.0" y1="228.0" x2="70.0" y2="240.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="70.0,240.0 65.8,232.1 74.2,232.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="240.0" width="300.0" height="34.0" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="260.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">5. 网络支持组播？</text>
+<line x1="340.0" y1="257.0" x2="400.0" y2="257.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,257.0 392.1,261.2 392.1,252.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="243.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="254.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="261.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">STATIC_PEERS / 发现服务器 / Zenoh</text>
+<line x1="70.0" y1="274.0" x2="70.0" y2="286.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="70.0,286.0 65.8,278.1 74.2,278.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="40.0" y="286.0" width="300.0" height="34.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="190.0" y="306.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">6. Zenoh：路由器起了、互相配了地址？</text>
+<line x1="340.0" y1="303.0" x2="400.0" y2="303.0" stroke="#dc2626" stroke-width="1.6"/>
+<polygon points="400.0,303.0 392.1,307.2 392.1,298.8" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="360.8" y="289.5" width="18.5" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="370.0" y="300.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#dc2626" text-anchor="middle" font-weight="normal">否</text>
+<text x="408.0" y="307.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#374151" text-anchor="start" font-weight="normal">启动 rmw_zenohd，配 ZENOH_ROUTER_CONFIG_URI</text>
+<text x="84.0" y="340.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="start" font-weight="normal">是 ↓ 全部通过</text>
+<rect x="560.0" y="326.0" width="280.0" height="30.0" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="344.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">看得见节点却收不到 → topic info -v 查 QoS</text>
+<line x1="200.0" y1="341.0" x2="560.0" y2="341.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="560.0,341.0 552.1,345.2 552.1,336.8" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+</svg>

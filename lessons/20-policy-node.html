@@ -212,6 +212,10 @@ self.create_subscription(JointState, 'joint_states', self.on_joint_states, 10,
 </tr>
 </tbody>
 </table>
+<p><img alt="推理与执行的快慢分离时间线" src="../figures/20-policy-node-fast-slow.png" /></p>
+<p><em>图 20-1 · 快慢分离：推理几百毫秒产出一个动作块，执行定时器每 20 ms 从当前块里取一步。</em></p>
+<p><img alt="动作块衔接：直接切换与融合" src="../figures/20-policy-node-blend.png" /></p>
+<p><em>图 20-2 · 动作块衔接（示意）：直接切换在切换时刻跳一下，融合 / RTC 让新块平滑接上。</em></p>
 <h3 id="3">第 3 步 · 安全、生命周期与测量</h3>
 <p><strong>安全</strong>（多章组合）：</p>
 <ol>
@@ -263,6 +267,8 @@ self.create_subscription(JointState, 'joint_states', self.on_joint_states, 10,
 <li>用 tracing 量端到端延迟和 p99。</li>
 </ol>
 <p>做完这一步，VLA 专题里学的模型就有了通往真机的完整路径：<strong>模型（VLA 专题）→ 策略节点（本章）→ ros2_control（第 15–16 章）→ 硬件（机器人软硬件架构专题）</strong>。</p>
+<p><img alt="策略节点的五层安全" src="../figures/20-policy-node-safety.png" /></p>
+<p><em>图 20-3 · 策略节点的安全层：限幅、超时、输入失效在节点里；关键节点退出由 launch 兜底；急停走硬件回路。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 20-1</strong>（第 1 步）：策略节点订阅相机图像用了默认 QoS，结果收不到图。为什么？怎么改？</p>
 <ul>

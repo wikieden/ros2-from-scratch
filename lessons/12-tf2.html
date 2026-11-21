@@ -141,6 +141,8 @@ jupyter lab ch12_tf2.ipynb</code></pre><p>也可以下载后直接用 VS Code �
 <p><strong>串起来</strong>：多个变换可以相乘（tf2 文档的 Car A / Car B 例子）：</p>
 <div class="arithmatex">\[{}_{B}T_{A}={}_{B}T_{E}\cdot{}_{E}T_{A}\]</div>
 <p>从 A 到 B 的变换 = 先从 A 到 E，再从 E 到 B。tf2 的 <code>lookup_transform(目标, 源, 时间)</code> 做的就是这件事：沿着树找到路径，把路上的变换乘起来，必要时取逆。</p>
+<p><img alt="相机坐标系到底座坐标系的数字例子" src="../figures/12-tf2-cup.png" /></p>
+<p><em>图 12-1 · 数字演示：相机不转时只加平移得 (0.6, 0, 0.3)；相机 yaw 90° 时先转再平移得 (0.1, 0.5, 0.3)。</em></p>
 <h3 id="2">第 2 步 · 树、时间缓冲、标准坐标系</h3>
 <p><strong>必须是树</strong>：每个坐标系<strong>只能有一个父亲</strong>，不能有环。两个节点同时发布"camera_link 的父亲是 X"，tf2 就会混乱。</p>
 <p><strong>两种变换</strong>：</p>
@@ -205,6 +207,10 @@ jupyter lab ch12_tf2.ipynb</code></pre><p>也可以下载后直接用 VS Code �
 </tbody>
 </table>
 <p><strong>为什么要分 map 和 odom 两层？</strong> 控制器需要平滑连续的位置（不能突然跳一下），定位需要绝对准确（会纠正漂移，可能跳）。分成两层，控制用 <code>odom</code>，规划用 <code>map</code>，各取所需。</p>
+<p><img alt="tf 时间缓存与查询时刻" src="../figures/12-tf2-buffer.png" /></p>
+<p><em>图 12-2 · tf 按时间缓存：查询时刻在缓存里就插值，早于缓存报 past，晚于最新一条报 future。</em></p>
+<p><img alt="REP 105 坐标系与漂移" src="../figures/12-tf2-rep105.png" /></p>
+<p><em>图 12-3 · REP 105：odom → base_link 连续但会漂，map → odom 定期修正（会跳）；示意数据。</em></p>
 <h3 id="3">第 3 步 · 代码与工具</h3>
 <p><strong>动态广播</strong>（<code>.../Tf2/Writing-A-Tf2-Broadcaster-Py.rst</code> 的核心，把小乌龟位姿发成 tf）：</p>
 <pre><code class="language-python">from tf2_ros import TransformBroadcaster

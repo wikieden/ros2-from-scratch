@@ -165,6 +165,8 @@ jupyter lab ch17_costmap_plan.ipynb</code></pre><p>也可以下载后直接用 V
 <p><strong>别名的好处</strong>：行为树里写的是 <code>FollowPath</code>（"跟随路径"这类算法），配置里再说 <code>FollowPath</code> 用 MPPI；参数放在 <code>FollowPath.&lt;参数名&gt;</code> 下。换算法只改配置，行为树不动（服务器文档举的就是 DWB 叫 <code>FollowPath</code> 的例子）。</p>
 <p><strong>同一个服务器装多个插件</strong>：比如控制服务器同时装"跟路径"、"对接充电桩"、"进电梯"三个控制器，共用一份局部代价地图，省掉重复计算（服务器文档）。</p>
 <p><strong>MPPI 控制器</strong>（<code>configuration_guide/controller_plugins/mppi_controller/</code>）：每个周期以上一周期的最优控制为基础，<strong>随机采样</strong>一批扰动后的控制序列，向前模拟出一批轨迹，用一组插件式的"评价函数"（离路径多远、离障碍多近、朝向对不对……）打分，再按分数做 softmax 加权平均得到新控制；迭代几次后输出。评价函数不要求凸、不要求可导。支持差速、全向、阿克曼底盘，4 代 i5 上能跑 100 Hz 以上。</p>
+<p><img alt="Nav2 的服务器与插件" src="../figures/17-nav2-servers.png" /></p>
+<p><em>图 17-1 · Nav2：bt_navigator 调度规划、平滑、控制、行为四个服务器，各装算法插件，分用全局 / 局部代价地图。</em></p>
 <h3 id="2">第 2 步 · 代价地图</h3>
 <p>依据：<code>.../navigation_concepts/environmental_representation.md</code>（下称"环境文档"）。</p>
 <p><strong>代价地图（costmap）</strong>：一张规则的二维栅格，每个格子一个代价：未知 / 空闲 / 被占 / 膨胀（环境文档）。规划器在里面<strong>搜索</strong>路径，控制器在里面<strong>采样</strong>检查轨迹。</p>
@@ -207,6 +209,8 @@ jupyter lab ch17_costmap_plan.ipynb</code></pre><p>也可以下载后直接用 V
 <li><strong>膨胀层</strong>：在障碍周围按距离加一圈逐渐变小的代价，让机器人别贴着墙走。机器人外形用 <code>robot_radius</code>（圆形）或 <code>footprint</code>（多边形）描述（服务器文档 "Robot Footprints"）。</li>
 </ul>
 <p><strong>代价地图过滤器</strong>（环境文档 Costmap Filters）：在一张"标注图"上画区域，让机器人在特定区域改变行为：禁行区、限速区、优先车道。</p>
+<p><img alt="代价地图与膨胀" src="../figures/17-nav2-costmap.png" /></p>
+<p><em>图 17-2 · 代价地图（示意）：障碍格四周按距离指数衰减的膨胀代价，规划出的路径自然离墙远一点。</em></p>
 <h3 id="3">第 3 步 · 行为树导航器、生命周期、上手</h3>
 <p><strong>行为树（BT）</strong>（<code>.../navigation_concepts/behavior_trees.md</code>）：把任务组织成一棵树，叶子是"计算路径"、"跟随路径"、"原地转"这类基本动作，中间节点规定顺序、重试、回退。比有几十个状态、几百条转换的有限状态机更好扩展、更容易看懂。Nav2 用 BehaviorTree.CPP v4，树写在 XML 里；整个 Nav2 树还能作为子树嵌进更大的任务树。Nav2 文档强烈推荐先读 Colledanchise &amp; Ögren 那本行为树书的第 1–3 章（约 30 分钟）。</p>
 <p><strong>默认的"导航到位姿"树</strong>（<code>.../nav2_behavior_trees/trees/nav_to_pose_recovery.md</code>）：</p>
@@ -225,6 +229,8 @@ jupyter lab ch17_costmap_plan.ipynb</code></pre><p>也可以下载后直接用 V
 ros2 launch nav2_bringup tb3_simulation_launch.py headless:=False
 </code></pre>
 <p>在 RViz 里先点 <strong>2D Pose Estimate</strong> 给初始位姿（让 AMCL 知道机器人大概在哪），再点 <strong>Nav2 Goal</strong> 给目标。</p>
+<p><img alt="默认导航行为树" src="../figures/17-nav2-bt.png" /></p>
+<p><em>图 17-3 · 默认的 navigate_to_pose 行为树（简化）：正常导航每秒重规划，失败后轮流清地图、原地转、等待、后退，最多重试 6 次。</em></p>
 <p><strong>和本仓库的连接</strong>：具身导航专题里的学习型导航（VLN、导航基础模型）通常只替换"目标从哪来"或"控制器"这一环：语言指令 → 视觉语言模型给出目标点 → Nav2 规划和避障；或者学到的策略直接输出 <code>cmd_vel</code>，代价地图做安全兜底（collision monitor）。Nav2 是理解"经典栈每一环在做什么"的最好参照。</p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 17-1</strong>（第 1 步）：规划服务器和控制服务器各输出什么？为什么控制器用局部代价地图（在 <code>odom</code> 坐标系）而不是全局的？</p>

@@ -250,6 +250,8 @@ jupyter lab ch01_message_flow.ipynb</code></pre><p>也可以下载后直接用 V
 <li><strong>能分开跑</strong>：节点可以在同一个进程、不同进程，甚至不同电脑上，彼此照样通信（<code>About-Nodes.rst</code> 第 40 行）。比如 <code>ball_detector</code> 放到带 GPU 的电脑上，<code>motor_driver</code> 留在小车上。</li>
 <li><strong>可复用</strong>：别人写好的 <code>camera_driver</code>、导航节点，拿来就能接上。</li>
 </ol>
+<p><img alt="追红球小车的计算图" src="../figures/01-what-is-ros2-ball-graph.png" /></p>
+<p><em>图 1-1 · 追红球小车：四个节点各管一件事，靠三个话题连起来；改追蓝球只改参数，换相机只换驱动节点。</em></p>
 <p><strong>和本仓库的连接</strong>：学的 VLA 策略部署到机器人上时，就是<strong>一个节点</strong>：订阅 <code>/image</code> 和 <code>/joint_states</code>，发布动作。</p>
 <h3 id="2_1">第 2 步 · 节点之间的四种说话方式</h3>
 <p>接着用后厨类比。厨师之间不只有"传菜口"一种沟通方式：</p>
@@ -309,6 +311,8 @@ jupyter lab ch01_message_flow.ipynb</code></pre><p>也可以下载后直接用 V
 <li>参数属于某个节点，节点关掉参数就没了（<code>About-Parameters.rst</code> §Parameters in ROS）。</li>
 </ol>
 <p><strong>回头看练习 1-2</strong>：想从追红球改成追蓝球，最省事的做法是给 <code>ball_detector</code> 一个参数 <code>target_color</code>，运行时用 <code>ros2 param set</code> 改成 blue，<strong>一行代码都不用改</strong>；<code>motor_driver</code> 完全不用动。</p>
+<p><img alt="话题、服务、动作、参数四种通信" src="../figures/01-what-is-ros2-four-ways.png" /></p>
+<p><em>图 1-2 · 四种说话方式：话题一对多持续发，服务一问一答要等，动作有目标 / 反馈 / 取消 / 结果，参数是节点的配置旋钮。</em></p>
 <p><strong>和本仓库的连接</strong>：VLA 策略节点订阅图像和关节状态用<strong>话题</strong>；上层"去叠毛巾"这种几十秒的任务适合做成<strong>动作</strong>；控制频率、模型路径做成<strong>参数</strong>。</p>
 <h3 id="3-ros-2">第 3 步 · 为什么有 ROS 2</h3>
 <p><strong>白话类比：小饭馆开成连锁店。</strong></p>
@@ -382,6 +386,8 @@ jupyter lab ch01_message_flow.ipynb</code></pre><p>也可以下载后直接用 V
 <p>代价是：ROS 得在 DDS 的设计框架里干活，不合适的地方要绕过去（同文同节）。这也是为什么要有总图 1 里的 <strong>rmw 插座</strong>：把 DDS 隔离在下面，以后还能换。现在可选的 Zenoh（<code>rmw_zenoh_cpp</code>）就是一个不基于 DDS 的插头。</p>
 <p><strong>为什么不在 ROS 1 上直接改？</strong> 改动太伤筋动骨，会把大家正在用的 ROS 1 弄坏。所以 ROS 2 是<strong>另起一套</strong>，接口（API）不兼容；需要共存时用桥接（bridge）在两边转发消息（<code>010_why_ros2.md</code> §Why not just enhance ROS 1）。</p>
 <p><strong>现状</strong>：ROS 1 已停止开发、不再发布新版本，ROS 2 每年 5 月发一个新版本（<code>About-ROS.rst</code> §ROS distributions）。新项目直接学 ROS 2。</p>
+<p><img alt="ROS 1 master 与 ROS 2 分布式发现" src="../figures/01-what-is-ros2-master-vs-p2p.png" /></p>
+<p><em>图 1-3 · ROS 1 所有节点先到 master 登记；ROS 2 没有中心，同一域里的节点自己广播、互相发现。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 1-1</strong>：一台扫地机器人有：激光雷达（测周围障碍物距离）、两个轮子电机、前方碰撞开关。它要能边走边建地图、避开障碍。请把它拆成 3–5 个节点，写出每个节点<strong>发布</strong>什么话题、<strong>订阅</strong>什么话题（话题名自己起）。</p>
 <ul>

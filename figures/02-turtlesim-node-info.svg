@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="400" viewBox="0 0 860 400">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">ros2 node info /turtlesim：一个节点对外的全部连接</text>
+<text x="16.0" y="390.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">每个节点都自带 /rosout、/parameter_events 和一组参数服务：ros2 param set 背后就是调 /turtlesim/set_parameters。</text>
+<rect x="330.0" y="150.0" width="200.0" height="96.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="194.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="15" fill="#1f2937" text-anchor="middle" font-weight="bold">/turtlesim</text>
+<text x="430.0" y="214.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">可执行文件 turtlesim_node</text>
+<rect x="24.0" y="172.0" width="150.0" height="50.0" rx="25.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="99.0" y="200.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">/teleop_turtle</text>
+<rect x="186.0" y="108.0" width="128.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="250.0" y="125.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtle1/cmd_vel</text>
+<polyline points="99.0,172.0 99.0,121.0 186.0,121.0" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="186.0,121.0 178.1,125.2 178.1,116.8" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polyline points="314.0,121.0 360.0,121.0 360.0,150.0" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="360.0,150.0 355.8,142.1 364.2,142.1" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="250.0" y="100.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">Subscribers</text>
+<text x="700.0" y="60.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#2563eb" text-anchor="middle" font-weight="bold">Publishers</text>
+<rect x="620.0" y="70.0" width="170.0" height="24.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="86.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtle1/pose</text>
+<line x1="530.0" y1="178.0" x2="620.0" y2="82.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="620.0,82.0 617.6,90.7 611.5,84.9" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="620.0" y="102.0" width="170.0" height="24.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="118.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtle1/color_sensor</text>
+<line x1="530.0" y1="182.0" x2="620.0" y2="114.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="620.0,114.0 616.2,122.2 611.1,115.4" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="620.0" y="134.0" width="170.0" height="24.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="150.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/rosout</text>
+<line x1="530.0" y1="186.0" x2="620.0" y2="146.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="620.0,146.0 614.5,153.1 611.0,145.4" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="620.0" y="166.0" width="170.0" height="24.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="182.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/parameter_events</text>
+<line x1="530.0" y1="190.0" x2="620.0" y2="178.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="620.0,178.0 612.7,183.2 611.6,174.9" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="700.0" y="222.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#16a34a" text-anchor="middle" font-weight="bold">Service Servers</text>
+<rect x="560.0" y="232.0" width="290.0" height="24.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="248.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/spawn  /clear  /kill  /reset</text>
+<rect x="560.0" y="262.0" width="290.0" height="24.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="278.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtle1/set_pen  /turtle1/teleport_*</text>
+<rect x="560.0" y="292.0" width="290.0" height="24.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="308.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtlesim/get_parameters …</text>
+<line x1="530.0" y1="228.0" x2="560.0" y2="262.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="560.0,262.0 551.6,258.8 557.9,253.2" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="310.0" y="300.0" width="240.0" height="26.0" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="317.0" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtle1/rotate_absolute</text>
+<text x="430.0" y="344.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="normal">Action Servers（teleop 是它的客户端）</text>
+<line x1="430.0" y1="246.0" x2="430.0" y2="300.0" stroke="#ea580c" stroke-width="1.6"/>
+<polygon points="430.0,300.0 425.8,292.1 434.2,292.1" fill="#ea580c" stroke="#ea580c" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polyline points="99.0,222.0 99.0,313.0 310.0,313.0" fill="none" stroke="#ea580c" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 3" opacity="1"/>
+<polygon points="310.0,313.0 302.1,317.2 302.1,308.8" fill="#ea580c" stroke="#ea580c" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="112.0" y="250.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">按方向键 → Twist</text>
+<text x="112.0" y="268.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">按 G/B/V/… → 动作目标</text>
+</svg>

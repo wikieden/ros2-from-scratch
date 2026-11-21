@@ -154,6 +154,8 @@ jupyter lab ch18_time_param.ipynb</code></pre><p>也可以下载后直接用 VS 
 <li>通过 <strong><code>FollowJointTrajectory</code> 动作</strong>把轨迹交给机器人上的控制器执行，<strong>动作服务器不由 MoveIt 提供</strong>，就是第 16 章的关节轨迹控制器。</li>
 <li>维护一个<strong>规划场景</strong>（planning scene）：机器人当前状态 + 周围障碍物 + 手里拿着的物体（视为刚性连在机器人上）。</li>
 </ul>
+<p><img alt="move_group 的输入与输出" src="../figures/18-moveit2-move-group.png" /></p>
+<p><em>图 18-1 · move_group 是集成者：URDF / SRDF / 关节状态 / tf 都由别的节点提供，轨迹交给 JTC 执行。</em></p>
 <h3 id="2">第 2 步 · 规划流水线</h3>
 <p>依据：<code>concepts/motion_planning.rst</code>（下称"规划文档"）、<code>concepts/kinematics.rst</code>、<code>concepts/trajectory_processing.rst</code>（下称"轨迹处理文档"）。</p>
 <p><strong>① 请求</strong>（规划文档 "The Motion Plan Request"）：目标可以是<strong>关节空间</strong>的一组关节角，或<strong>末端位姿</strong>；可加约束：位置约束（某连杆在某区域内）、姿态约束（比如杯子保持竖直，roll / pitch 有限）、可见性约束、关节约束、自定义约束。默认检查碰撞（含自碰撞和手持物体）。</p>
@@ -162,6 +164,8 @@ jupyter lab ch18_time_param.ipynb</code></pre><p>也可以下载后直接用 VS 
 <p><strong>④ 规划请求适配器</strong>：规划前后的预处理 / 后处理。比如 <code>CheckStartStateBounds</code>：真机关节读数略超出限位时，把起点修正到限位上，否则规划器会认为起点非法（规划文档 "Motion planning adapters"）。</p>
 <p><strong>⑤ 时间参数化</strong>：<strong>规划器给的是"路径"（一串关节位形，没有时间）</strong>；要变成"<strong>轨迹</strong>"（每个点什么时刻到、速度加速度多少），必须在速度、加速度限制下排时间。推荐算法 <strong>TOTG</strong>（时间最优轨迹生成），默认时间步长 0.1 秒，要求起止都静止；限值来自 <code>joint_limits.yaml</code>，会覆盖 URDF 里的值（轨迹处理文档）。规划文档也强调：move_group 输出的是<strong>轨迹而不只是路径</strong>。</p>
 <p><strong>⑥ 执行</strong>：轨迹经 <code>FollowJointTrajectory</code> 动作交给关节轨迹控制器，控制器在 1 kHz 回路里插值执行（第 15–16 章）。</p>
+<p><img alt="路径经时间参数化变成轨迹" src="../figures/18-moveit2-time-param.png" /></p>
+<p><em>图 18-2 · 规划器给的是路径（只有位形）；时间参数化按速度、加速度上限排时刻，才成为轨迹（示意）。</em></p>
 <h3 id="3">第 3 步 · 用起来</h3>
 <p><strong>RViz 运动规划插件</strong>（<code>tutorials/quickstart_in_rviz/</code>）：拖动末端的交互标记设目标，点 Plan、Execute。R-M9 先从这里开始。</p>
 <p><strong>MoveItPy（Python API）</strong>（<code>examples/motion_planning_python_api/</code>，取自教程代码）：</p>

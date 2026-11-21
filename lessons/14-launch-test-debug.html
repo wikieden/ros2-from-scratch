@@ -237,6 +237,8 @@ def generate_launch_description():
 <p><strong>托管节点 + launch</strong>（接第 11 章）：用 <code>launch_ros.actions.LifecycleNode</code> 启动，再用事件处理器监听它的状态变化，"进入 inactive 后自动发 activate"。节点多时直接用 Nav2 式的生命周期管理器更省事。</p>
 <p><strong>组件 + launch</strong>（接第 10 章）：<code>ComposableNodeContainer(package='rclcpp_components', executable='component_container', composable_node_descriptions=[ComposableNode(...), ...])</code>（<code>Launching-composable-nodes.rst</code>）。</p>
 <p><strong>Python / XML / YAML 怎么选</strong>（<code>Launch-file-different-formats.rst</code>）：简单的启动清单用 XML / YAML，短且好读；需要复杂逻辑用 Python。Lyrical 给 XML / YAML 加了 <code>string-join</code>、<code>path-join</code> 替换，也支持在 launch 里按条设日志级别（<code>Release-Lyrical-Luth.rst</code>）。</p>
+<p><img alt="launch 文件的 include 树" src="../figures/14-launch-test-include-tree.png" /></p>
+<p><em>图 14-1 · 大项目的 launch：顶层只 include 子文件并往下传参数，用条件决定起仿真还是真机。</em></p>
 <h3 id="2">第 2 步 · 测试</h3>
 <p>依据：<code>Developer-Tools/Debugging/Testing/</code> 下各页。</p>
 <p><strong>三层测试：</strong></p>
@@ -279,6 +281,8 @@ colcon test --packages-select my_package --pytest-args -k test_speed_limit   # �
 <li><strong>关闭后测试</strong>（post-shutdown tests）：所有节点退出后检查，比如"退出码都是 0"。</li>
 </ol>
 <p>CMake 包里用 <code>add_launch_test(test/my_test.py)</code> 注册，<code>colcon test</code> 一起跑。<strong>每次提交都自动跑一遍</strong>（CI），是避免"改了 A 坏了 B"的唯一可靠办法。</p>
+<p><img alt="launch_testing 的一次运行" src="../figures/14-launch-test-launch-test.png" /></p>
+<p><em>图 14-2 · launch_testing：ReadyToTest 后跑活动测试，所有节点退出后再跑关闭后测试。</em></p>
 <h3 id="3">第 3 步 · 调试</h3>
 <p><strong>崩溃：用 gdb 拿调用栈</strong>（<code>Developer-Tools/Debugging/Getting-Backtraces-in-ROS-2.rst</code>，C++ 节点）：</p>
 <pre><code class="language-bash">ros2 run --prefix 'gdb -ex run --args' my_package my_node

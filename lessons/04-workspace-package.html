@@ -144,6 +144,8 @@ source install/local_setup.bash        # 再 source 上层
 <li><code>local_setup.bash</code> 只加上本工作区的包；<code>setup.bash</code> 会把本工作区<strong>和</strong>它编译时用的底层一起加上。所以上面两行等于直接 <code>source ~/ros2_ws/install/setup.bash</code>。</li>
 <li>官方特别强调：<strong>在一个新终端里 source overlay，不要在编译用的那个终端里 source</strong>，也不要在已经 source 了 overlay 的终端里编译，否则会出现难查的问题。</li>
 </ul>
+<p><img alt="overlay 叠在 underlay 上" src="../figures/04-workspace-overlay.png" /></p>
+<p><em>图 4-1 · overlay 叠在 underlay 上：找包先翻自己的工作区，同名包优先用 overlay 里的。</em></p>
 <h3 id="2">第 2 步 · 包：最小骨架</h3>
 <p>依据：<code>.../Creating-Your-First-ROS2-Package.rst</code>（下称"建包教程"）。</p>
 <p><strong>包（package）</strong>是 ROS 代码的组织和发布单位：想让别人能编译、能安装你的代码，就要把它组织成包（建包教程背景第 1 节）。一个工作区可以有很多包，C++ 包和 Python 包可以混放，但<strong>包不能嵌套</strong>。</p>
@@ -259,6 +261,8 @@ Hi from my_package.
 </code></pre>
 <p>（建包教程第 4 步，Python 版的输出。）</p>
 <p><strong>本仓库约定</strong>：之后写的代码都放 <code>ros2/solutions/ros2_ws/src/</code> 下（study-plan 的 R-M2 起），<code>build/ install/ log/</code> 不入库。</p>
+<p><img alt="colcon 按依赖排序并行编译" src="../figures/04-workspace-colcon-order.png" /></p>
+<p><em>图 4-2 · colcon 按 package.xml 的依赖排顺序：被依赖的先编，互不依赖的并行编。</em></p>
 <h2 id="_2">练习与作答记录</h2>
 <p><strong>练习 4-1</strong>（第 1 步）：你在 <code>~/ros2_ws/src/</code> 里克隆了 turtlesim 源码，改了窗口标题并编译。新终端里只 <code>source /opt/ros/lyrical/setup.bash</code>，没 source 工作区，<code>ros2 run turtlesim turtlesim_node</code> 打开的窗口标题是改过的还是原来的？为什么？</p>
 <ul>

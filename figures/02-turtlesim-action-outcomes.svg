@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="300" viewBox="0 0 840 300">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">rotate_absolute 的三种结局：谁叫停，决定终态是哪一个</text>
+<text x="16.0" y="290.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">新目标打断旧目标时怎么办，ROS 不统一规定；turtlesim 选“接受新的、放弃旧的”，所以旧目标是 ABORTED。</text>
+<line x1="170.0" y1="250.0" x2="790.0" y2="250.0" stroke="#1f2937" stroke-width="1.2"/>
+<line x1="170.0" y1="250.0" x2="170.0" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="170.0" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0 s</text>
+<line x1="273.3" y1="250.0" x2="273.3" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="273.3" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0.5 s</text>
+<line x1="376.7" y1="250.0" x2="376.7" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="376.7" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">1 s</text>
+<line x1="480.0" y1="250.0" x2="480.0" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="480.0" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">1.5 s</text>
+<line x1="583.3" y1="250.0" x2="583.3" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="583.3" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">2 s</text>
+<line x1="686.7" y1="250.0" x2="686.7" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="686.7" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">2.5 s</text>
+<line x1="790.0" y1="250.0" x2="790.0" y2="254.0" stroke="#1f2937" stroke-width="1"/>
+<text x="790.0" y="267.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">3 s</text>
+<text x="160.0" y="86.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="end" font-weight="normal">转完了</text>
+<rect x="190.7" y="70.0" width="475.3" height="24.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="211.3" y1="74.0" x2="211.3" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="263.0" y1="74.0" x2="263.0" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="314.7" y1="74.0" x2="314.7" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="366.3" y1="74.0" x2="366.3" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="418.0" y1="74.0" x2="418.0" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="469.7" y1="74.0" x2="469.7" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="521.3" y1="74.0" x2="521.3" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="573.0" y1="74.0" x2="573.0" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="624.7" y1="74.0" x2="624.7" y2="90.0" stroke="#93c5fd" stroke-width="1"/>
+<rect x="194.7" y="75.5" width="163.0" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="198.7" y="86.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1e3a8a" text-anchor="start" font-weight="normal">EXECUTING · 反馈 remaining</text>
+<rect x="666.0" y="70.0" width="100.0" height="24.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="716.0" y="86.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="bold">SUCCEEDED</text>
+<text x="160.0" y="142.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="end" font-weight="normal">中途按 F</text>
+<rect x="190.7" y="126.0" width="248.0" height="24.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="211.3" y1="130.0" x2="211.3" y2="146.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="263.0" y1="130.0" x2="263.0" y2="146.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="314.7" y1="130.0" x2="314.7" y2="146.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="366.3" y1="130.0" x2="366.3" y2="146.0" stroke="#93c5fd" stroke-width="1"/>
+<rect x="194.7" y="131.5" width="163.0" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="198.7" y="142.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1e3a8a" text-anchor="start" font-weight="normal">EXECUTING · 反馈 remaining</text>
+<rect x="438.7" y="126.0" width="100.0" height="24.0" rx="4" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="488.7" y="142.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="bold">CANCELED</text>
+<text x="546.7" y="142.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="start" font-weight="normal">客户端发 cancel</text>
+<text x="160.0" y="198.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="end" font-weight="normal">中途按别的字母</text>
+<rect x="190.7" y="182.0" width="206.7" height="24.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="211.3" y1="186.0" x2="211.3" y2="202.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="263.0" y1="186.0" x2="263.0" y2="202.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="314.7" y1="186.0" x2="314.7" y2="202.0" stroke="#93c5fd" stroke-width="1"/>
+<line x1="366.3" y1="186.0" x2="366.3" y2="202.0" stroke="#93c5fd" stroke-width="1"/>
+<rect x="194.7" y="187.5" width="163.0" height="15.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="198.7" y="198.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1e3a8a" text-anchor="start" font-weight="normal">EXECUTING · 反馈 remaining</text>
+<rect x="397.3" y="182.0" width="100.0" height="24.0" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="447.3" y="198.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="bold">ABORTED</text>
+<text x="505.3" y="198.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="start" font-weight="normal">新目标到达，服务端放弃旧的</text>
+<rect x="397.3" y="210.0" width="310.0" height="16.0" rx="3" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="0.7"/>
+<text x="403.3" y="222.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#1e3a8a" text-anchor="start" font-weight="normal">新目标接着执行</text>
+<text x="190.7" y="60.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="normal">Goal accepted</text>
+</svg>

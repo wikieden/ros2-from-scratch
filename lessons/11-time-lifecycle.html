@@ -159,6 +159,8 @@ jupyter lab ch11_time_lifecycle.ipynb</code></pre><p>也可以下载后直接用
 <p><strong>为什么需要它？</strong> 仿真可能比真实时间快（批量测试）或慢（物理很复杂）（时间设计开头）。如果节点用墙上时钟，"每 0.1 秒发一次指令"在慢 10 倍的仿真里就变成"仿真时间每 0.01 秒一次"，控制完全乱套。回放 bag 也一样：数据的时间戳是录制时的，节点要按 bag 里的时间运转。</p>
 <p><strong>最常见的坑</strong>：系统里<strong>有的节点设了 <code>use_sim_time</code>、有的没设</strong>。一半节点活在 bag 的时间里、一半活在现在，tf2 会报"变换在过去 / 未来"（第 12 章），消息同步全部失败。Lyrical 新增 <code>ros2 param get &lt;参数名&gt;</code> 一次查所有节点的同一个参数，正好用来检查这件事（<code>Release-Lyrical-Luth.rst</code> 对应一节）。</p>
 <p><strong>代码里</strong>：<code>self.get_clock().now()</code> 拿 ROS 时间；要测执行耗时、做超时，用稳定时钟（Python 里 <code>time.monotonic()</code>，或 <code>rclpy.clock.Clock(clock_type=ClockType.STEADY_TIME)</code>）。多台电脑之间的时间戳要可比，还要用 NTP / PTP 把各机时钟对齐（第 15 章会提硬件时间同步）。</p>
+<p><img alt="三种时钟的读数" src="../figures/11-time-lifecycle-clocks.png" /></p>
+<p><em>图 11-1 · 三种时钟（示意）：系统时间会被 NTP 拨回，稳定时间只往前，开了 use_sim_time 的 ROS 时间跟着 /clock 暂停、加速。</em></p>
 <h3 id="2">第 2 步 · 托管节点：状态、转换、回调</h3>
 <p>依据：<code>materials/design/articles/node_lifecycle.md</code>（下称"生命周期设计"）、<code>ROS-Framework/nodes/Working-with-nodes/Managed-Nodes.rst</code>。</p>
 <p><strong>为什么要托管节点（managed node / lifecycle node）？</strong> 普通节点一构造就开始工作。可真实系统需要：</p>
@@ -268,6 +270,8 @@ ros2 lifecycle set /lc_talker activate  # 这之后 lc_talker 才开始发消息
 <li><strong>生命周期管理器</strong>：Nav2 自带 <code>lifecycle_manager</code>，按列表<strong>依次</strong>把一串节点 configure → activate；任何一个失败就停下。它还通过 <strong>bond</strong>（心跳连接）盯着每个服务端：某个服务端崩了，管理器知道后把整个系统有序地降下来，防止出现严重故障（Nav2 文档同一节）。</li>
 </ol>
 <p><strong>官方建议</strong>：能用托管节点的地方都用（Nav2 文档："It is best convention for all ROS systems to use lifecycle nodes if it is possible"）。ros2_control 的硬件组件也有同样一套生命周期（第 16 章）。</p>
+<p><img alt="lifecycle_manager 依次激活节点" src="../figures/11-time-lifecycle-manager.png" /></p>
+<p><em>图 11-2 · lifecycle_manager 按列表依次 configure → activate 一串托管节点，并用 bond 心跳盯着它们。</em></p>
 <p><strong>和本仓库的连接</strong>：VLA 策略节点也适合做成托管节点：<code>on_configure</code> 加载模型权重、预热 GPU；<code>on_activate</code> 才开始订阅图像、输出动作；出问题 <code>deactivate</code>，机器人停在安全姿态，不必重新加载几 GB 的权重。</p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 11-1</strong>（第 1 步）：你用 <code>ros2 bag play</code> 回放一段 10 分钟前录的数据，检测节点的输出时间戳却是"现在"。缺了哪两样设置？</p>

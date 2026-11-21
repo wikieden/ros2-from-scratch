@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="350" viewBox="0 0 840 350">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">命名空间：同一个可执行文件起两份，名字加前缀就互不干扰</text>
+<text x="16.0" y="340.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">multisim.launch.py 里两个 Node 只差 namespace。遥控节点用 -r __ns:=/turtlesim1 放进同一个命名空间，才只控制第一只。</text>
+<rect x="30.0" y="52.0" width="380.0" height="204.0" rx="10" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="40.0" y="70.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#2563eb" text-anchor="start" font-weight="bold">namespace=&#x27;turtlesim1&#x27;</text>
+<rect x="230.0" y="150.0" width="160.0" height="40.0" rx="20.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="310.0" y="173.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">/turtlesim1/sim</text>
+<rect x="50.0" y="100.0" width="250.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="175.0" y="117.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtlesim1/turtle1/cmd_vel</text>
+<polyline points="300.0,113.0 310.0,113.0 310.0,150.0" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="310.0,150.0 305.8,142.1 314.2,142.1" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="50.0" y="200.0" width="150.0" height="40.0" rx="20.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="125.0" y="223.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">teleop</text>
+<polyline points="125.0,200.0 125.0,126.0" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="125.0,126.0 129.2,133.9 120.8,133.9" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="440.0" y="52.0" width="380.0" height="204.0" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="450.0" y="70.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">namespace=&#x27;turtlesim2&#x27;</text>
+<rect x="640.0" y="150.0" width="160.0" height="40.0" rx="20.0" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="720.0" y="173.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">/turtlesim2/sim</text>
+<rect x="460.0" y="100.0" width="250.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="585.0" y="117.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="10.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/turtlesim2/turtle1/cmd_vel</text>
+<polyline points="710.0,113.0 720.0,113.0 720.0,150.0" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="720.0,150.0 715.8,142.1 724.2,142.1" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="150.0" y="272.0" width="540.0" height="36.0" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="420.0" y="293.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="normal">不加 namespace：两个模拟器都订阅 /turtle1/cmd_vel → 按一下键两只一起动</text>
+</svg>

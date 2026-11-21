@@ -136,6 +136,8 @@ ros2 run demo_nodes_cpp talker --ros-args --log-level talker:=DEBUG     # 只调
 </code></pre>
 <p><strong>代码里怎么写</strong>：Python 里 <code>self.get_logger().info('...')</code>，还能加 <code>throttle_duration_sec=1.0</code>（每秒最多打一次）、<code>once=True</code>（只打一次）。C++ 用 <code>RCLCPP_INFO(node-&gt;get_logger(), "...")</code> 一族宏，带 <code>_THROTTLE</code>、<code>_ONCE</code> 等变体（日志文档 APIs 一节）。在 50 Hz 的控制回调里打日志，<strong>一定要节流</strong>，否则终端被刷屏、还拖慢回调。</p>
 <p><strong>Lyrical 新功能</strong>：日志后端可以在运行时用环境变量 <code>RCL_LOGGING_IMPLEMENTATION</code> 换（默认 <code>rcl_logging_spdlog</code>，<code>rcl_logging_noop</code> 关掉写文件）；launch 文件里也能按条设置日志级别（<code>Releases/Release-Lyrical-Luth.rst</code> 对应两节）。</p>
+<p><img alt="日志级别阈值与三个去处" src="../figures/03-launch-log-bag-log-routes.png" /></p>
+<p><em>图 3-1 · 日志：低于阈值的丢掉，其余同时送到终端、日志文件和 /rosout 话题。</em></p>
 <h3 id="2-launch">第 2 步 · launch：一条命令启动整个系统</h3>
 <p>依据：<code>ROS-Framework/nodes/Working-with-nodes/Launching-Multiple-Nodes/Launching-Multiple-Nodes.rst</code>（下称"launch 教程"）。</p>
 <p><strong>用法</strong>：<code>ros2 launch &lt;包名&gt; &lt;launch 文件名&gt;</code>。turtlesim 自带一个：</p>
@@ -197,6 +199,8 @@ def generate_launch_description():                 # 固定的入口函数名
 <li>可以传参数：<code>ros2 launch &lt;包&gt; &lt;文件&gt; 参数名:=值</code>，前提是文件里声明过这个参数（launch 教程 FAQ）。</li>
 <li>launch 还能加载参数文件、做条件判断、监听"某节点退出就关掉全部"之类的事件，这些放到第 14 章。</li>
 </ul>
+<p><img alt="命名空间让两个模拟器互不干扰" src="../figures/03-launch-log-bag-namespace.png" /></p>
+<p><em>图 3-2 · 命名空间：同一个可执行文件起两份，所有名字加前缀，话题就分开了。</em></p>
 <h3 id="3-bag">第 3 步 · bag：把数据录下来，回放复现</h3>
 <p>依据：<code>ROS-Framework/interfaces/Working-with-interfaces/Recording-And-Playing-Back-Data/Recording-And-Playing-Back-Data.rst</code>（下称"bag 教程"）。</p>
 <p><strong>bag</strong> 是 ROS 的"录像带"：把话题上的消息按时间录进文件，之后按原来的节奏重新发布出去。工具叫 <strong>rosbag2</strong>，命令是 <code>ros2 bag</code>。</p>
@@ -234,6 +238,8 @@ ros2 bag play -i subset_cmd_vel -i subset_pose    # 同时放两个 bag，时间
 <li><strong>离线测试</strong>：新写的感知节点不用连真相机，订阅 bag 回放的 <code>/image</code> 就能测。</li>
 </ol>
 <p><strong>Lyrical 新功能</strong>（<code>Release-Lyrical-Luth.rst</code>）：用服务远程开始 / 停止录制、Python API 控制录放、<code>--max-bag-files</code> 循环录制（盘满前删最旧的分片）、丢包统计话题 <code>events/rosbag2_messages_lost</code>。机器人上长期"黑匣子"式录制正需要这些。</p>
+<p><img alt="bag 录制与回放" src="../figures/03-launch-log-bag-bag.png" /></p>
+<p><em>图 3-3 · bag：录的是序列化后的字节，回放按原来的时间间隔重新发布；被录的源回放前要关掉。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 3-1</strong>（第 1 步）：你的控制节点每秒执行 100 次回调，你想在里面打一条"当前速度"的日志，但不想刷屏。Python 里怎么写？</p>
 <ul>

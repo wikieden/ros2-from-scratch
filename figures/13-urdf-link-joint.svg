@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="390" viewBox="0 0 860 390">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">URDF 是一棵树：连杆是节点，关节连接父子并规定怎么动</text>
+<text x="16.0" y="380.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">每个 link 一个坐标系，和第 12 章的 tf 树一一对应。origin = 关节角为 0 时子相对父的变换；转了 θ 就再绕 axis 转 θ。</text>
+<rect x="330.0" y="60.0" width="170.0" height="40.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="415.0" y="83.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">base_link</text>
+<rect x="40.0" y="180.0" width="170.0" height="40.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="125.0" y="203.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">left_wheel</text>
+<rect x="220.0" y="180.0" width="170.0" height="40.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="305.0" y="203.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">right_wheel</text>
+<rect x="420.0" y="180.0" width="170.0" height="40.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="505.0" y="203.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">camera_link</text>
+<rect x="620.0" y="180.0" width="170.0" height="40.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="203.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">lift</text>
+<rect x="620.0" y="290.0" width="170.0" height="40.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="705.0" y="313.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">arm</text>
+<line x1="415.0" y1="100.0" x2="125.0" y2="180.0" stroke="#2563eb" stroke-width="1.8"/>
+<polygon points="125.0,180.0 131.5,173.8 133.8,182.0" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="234.1" y="128.0" width="71.8" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="270.0" y="139.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">continuous</text>
+<line x1="415.0" y1="100.0" x2="305.0" y2="180.0" stroke="#2563eb" stroke-width="1.8"/>
+<polygon points="305.0,180.0 308.9,171.9 313.9,178.7" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="324.1" y="128.0" width="71.8" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="360.0" y="139.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">continuous</text>
+<line x1="415.0" y1="100.0" x2="505.0" y2="180.0" stroke="#6b7280" stroke-width="1.8"/>
+<polygon points="505.0,180.0 496.3,177.9 501.9,171.6" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="440.1" y="128.0" width="39.9" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="460.0" y="139.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">fixed</text>
+<line x1="415.0" y1="100.0" x2="705.0" y2="180.0" stroke="#ea580c" stroke-width="1.8"/>
+<polygon points="705.0,180.0 696.2,182.0 698.5,173.8" fill="#ea580c" stroke="#ea580c" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="527.3" y="128.0" width="65.4" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="560.0" y="139.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="normal">prismatic</text>
+<line x1="705.0" y1="220.0" x2="705.0" y2="290.0" stroke="#16a34a" stroke-width="1.8"/>
+<polygon points="705.0,290.0 700.8,282.1 709.2,282.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="675.5" y="243.0" width="59.0" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="705.0" y="254.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="normal">revolute</text>
+<text x="40.0" y="270.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="start" font-weight="bold">joint 类型</text>
+<text x="40.0" y="290.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#374151" text-anchor="start" font-weight="normal">continuous：轮子      fixed：相机支架</text>
+<text x="40.0" y="308.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#374151" text-anchor="start" font-weight="normal">prismatic：升降柱    revolute：机械臂关节</text>
+<text x="40.0" y="344.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">每个 link 三种描述：visual（显示）· collision（碰撞）· inertial（质量惯量）</text>
+</svg>

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="350" viewBox="0 0 860 350">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">单线程里同步 call()：回调等回复，回复等回调结束，谁也等不到谁</text>
+<text x="16.0" y="340.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">修法：call_async + add_done_callback；或多线程 executor + 两个回调组（第 9 章）；或 Lyrical 的 AsyncNode 里 await。</text>
+<line x1="150.0" y1="296.0" x2="800.0" y2="296.0" stroke="#6b7280" stroke-width="1.2"/>
+<polygon points="800.0,296.0 792.1,300.2 792.1,291.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="800.0" y="316.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="end" font-weight="normal">时间</text>
+<text x="140.0" y="92.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="normal">executor 唯一线程</text>
+<rect x="203.3" y="74.0" width="586.7" height="28.0" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="214.0" y="93.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#dc2626" text-anchor="start" font-weight="normal">定时器回调：result = cli.call(req)  ← 阻塞，一直不返回</text>
+<text x="140.0" y="152.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="normal">中间件</text>
+<line x1="150.0" y1="146.0" x2="790.0" y2="146.0" stroke="#d1d5db" stroke-width="8"/>
+<line x1="235.3" y1="102.0" x2="235.3" y2="140.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="235.3,140.0 231.1,132.1 239.6,132.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="242.3" y="110.5" width="54.0" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="269.3" y="122.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#16a34a" text-anchor="middle" font-weight="normal">请求发出</text>
+<circle cx="384.7" cy="146.0" r="8" fill="#16a34a" stroke="#fff" stroke-width="2"/>
+<text x="370.7" y="176.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="end" font-weight="normal">回复到了，留在中间件里</text>
+<text x="140.0" y="222.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="normal">回复回调</text>
+<rect x="406.0" y="206.0" width="384.0" height="26.0" rx="4" fill="#f9fafb" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="1"/>
+<text x="416.7" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">要 executor 取出来才能填进结果 —— 可线程正卡在上面</text>
+<line x1="384.7" y1="154.0" x2="427.3" y2="204.0" stroke="#6b7280" stroke-width="1.6" stroke-dasharray="3 3"/>
+<polygon points="427.3,204.0 419.0,200.7 425.4,195.2" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="704.7" y="272.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="16" fill="#dc2626" text-anchor="middle" font-weight="bold">死锁</text>
+</svg>

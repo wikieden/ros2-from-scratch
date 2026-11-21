@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="320" viewBox="0 0 860 320">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">同一批组件，部署时才决定进程怎么分</text>
+<text x="16.0" y="310.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">组件 = 没有 main 的节点，编成动态库；component_container 是“插线板”。分开放好调试、互不连累；合起来省开销，还能零拷贝。</text>
+<rect x="16.0" y="50.0" width="400.0" height="220.0" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="26.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6b7280" text-anchor="start" font-weight="bold">分开放：每个组件一个进程</text>
+<rect x="36.0" y="90.0" width="116.0" height="120.0" rx="8" fill="#fff" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="1"/>
+<text x="94.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">进程 1</text>
+<rect x="46.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="94.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">camera</text>
+<rect x="164.0" y="90.0" width="116.0" height="120.0" rx="8" fill="#fff" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="1"/>
+<text x="222.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">进程 2</text>
+<rect x="174.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="222.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">rectify</text>
+<line x1="152.0" y1="158.0" x2="174.0" y2="158.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="174.0,158.0 166.1,162.2 166.1,153.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="292.0" y="90.0" width="116.0" height="120.0" rx="8" fill="#fff" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="1"/>
+<text x="350.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">进程 3</text>
+<rect x="302.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="350.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">detector</text>
+<line x1="280.0" y1="158.0" x2="302.0" y2="158.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="302.0,158.0 294.1,162.2 294.1,153.8" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="216.0" y="246.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">跨进程：序列化 + 传输 + 反序列化</text>
+<rect x="444.0" y="50.0" width="400.0" height="220.0" rx="10" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="454.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#16a34a" text-anchor="start" font-weight="bold">合起来放：一个 component_container</text>
+<rect x="464.0" y="90.0" width="360.0" height="120.0" rx="8" fill="#fff" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="644.0" y="110.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="normal">进程 1（插线板）</text>
+<rect x="478.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="526.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">camera</text>
+<rect x="596.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="644.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">rectify</text>
+<line x1="574.0" y1="158.0" x2="596.0" y2="158.0" stroke="#16a34a" stroke-width="2.2"/>
+<polygon points="596.0,158.0 588.1,162.2 588.1,153.8" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="714.0" y="140.0" width="96.0" height="36.0" rx="18.0" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="762.0" y="161.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">detector</text>
+<line x1="692.0" y1="158.0" x2="714.0" y2="158.0" stroke="#16a34a" stroke-width="2.2"/>
+<polygon points="714.0,158.0 706.1,162.2 706.1,153.8" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="644.0" y="246.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="normal">进程内：交出 unique_ptr，0 次复制</text>
+</svg>

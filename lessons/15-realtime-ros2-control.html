@@ -156,6 +156,8 @@ jupyter lab ch15_control_loop.ipynb</code></pre><p>也可以下载后直接用 V
 </ol>
 <p><strong>操作系统也要配合</strong>：普通 Linux 调度器不保证准时。常见方案是打 <strong>PREEMPT_RT</strong> 补丁（让内核几乎处处可被高优先级任务抢占），或用 Xenomai 这类双内核（实时背景 "Real-time operating systems" 一节；<code>Developer-Tools/Build/Building-Realtime-rt_preempt-kernel-for-ROS-2/</code>）。实时线程还要设高优先级（<code>SCHED_FIFO</code>）、绑定 CPU 核。</p>
 <p><strong>这对 ROS 2 意味着什么？</strong> 第 9 章说过：普通 executor 调度复杂、有优先级反转、开销不小，<strong>不适合硬实时</strong>。Python 更不行（垃圾回收、GIL）。所以：<strong>关节级的快回路放进专门设计的框架里（ros2_control），用 C++ 写，严格遵守上面几条；话题、服务这些"慢世界"的东西留在外面。</strong> 这正是 ros2_control 的定位。</p>
+<p><img alt="实时回路的截止时间与抖动" src="../figures/15-ros2-control-jitter.png" /></p>
+<p><em>图 15-1 · 实时 = 准时（示意）：普通内核偶尔一拍错过截止时间；PREEMPT_RT + 锁内存 + 预分配后抖动小。</em></p>
 <h3 id="2-ros2_control">第 2 步 · ros2_control 架构</h3>
 <p>依据：<code>materials/ecosystem/control.ros.org/doc/getting_started/getting_started.rst</code>（下称"入门文档"）Architecture 一节。</p>
 <table>
@@ -261,6 +263,8 @@ ros2 control list_hardware_interfaces      # 看所有接口，哪些命令接�
 </code></pre>
 <p><strong>启动三步</strong>（入门文档 "Running the Framework for Your Robot"）：① 写控制器 YAML；② 在 URDF 里加 <code>&lt;ros2_control&gt;</code> 标签；③ launch 文件启动 <code>ros2_control_node</code>（带 <code>robot_description</code> 和 YAML）+ 各个 spawner。</p>
 <p><strong>换硬件不改控制器</strong>：仿真时把 <code>&lt;plugin&gt;</code> 换成仿真器的插件或 <code>mock_components/GenericSystem</code>（假硬件，命令原样回写成状态），控制器、YAML、上层代码一行不改。R-M7 就从 mock 硬件开始。</p>
+<p><img alt="命令接口独占与状态接口共享" src="../figures/15-ros2-control-claim.png" /></p>
+<p><em>图 15-2 · 控制器和硬件之间走接口：状态接口谁都能读，命令接口同一时刻只归一个控制器，抢占会被拒绝。</em></p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 15-1</strong>（第 1 步）：下面哪些操作不该出现在 1 kHz 控制回路里：(a) <code>std::vector::push_back</code>；(b) 读一个预先分配好的数组；(c) <code>RCLCPP_INFO</code> 打日志；(d) 等一把可能被 GUI 线程占着的互斥锁？</p>
 <ul>

@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="362" viewBox="0 0 860 362">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">colcon 按 package.xml 里的依赖排序：被依赖的先编，互不依赖的并行</text>
+<text x="16.0" y="352.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">依赖没写全，colcon 就可能先编使用方，报找不到头文件 / 模块。三层：CMake·setuptools 编一个包，ament 加 ROS 便利，colcon 编一堆。</text>
+<rect x="40.0" y="130.0" width="170.0" height="44.0" rx="8" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.4" opacity="1"/>
+<text x="125.0" y="155.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">my_interfaces</text>
+<rect x="270.0" y="70.0" width="170.0" height="44.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="355.0" y="95.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">my_driver</text>
+<rect x="270.0" y="190.0" width="170.0" height="44.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="355.0" y="215.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">my_perception</text>
+<rect x="500.0" y="130.0" width="170.0" height="44.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="585.0" y="155.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">my_bringup</text>
+<line x1="209.3" y1="130.0" x2="270.7" y2="114.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="270.7,114.0 264.0,120.1 261.9,111.9" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="209.3" y1="174.0" x2="270.7" y2="190.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="270.7,190.0 261.9,192.1 264.0,183.9" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="439.3" y1="114.0" x2="500.7" y2="130.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="500.7,130.0 491.9,132.1 494.0,123.9" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="439.3" y1="190.0" x2="500.7" y2="174.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="500.7,174.0 494.0,180.1 491.9,171.9" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="455.0" y="60.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="normal">箭头：被依赖 → 使用方</text>
+<line x1="40.0" y1="300.0" x2="670.0" y2="300.0" stroke="#1f2937" stroke-width="1.2"/>
+<line x1="40.0" y1="300.0" x2="40.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="40.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0 s</text>
+<line x1="110.0" y1="300.0" x2="110.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="110.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">1 s</text>
+<line x1="180.0" y1="300.0" x2="180.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="180.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">2 s</text>
+<line x1="250.0" y1="300.0" x2="250.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="250.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">3 s</text>
+<line x1="320.0" y1="300.0" x2="320.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="320.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">4 s</text>
+<line x1="390.0" y1="300.0" x2="390.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="390.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">5 s</text>
+<line x1="460.0" y1="300.0" x2="460.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="460.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">6 s</text>
+<line x1="530.0" y1="300.0" x2="530.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="530.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">7 s</text>
+<line x1="600.0" y1="300.0" x2="600.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="600.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">8 s</text>
+<line x1="670.0" y1="300.0" x2="670.0" y2="304.0" stroke="#1f2937" stroke-width="1"/>
+<text x="670.0" y="317.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">9 s</text>
+<rect x="40.0" y="250.0" width="210.0" height="20.0" rx="4" fill="#ccfbf1" stroke="#0d9488" stroke-width="1.4" opacity="1"/>
+<text x="45.0" y="264.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="start" font-weight="normal">my_interfaces</text>
+<rect x="250.0" y="250.0" width="210.0" height="20.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="255.0" y="264.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="start" font-weight="normal">my_driver</text>
+<rect x="250.0" y="274.0" width="280.0" height="20.0" rx="4" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="255.0" y="288.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="start" font-weight="normal">my_perception</text>
+<rect x="530.0" y="250.0" width="105.0" height="20.0" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="535.0" y="264.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#1f2937" text-anchor="start" font-weight="normal">my_bringup</text>
+<text x="720.0" y="262.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="start" font-weight="normal">driver 与 perception</text>
+<text x="720.0" y="280.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="start" font-weight="normal">同时编（并行）</text>
+</svg>

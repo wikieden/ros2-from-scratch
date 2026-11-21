@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="340" viewBox="0 0 860 340">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">控制器和硬件之间走“接口”，不走话题；命令接口同一时刻只归一个控制器</text>
+<text x="16.0" y="330.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">状态接口只读，谁都能读；命令接口独占。控制器管理器在激活时配对，第二个控制器抢同一个命令接口会被拒绝。换硬件只换最下面的插件。</text>
+<rect x="30.0" y="60.0" width="220.0" height="56.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="140.0" y="84.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">joint_trajectory_controller</text>
+<text x="140.0" y="100.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">active：占 joint1/position</text>
+<rect x="30.0" y="140.0" width="220.0" height="56.0" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="140.0" y="164.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">forward_position_controller</text>
+<text x="140.0" y="180.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">想激活 → 被拒绝</text>
+<rect x="30.0" y="220.0" width="220.0" height="56.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="140.0" y="244.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">joint_state_broadcaster</text>
+<text x="140.0" y="260.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">只读状态 → /joint_states</text>
+<rect x="330.0" y="50.0" width="230.0" height="236.0" rx="10" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="340.0" y="68.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#6b7280" text-anchor="start" font-weight="bold">资源管理器 RM：共享内存里的 double</text>
+<rect x="350.0" y="86.0" width="190.0" height="34.0" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="445.0" y="106.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">cmd  joint1/position</text>
+<rect x="350.0" y="150.0" width="190.0" height="34.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="445.0" y="170.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">state  joint1/position</text>
+<rect x="350.0" y="192.0" width="190.0" height="34.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="445.0" y="212.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">state  joint1/velocity</text>
+<rect x="350.0" y="234.0" width="190.0" height="34.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="445.0" y="254.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">state  joint1/effort</text>
+<line x1="250.0" y1="88.0" x2="350.0" y2="103.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="350.0,103.0 341.5,106.0 342.8,97.6" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="290.2" y="79.0" width="19.5" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="300.0" y="91.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#16a34a" text-anchor="middle" font-weight="normal">写</text>
+<line x1="250.0" y1="168.0" x2="350.0" y2="113.0" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4 3"/>
+<polygon points="350.0,113.0 345.1,120.5 341.0,113.1" fill="#dc2626" stroke="#dc2626" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="292.7" y="124.0" width="14.7" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="300.0" y="136.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#dc2626" text-anchor="middle" font-weight="normal">✗</text>
+<line x1="250.0" y1="248.0" x2="350.0" y2="200.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="350.0,200.0 344.7,207.2 341.0,199.6" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="290.2" y="207.5" width="19.5" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="300.0" y="219.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#2563eb" text-anchor="middle" font-weight="normal">读</text>
+<rect x="630.0" y="110.0" width="200.0" height="110.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="730.0" y="145.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">硬件组件插件</text>
+<text x="730.0" y="161.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">read() → 写状态接口</text>
+<text x="730.0" y="177.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">write() ← 读命令接口</text>
+<text x="730.0" y="192.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">真机 / mock / 仿真</text>
+<line x1="560.0" y1="140.0" x2="630.0" y2="140.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="630.0,140.0 622.1,144.2 622.1,135.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="560.0,140.0 567.9,135.8 567.9,144.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="560.0" y1="190.0" x2="630.0" y2="190.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="630.0,190.0 622.1,194.2 622.1,185.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="560.0,190.0 567.9,185.8 567.9,194.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+</svg>

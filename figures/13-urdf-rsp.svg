@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="330" viewBox="0 0 860 330">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">robot_state_publisher：URDF + 关节角 → 每个连杆的坐标</text>
+<text x="16.0" y="320.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">/joint_states 换来源（滑条 / 仿真器 / 真机 joint_state_broadcaster），后面的链路一点不变。RViz 的 Fixed Frame 决定一切画在哪个坐标系下。</text>
+<rect x="20.0" y="60.0" width="170.0" height="50.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="105.0" y="80.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">robot.urdf.xacro</text>
+<text x="105.0" y="96.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">xacro 展开</text>
+<rect x="20.0" y="150.0" width="200.0" height="42.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="120.0" y="167.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">joint_state_publisher_gui</text>
+<text x="120.0" y="182.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">只看模型：滑条</text>
+<rect x="20.0" y="202.0" width="200.0" height="42.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="120.0" y="219.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">仿真器插件</text>
+<text x="120.0" y="234.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">Gazebo / MuJoCo</text>
+<rect x="20.0" y="254.0" width="200.0" height="42.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="120.0" y="271.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">joint_state_broadcaster</text>
+<text x="120.0" y="286.3" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#4b5563" text-anchor="middle" font-weight="normal">真机，ros2_control</text>
+<rect x="250.0" y="200.0" width="120.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="310.0" y="217.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">/joint_states</text>
+<line x1="220.0" y1="171.0" x2="250.0" y2="213.0" stroke="#16a34a" stroke-width="1.2"/>
+<polygon points="250.0,213.0 241.9,209.0 248.8,204.1" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="220.0" y1="223.0" x2="250.0" y2="213.0" stroke="#16a34a" stroke-width="1.2"/>
+<polygon points="250.0,213.0 243.8,219.5 241.1,211.5" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="220.0" y1="275.0" x2="250.0" y2="213.0" stroke="#16a34a" stroke-width="1.2"/>
+<polygon points="250.0,213.0 250.3,222.0 242.7,218.3" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="420.0" y="120.0" width="180.0" height="90.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="510.0" y="153.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">robot_state_publisher</text>
+<text x="510.0" y="169.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">fixed 关节 → 静态变换</text>
+<text x="510.0" y="185.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">其余关节 → 正运动学</text>
+<line x1="190.0" y1="85.0" x2="420.0" y2="140.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="420.0,140.0 411.3,142.3 413.3,134.0" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="244.3" y="96.0" width="121.4" height="16.5" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="305.0" y="108.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="middle" font-weight="normal">robot_description</text>
+<line x1="370.0" y1="213.0" x2="420.0" y2="190.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="420.0,190.0 414.5,197.2 411.0,189.5" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="650.0" y="110.0" width="100.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="127.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">/tf_static</text>
+<rect x="650.0" y="190.0" width="100.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="207.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">/tf</text>
+<line x1="600.0" y1="145.0" x2="650.0" y2="123.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="650.0,123.0 644.4,130.1 641.0,122.3" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="600.0" y1="185.0" x2="650.0" y2="203.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="650.0,203.0 641.1,204.3 644.0,196.3" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="780.0" y="130.0" width="64.0" height="70.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="812.0" y="155.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">RViz</text>
+<text x="812.0" y="170.7" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#4b5563" text-anchor="middle" font-weight="normal">TF</text>
+<text x="812.0" y="184.2" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#4b5563" text-anchor="middle" font-weight="normal">Robot</text>
+<line x1="750.0" y1="123.0" x2="780.0" y2="150.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="780.0,150.0 771.3,147.8 776.9,141.5" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="750.0" y1="203.0" x2="780.0" y2="180.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="780.0,180.0 776.3,188.2 771.1,181.5" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+</svg>

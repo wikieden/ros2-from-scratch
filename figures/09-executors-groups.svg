@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="380" viewBox="0 0 860 380">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">只换多线程 executor、不分组：回调还是一个一个跑</text>
+<text x="16.0" y="370.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">没指定组的回调都进节点默认组，而默认组是互斥组。控制定时器和图像订阅分到两个组，控制才不会被 40 ms 的图像处理挡住。</text>
+<line x1="230.0" y1="336.0" x2="820.0" y2="336.0" stroke="#1f2937" stroke-width="1.2"/>
+<line x1="230.0" y1="336.0" x2="230.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="230.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0 ms</text>
+<line x1="348.0" y1="336.0" x2="348.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="348.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">20 ms</text>
+<line x1="466.0" y1="336.0" x2="466.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="466.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">40 ms</text>
+<line x1="584.0" y1="336.0" x2="584.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="584.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">60 ms</text>
+<line x1="702.0" y1="336.0" x2="702.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="702.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">80 ms</text>
+<line x1="820.0" y1="336.0" x2="820.0" y2="340.0" stroke="#1f2937" stroke-width="1"/>
+<text x="820.0" y="353.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">100 ms</text>
+<text x="160.0" y="101.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">单线程 executor</text>
+<text x="222.0" y="101.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="normal">线程 1</text>
+<line x1="230.0" y1="98.0" x2="820.0" y2="98.0" stroke="#e5e7eb" stroke-width="1"/>
+<rect x="230.0" y="86.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="348.0" y="101.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="466.0" y="86.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="471.9" y="86.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="589.9" y="101.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="707.9" y="86.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="230.0" y1="80.0" x2="230.0" y2="86.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="348.0" y1="80.0" x2="348.0" y2="86.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="466.0" y1="80.0" x2="466.0" y2="86.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="584.0" y1="80.0" x2="584.0" y2="86.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="702.0" y1="80.0" x2="702.0" y2="86.0" stroke="#2563eb" stroke-width="1.4"/>
+<text x="160.0" y="193.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">多线程，默认组（互斥）</text>
+<text x="222.0" y="193.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="normal">线程 1</text>
+<line x1="230.0" y1="190.0" x2="820.0" y2="190.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="222.0" y="223.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="normal">线程 2</text>
+<line x1="230.0" y1="220.0" x2="820.0" y2="220.0" stroke="#e5e7eb" stroke-width="1"/>
+<rect x="230.0" y="178.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="348.0" y="193.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="466.0" y="208.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="471.9" y="178.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="589.9" y="193.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="707.9" y="208.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="230.0" y1="172.0" x2="230.0" y2="178.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="348.0" y1="172.0" x2="348.0" y2="178.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="466.0" y1="172.0" x2="466.0" y2="178.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="584.0" y1="172.0" x2="584.0" y2="178.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="702.0" y1="172.0" x2="702.0" y2="178.0" stroke="#2563eb" stroke-width="1.4"/>
+<text x="160.0" y="285.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="end" font-weight="bold">多线程，两个组</text>
+<text x="222.0" y="285.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="normal">线程 1</text>
+<line x1="230.0" y1="282.0" x2="820.0" y2="282.0" stroke="#e5e7eb" stroke-width="1"/>
+<text x="222.0" y="315.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#6b7280" text-anchor="end" font-weight="normal">线程 2</text>
+<line x1="230.0" y1="312.0" x2="820.0" y2="312.0" stroke="#e5e7eb" stroke-width="1"/>
+<rect x="230.0" y="270.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="348.0" y="285.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="230.0" y="300.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="348.0" y="300.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="471.9" y="270.0" width="236.0" height="22.0" rx="3" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="589.9" y="285.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#ea580c" text-anchor="middle" font-weight="normal">图像回调 40 ms</text>
+<rect x="466.0" y="300.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="584.0" y="300.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<rect x="702.0" y="300.0" width="5.9" height="22.0" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<line x1="230.0" y1="264.0" x2="230.0" y2="270.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="348.0" y1="264.0" x2="348.0" y2="270.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="466.0" y1="264.0" x2="466.0" y2="270.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="584.0" y1="264.0" x2="584.0" y2="270.0" stroke="#2563eb" stroke-width="1.4"/>
+<line x1="702.0" y1="264.0" x2="702.0" y2="270.0" stroke="#2563eb" stroke-width="1.4"/>
+<text x="348.0" y="256.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#2563eb" text-anchor="middle" font-weight="normal">控制定时器 50 Hz，每 20 ms 一次 ↓</text>
+<text x="830.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="end" font-weight="normal">ctl 晚到</text>
+<text x="830.0" y="196.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="end" font-weight="normal">还是晚到</text>
+<text x="830.0" y="318.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="end" font-weight="normal">准时</text>
+</svg>

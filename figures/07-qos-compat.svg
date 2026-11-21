@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="330" viewBox="0 0 860 330">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">QoS 兼容：每一项都要“提供 ≥ 要求”，有一项不满足就连不上</text>
+<text x="16.0" y="320.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">连不上不会报错退出，只打一条 incompatible QoS 警告，订阅者就是收不到。先用 ros2 topic info -v 查两边的 QoS。</text>
+<text x="200.0" y="64.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="14" fill="#1f2937" text-anchor="middle" font-weight="bold">可靠性 Reliability</text>
+<text x="40.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="normal">发布者提供 ↓  订阅者要求 →</text>
+<text x="220.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">Best effort</text>
+<text x="340.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">Reliable</text>
+<text x="145.0" y="148.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="end" font-weight="bold">Best effort</text>
+<rect x="165.0" y="118.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="220.0" y="141.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<rect x="285.0" y="118.0" width="110.0" height="50.0" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="340.0" y="141.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#dc2626" text-anchor="middle" font-weight="bold">✗ 连不上</text>
+<text x="340.0" y="158.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#374151" text-anchor="middle" font-weight="normal">最常见的坑</text>
+<text x="145.0" y="208.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="end" font-weight="bold">Reliable</text>
+<rect x="165.0" y="178.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="220.0" y="201.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<rect x="285.0" y="178.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="340.0" y="201.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<text x="620.0" y="64.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="14" fill="#1f2937" text-anchor="middle" font-weight="bold">持久性 Durability</text>
+<text x="460.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="start" font-weight="normal">发布者提供 ↓  订阅者要求 →</text>
+<text x="640.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">Volatile</text>
+<text x="760.0" y="104.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="bold">Trans. local</text>
+<text x="565.0" y="148.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="end" font-weight="bold">Volatile</text>
+<rect x="585.0" y="118.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="640.0" y="141.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<text x="640.0" y="158.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#374151" text-anchor="middle" font-weight="normal">只收新的</text>
+<rect x="705.0" y="118.0" width="110.0" height="50.0" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="760.0" y="141.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#dc2626" text-anchor="middle" font-weight="bold">✗ 连不上</text>
+<text x="565.0" y="208.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1f2937" text-anchor="end" font-weight="bold">Trans. local</text>
+<rect x="585.0" y="178.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="640.0" y="201.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<text x="640.0" y="218.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#374151" text-anchor="middle" font-weight="normal">只收新的</text>
+<rect x="705.0" y="178.0" width="110.0" height="50.0" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="760.0" y="201.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#16a34a" text-anchor="middle" font-weight="bold">✓ 连上</text>
+<text x="760.0" y="218.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10" fill="#374151" text-anchor="middle" font-weight="normal">新旧都收</text>
+<text x="220.0" y="270.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#dc2626" text-anchor="middle" font-weight="normal">相机驱动 Best effort + 默认订阅 Reliable → 收不到</text>
+<text x="640.0" y="270.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#ea580c" text-anchor="middle" font-weight="normal">/map 只发一次：订阅端要 Transient local 才拿得到</text>
+</svg>

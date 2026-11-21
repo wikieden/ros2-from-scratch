@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="330" viewBox="0 0 840 330">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">日志：低于阈值的直接丢，过了阈值的同时送三个去处</text>
+<text x="16.0" y="320.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">--ros-args --log-level debug 调阈值；/rosout 汇总全机所有节点的日志，rqt_console 订阅它按级别、节点过滤。</text>
+<rect x="30.0" y="60.0" width="110.0" height="36.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="81.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">DEBUG</text>
+<rect x="30.0" y="108.0" width="110.0" height="36.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="129.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">INFO</text>
+<rect x="30.0" y="156.0" width="110.0" height="36.0" rx="8" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="177.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">WARN</text>
+<rect x="30.0" y="204.0" width="110.0" height="36.0" rx="8" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="225.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">ERROR</text>
+<rect x="30.0" y="252.0" width="110.0" height="36.0" rx="8" fill="#fee2e2" stroke="#dc2626" stroke-width="1.4" opacity="1"/>
+<text x="85.0" y="273.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12.5" fill="#1f2937" text-anchor="middle" font-weight="bold">FATAL</text>
+<line x1="20.0" y1="102.0" x2="160.0" y2="102.0" stroke="#dc2626" stroke-width="2" stroke-dasharray="6 3"/>
+<text x="165.0" y="106.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#dc2626" text-anchor="start" font-weight="normal">阈值 = INFO（默认）</text>
+<text x="165.0" y="86.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#6b7280" text-anchor="start" font-weight="normal">DEBUG 被丢弃</text>
+<rect x="330.0" y="140.0" width="150.0" height="70.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="405.0" y="171.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13" fill="#1f2937" text-anchor="middle" font-weight="bold">节点的 logger</text>
+<text x="405.0" y="188.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">get_logger().info()</text>
+<line x1="140.0" y1="126.0" x2="330.0" y2="175.0" stroke="#9ca3af" stroke-width="1.2"/>
+<polygon points="330.0,175.0 321.3,177.1 323.4,168.9" fill="#9ca3af" stroke="#9ca3af" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="140.0" y1="174.0" x2="330.0" y2="175.0" stroke="#9ca3af" stroke-width="1.2"/>
+<polygon points="330.0,175.0 322.0,179.2 322.1,170.7" fill="#9ca3af" stroke="#9ca3af" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="140.0" y1="222.0" x2="330.0" y2="175.0" stroke="#9ca3af" stroke-width="1.2"/>
+<polygon points="330.0,175.0 323.3,181.0 321.3,172.8" fill="#9ca3af" stroke="#9ca3af" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="140.0" y1="270.0" x2="330.0" y2="175.0" stroke="#9ca3af" stroke-width="1.2"/>
+<polygon points="330.0,175.0 324.8,182.3 321.0,174.8" fill="#9ca3af" stroke="#9ca3af" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="600.0" y="70.0" width="200.0" height="56.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="94.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13" fill="#1f2937" text-anchor="middle" font-weight="bold">终端</text>
+<text x="700.0" y="111.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">stderr</text>
+<line x1="480.0" y1="175.0" x2="600.0" y2="98.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="600.0,98.0 595.6,105.8 591.0,98.7" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="600.0" y="150.0" width="200.0" height="56.0" rx="8" fill="#f3f4f6" stroke="#6b7280" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="174.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13" fill="#1f2937" text-anchor="middle" font-weight="bold">日志文件</text>
+<text x="700.0" y="191.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">~/.ros/log/</text>
+<line x1="480.0" y1="175.0" x2="600.0" y2="178.0" stroke="#6b7280" stroke-width="1.6"/>
+<polygon points="600.0,178.0 592.0,182.0 592.2,173.6" fill="#6b7280" stroke="#6b7280" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="600.0" y="230.0" width="200.0" height="56.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="700.0" y="254.1" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="13" fill="#1f2937" text-anchor="middle" font-weight="bold">/rosout 话题</text>
+<text x="700.0" y="271.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">全机汇总</text>
+<line x1="480.0" y1="175.0" x2="600.0" y2="258.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="600.0,258.0 591.1,257.0 595.9,250.0" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<text x="700.0" y="300.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="normal">rqt_console 订阅 /rosout</text>
+</svg>

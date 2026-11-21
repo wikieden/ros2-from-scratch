@@ -148,6 +148,8 @@ jupyter lab ch10_zero_copy.ipynb</code></pre><p>也可以下载后直接用 VS C
 </tr>
 </tbody>
 </table>
+<p><img alt="四种传法的复制次数" src="../figures/10-composition-copies.png" /></p>
+<p><em>图 10-1 · 1080p 30 Hz 图像的四种传法：普通跨进程要搬几次，后三种都把数据留在原地。</em></p>
 <h3 id="1">第 1 步 · 组件与组件容器</h3>
 <p>依据：<code>ROS-Framework/nodes/About-Composition.rst</code>（下称"组合文档"）、<code>.../Working-with-nodes/Composition.rst</code>（下称"组合教程"）。</p>
 <p><strong>组件（component）是"没有 main 函数的节点"</strong>：它被编译成<strong>动态库</strong>，运行时由一个<strong>组件容器</strong>进程加载进来（组合文档 Writing a Component）。ROS 1 里这叫 nodelet，和普通节点是两套 API；ROS 2 统一成一套，组件通常就是一个 <code>rclcpp::Node</code> 的子类。</p>
@@ -172,6 +174,8 @@ ros2 component list                                    # 看容器里装了谁
 </code></pre>
 <p><strong>选容器的 executor</strong>（组合文档 Component Container）：<code>component_container</code> 默认单线程 executor；<code>--executor-type multi-threaded</code> 或 <code>events-cbg</code> 换成多线程 / 事件 executor（<code>thread_num</code> 参数设线程数）；加 <code>--isolated</code> 给每个组件一个独立的 executor。第 9 章的调度规则在容器里同样适用。</p>
 <p>实际项目里用 launch 的 <code>ComposableNodeContainer</code> + <code>ComposableNode</code> 描述"哪些组件装进哪个容器"（第 14 章）。</p>
+<p><img alt="组件分进程放与合进一个容器" src="../figures/10-composition-container.png" /></p>
+<p><em>图 10-2 · 同一批组件：分开放每个一个进程，好调试；合进一个 component_container，省开销、能零拷贝。</em></p>
 <h3 id="2">第 2 步 · 进程内通信：交出指针，零拷贝</h3>
 <p>依据：<code>.../Working-with-nodes/intra-process/Intra-Process-Communication.rst</code>（下称"进程内文档"）、<code>design/articles/intraprocess_communication.md</code>。</p>
 <p>同一进程里的两个节点，如果都开了进程内通信：</p>

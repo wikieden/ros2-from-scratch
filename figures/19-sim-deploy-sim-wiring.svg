@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="340" viewBox="0 0 860 340">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">Gazebo 接进 ROS 2 的三根线：关节、传感器、时间</text>
+<text x="16.0" y="330.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">关节走 gz_ros2_control，控制器一行不改；传感器经 ros_gz_bridge 变成标准话题；时间走 /clock。漏设一个 use_sim_time，tf 就报错。</text>
+<rect x="20.0" y="52.0" width="260.0" height="250.0" rx="10" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+<text x="30.0" y="70.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#ea580c" text-anchor="start" font-weight="bold">Gazebo（gz sim）</text>
+<rect x="40.0" y="90.0" width="220.0" height="50.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="150.0" y="110.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">物理引擎</text>
+<text x="150.0" y="126.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">关节状态 / 施加命令</text>
+<rect x="40.0" y="160.0" width="220.0" height="50.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="150.0" y="180.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">仿真传感器</text>
+<text x="150.0" y="196.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">相机 · 激光 · IMU</text>
+<rect x="40.0" y="230.0" width="220.0" height="50.0" rx="8" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="150.0" y="258.6" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">仿真时钟</text>
+<rect x="330.0" y="90.0" width="200.0" height="50.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="110.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">gz_ros2_control</text>
+<text x="430.0" y="126.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">硬件组件插件</text>
+<rect x="330.0" y="160.0" width="200.0" height="50.0" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="180.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">ros_gz_bridge</text>
+<text x="430.0" y="196.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">gz 消息 ↔ ROS 消息</text>
+<rect x="330.0" y="242.0" width="200.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="430.0" y="259.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11.5" fill="#1f2937" text-anchor="middle" font-weight="normal">/clock</text>
+<line x1="260.0" y1="115.0" x2="330.0" y2="115.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="330.0,115.0 322.1,119.2 322.1,110.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="260.0,115.0 267.9,110.8 267.9,119.2" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="260.0" y1="185.0" x2="330.0" y2="185.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="330.0,185.0 322.1,189.2 322.1,180.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="260.0" y1="255.0" x2="330.0" y2="255.0" stroke="#7c3aed" stroke-width="1.6"/>
+<polygon points="330.0,255.0 322.1,259.2 322.1,250.8" fill="#7c3aed" stroke="#7c3aed" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<rect x="590.0" y="90.0" width="250.0" height="50.0" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="715.0" y="110.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">controller_manager + JTC</text>
+<text x="715.0" y="126.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">read() / write()</text>
+<rect x="590.0" y="172.0" width="250.0" height="26.0" rx="2" fill="#ffffff" stroke="#9ca3af" stroke-width="1.4" opacity="1"/>
+<text x="715.0" y="189.5" font-family="'SF Mono',Menlo,Consolas,monospace" font-size="11" fill="#1f2937" text-anchor="middle" font-weight="normal">/camera/image  /scan  /imu</text>
+<rect x="590.0" y="230.0" width="250.0" height="50.0" rx="8" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="715.0" y="250.8" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="12" fill="#1f2937" text-anchor="middle" font-weight="bold">所有节点</text>
+<text x="715.0" y="266.4" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#4b5563" text-anchor="middle" font-weight="normal">use_sim_time:=true</text>
+<line x1="530.0" y1="115.0" x2="590.0" y2="115.0" stroke="#16a34a" stroke-width="1.6"/>
+<polygon points="590.0,115.0 582.1,119.2 582.1,110.8" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<polygon points="530.0,115.0 537.9,110.8 537.9,119.2" fill="#16a34a" stroke="#16a34a" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="530.0" y1="185.0" x2="590.0" y2="185.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="590.0,185.0 582.1,189.2 582.1,180.8" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+<line x1="530.0" y1="255.0" x2="590.0" y2="255.0" stroke="#2563eb" stroke-width="1.6"/>
+<polygon points="590.0,255.0 582.1,259.2 582.1,250.8" fill="#2563eb" stroke="#2563eb" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="1"/>
+</svg>

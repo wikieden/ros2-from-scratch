@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="290" viewBox="0 0 860 290">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<text x="16.0" y="26.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="17" fill="#1f2937" text-anchor="start" font-weight="bold">launch_testing 的一次运行：先起节点，再跑活动测试，退出后再查</text>
+<text x="16.0" y="280.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#6b7280" text-anchor="start" font-weight="normal">活动测试在节点运行期间执行（如“发一条 cmd_vel，2 秒内应收到位姿变化”）；关闭后测试检查退出码。CMake 里 add_launch_test 注册，colcon test 一起跑。</text>
+<line x1="60.0" y1="240.0" x2="820.0" y2="240.0" stroke="#1f2937" stroke-width="1.2"/>
+<line x1="60.0" y1="240.0" x2="60.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="60.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">0 s</text>
+<line x1="136.0" y1="240.0" x2="136.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="136.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">1 s</text>
+<line x1="212.0" y1="240.0" x2="212.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="212.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">2 s</text>
+<line x1="288.0" y1="240.0" x2="288.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="288.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">3 s</text>
+<line x1="364.0" y1="240.0" x2="364.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="364.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">4 s</text>
+<line x1="440.0" y1="240.0" x2="440.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="440.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">5 s</text>
+<line x1="516.0" y1="240.0" x2="516.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="516.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">6 s</text>
+<line x1="592.0" y1="240.0" x2="592.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="592.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">7 s</text>
+<line x1="668.0" y1="240.0" x2="668.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="668.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">8 s</text>
+<line x1="744.0" y1="240.0" x2="744.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="744.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">9 s</text>
+<line x1="820.0" y1="240.0" x2="820.0" y2="244.0" stroke="#1f2937" stroke-width="1"/>
+<text x="820.0" y="257.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#6b7280" text-anchor="middle" font-weight="normal">10 s</text>
+<rect x="60.0" y="70.0" width="114.0" height="40.0" rx="5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1.4" opacity="1"/>
+<text x="117.0" y="95.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#7c3aed" text-anchor="middle" font-weight="normal">起被测节点</text>
+<line x1="174.0" y1="60.0" x2="174.0" y2="230.0" stroke="#16a34a" stroke-width="2" stroke-dasharray="4 3"/>
+<rect x="128.5" y="46.0" width="90.9" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="174.0" y="57.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#16a34a" text-anchor="middle" font-weight="normal">ReadyToTest()</text>
+<rect x="174.0" y="120.0" width="456.0" height="32.0" rx="5" fill="#e0ecff" stroke="#2563eb" stroke-width="1.4" opacity="1"/>
+<text x="402.0" y="141.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#1e3a8a" text-anchor="middle" font-weight="normal">被测节点在跑（turtlesim、你的节点…）</text>
+<rect x="212.0" y="160.0" width="342.0" height="32.0" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="1.4" opacity="1"/>
+<text x="383.0" y="181.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11.5" fill="#16a34a" text-anchor="middle" font-weight="normal">活动测试 unittest.TestCase：发消息、等回应、断言</text>
+<line x1="630.0" y1="60.0" x2="630.0" y2="230.0" stroke="#dc2626" stroke-width="2" stroke-dasharray="4 3"/>
+<rect x="593.0" y="46.0" width="74.0" height="16.0" rx="3" fill="#ffffff" stroke="none" stroke-width="1.4" opacity="0.9"/>
+<text x="630.0" y="57.5" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="normal">全部节点退出</text>
+<rect x="645.2" y="160.0" width="159.6" height="32.0" rx="5" fill="#ffedd5" stroke="#ea580c" stroke-width="1.4" opacity="1"/>
+<text x="725.0" y="181.0" font-family="'PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif" font-size="11" fill="#ea580c" text-anchor="middle" font-weight="normal">关闭后测试：退出码 = 0</text>
+</svg>

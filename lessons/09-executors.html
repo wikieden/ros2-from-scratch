@@ -152,6 +152,8 @@ jupyter lab ch09_executor.ipynb</code></pre><p>也可以下载后直接用 VS Co
 </table>
 <p>EventsCBGExecutor 的一个提醒：事件队列<strong>没有上限</strong>，进程过载时队列会无限增长（executor 文档对应一节的 Note）。</p>
 <p><strong>为什么默认 executor 不适合硬实时</strong>（executor 文档 Outlook）：调度规则复杂难分析；高优先级回调可能被低优先级回调挡住（优先级反转）；不能显式控制回调执行顺序；CPU 和内存开销不小。真正的实时控制回路通常放在 ros2_control 里（第 15 章）。</p>
+<p><img alt="spin 的一圈：等待集与执行" src="../figures/09-executors-waitset.png" /></p>
+<p><em>图 9-1 · spin() 的一圈：等待集说“谁有活”，再一次执行一个回调；消息到要处理时才从中间件取出来。</em></p>
 <h3 id="2">第 2 步 · 回调组</h3>
 <p>依据：executor 文档 Callback groups 一节、<code>ROS-Framework/nodes/Working-with-nodes/Using-callback-groups.rst</code>（下称"回调组指南"）。</p>
 <p><strong>两种回调组</strong>：</p>
@@ -202,6 +204,8 @@ executor.spin()
 <li>两个回调需要并行 → 放进<strong>不同</strong>的组（或同一个可重入组）。</li>
 </ol>
 <p><strong>Python 的特别提醒</strong>：Python 有全局解释器锁（GIL），多个线程同一时刻只能有一个在执行 Python 代码。多线程 executor 在 Python 里主要解决<strong>等待</strong>（等服务回复、等 I/O）时的互相阻塞，而不是把计算变快。计算密集的部分（比如模型推理）放在 C++ 或 GPU 上。</p>
+<p><img alt="回调组与线程时间线" src="../figures/09-executors-groups.png" /></p>
+<p><em>图 9-2 · 只换多线程 executor 不分组，回调仍一个一个跑；控制定时器和图像订阅分到两个组，控制才准时。</em></p>
 <h3 id="3">第 3 步 · 实战</h3>
 <p><strong>修好第 5 章的服务死锁。</strong> 死锁原因：定时器回调里同步调用服务，executor 唯一的线程卡在这个回调里，没人去取回复。修法（回调组指南的核心例子）：</p>
 <pre><code class="language-python">self.client_group = MutuallyExclusiveCallbackGroup()

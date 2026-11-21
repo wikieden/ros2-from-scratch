@@ -205,6 +205,8 @@ jupyter lab ch13_urdf_fk.ipynb</code></pre><p>也可以下载后直接用 VS Cod
 </table>
 <p><strong>Lyrical 的 URDF 新功能</strong>（<code>Release-Lyrical-Luth.rst</code> "URDF improvements"）：姿态可以直接写四元数、新增胶囊形状、关节可以写加速度 / 减速度 / 加加速度（jerk）限制。要在文件里声明 <code>version="1.2"</code> 才能用。</p>
 <p><strong>URDF 和 MJCF</strong>：MuJoCo 仿真器用自己的 MJCF 格式，能描述 URDF 写不了的东西（闭链、肌腱、接触参数）。学习型机器人项目常两种都有：URDF 给 ROS 工具链，MJCF 给训练仿真（机器人软硬件架构专题第 9 章）。</p>
+<p><img alt="URDF 连杆与关节树" src="../figures/13-urdf-link-joint.png" /></p>
+<p><em>图 13-1 · URDF 是一棵树：连杆是节点，关节连父子，类型决定怎么动（continuous / fixed / prismatic / revolute）。</em></p>
 <h3 id="2-xacro-urdf">第 2 步 · xacro：让 URDF 不再重复</h3>
 <p>依据：<code>Developer-Tools/Build/Using-Xacro-to-Clean-Up-a-URDF-File/</code>（下称"xacro 教程"）。</p>
 <p>URDF 很快会变得又长又重复：左右两个轮子、六个结构相同的关节……<strong>xacro</strong> 是 XML 的宏语言，跑一遍就展开成普通 URDF（xacro 教程开头）：</p>
@@ -272,6 +274,8 @@ jupyter lab ch13_urdf_fk.ipynb</code></pre><p>也可以下载后直接用 VS Cod
 <pre><code class="language-bash">ros2 launch urdf_tutorial display.launch.py model:=/path/to/my_arm.urdf.xacro
 # 等价于：xacro 展开 → robot_state_publisher → joint_state_publisher_gui → rviz2
 </code></pre>
+<p><img alt="robot_state_publisher 数据流" src="../figures/13-urdf-rsp.png" /></p>
+<p><em>图 13-2 · robot_state_publisher：读 URDF、订阅 /joint_states，发 /tf_static 和 /tf，RViz 据此画出机器人。</em></p>
 <p><strong>和本仓库的连接</strong>：VLA 数据集里的"本体感知状态"（proprioception）就是 <code>/joint_states</code>；动作如果是末端位姿，从关节角算末端位置用的正是 URDF 描述的运动学链（机器人软硬件架构专题第 2 章）。</p>
 <h2 id="_3">练习与作答记录</h2>
 <p><strong>练习 13-1</strong>（第 1 步）：一个两轮差速小车，有底座、左轮、右轮、一个固定的激光雷达。写出所需的 link 和 joint 列表，每个 joint 标明类型。</p>
